@@ -1,62 +1,141 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MatchConnect Dashboard</title>
 
-  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="css/style.css">
+
+  <link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
+
 <body>
 
-  <div class="dashboard">
+<header class="header">
 
-    <header>
-      <h1>MatchConnect Dashboard</h1>
-      <p>Fun • Hookup • Matchmaking Platform</p>
+  <div class="logo-area">
 
-      <div class="header-buttons">
-        <button>Upload Photo</button>
-        <button>Upload Video</button>
-      </div>
-    </header>
+    <div class="menu-btn">
+      <i class="fas fa-bars"></i>
+    </div>
 
-    <section class="stats">
+    <img
+    src="https://cdn-icons-png.flaticon.com/512/1041/1041916.png"
+    class="logo">
 
-      <div class="card">
-        <h2>Active Members</h2>
-        <p>12.4K</p>
-      </div>
-
-      <div class="card">
-        <h2>New Matches</h2>
-        <p>1,280</p>
-      </div>
-
-      <div class="card">
-        <h2>Video Uploads</h2>
-        <p>845</p>
-      </div>
-
-    </section>
-
-    <section>
-      <h2 class="title">Featured Profiles</h2>
-
-      <div class="profiles" id="profiles"></div>
-    </section>
-
-    <section class="activities">
-      <h2>Recent Activities</h2>
-
-      <div class="activity">Sophia uploaded a new video</div>
-      <div class="activity">Daniel matched with Amara</div>
-      <div class="activity">5 new photos added today</div>
-    </section>
+    <h1>MatchConnect</h1>
 
   </div>
 
-  <script src="index.js"></script>
+
+  <div class="search-box">
+
+    <input type="text"
+    placeholder="Search profiles, videos...">
+
+    <i class="fas fa-search"></i>
+
+  </div>
+
+</header>
+
+
+
+<section class="hero-card">
+
+  <div class="overlay">
+
+    <h2>
+      Find Fun, Friends & Perfect Matches
+    </h2>
+
+    <p>
+      Connect with people around the world
+      through photos, videos and live chats.
+    </p>
+
+    <button>
+      Get Started
+    </button>
+
+  </div>
+
+</section>
+
+
+
+<div class="dashboard">
+
+  <section class="stats">
+
+    <div class="card transparent-card">
+
+      <h2>Active Members</h2>
+
+      <p>12.4K</p>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>New Matches</h2>
+
+      <p>1,280</p>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>Video Uploads</h2>
+
+      <p>845</p>
+
+    </div>
+
+  </section>
+
+
+
+  <section>
+
+    <h2 class="title">
+      Featured Profiles
+    </h2>
+
+    <div class="profiles"
+    id="profiles"></div>
+
+  </section>
+
+
+
+  <section class="activities">
+
+    <h2>Recent Activities</h2>
+
+    <div class="activity">
+      Sophia uploaded a new video
+    </div>
+
+    <div class="activity">
+      Daniel matched with Amara
+    </div>
+
+    <div class="activity">
+      5 new photos added today
+    </div>
+
+  </section>
+
+</div>
+
+
+<script src="js/script.js"></script>
 
 </body>
 </html>
