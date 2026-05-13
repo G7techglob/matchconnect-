@@ -12,7 +12,7 @@ const profiles = [
     "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
 
     bio:
-    "Loves fashion, travelling and live video chats."
+    "Loves fashion and travelling."
   },
 
 
@@ -29,7 +29,7 @@ const profiles = [
     "https://www.youtube.com/watch?v=ysz5S6PUM-U",
 
     bio:
-    "Entrepreneur, fitness lover and content creator."
+    "Fitness lover and entrepreneur."
   },
 
 
@@ -46,24 +46,7 @@ const profiles = [
     "https://www.youtube.com/watch?v=jNQXAC9IVRw",
 
     bio:
-    "Music lover, dancer and social media influencer."
-  },
-
-
-
-  {
-    name:"Michael",
-    age:29,
-    city:"Abuja",
-
-    image:
-    "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=800",
-
-    video:
-    "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
-
-    bio:
-    "Friendly guy who enjoys football and adventure."
+    "Dancer and social media creator."
   }
 
 ];
@@ -89,9 +72,7 @@ function loadProfiles(){
 
     <div class="profile-item">
 
-      <img
-      src="${profile.image}"
-      alt="${profile.name}">
+      <img src="${profile.image}">
 
 
       <div class="profile-content">
@@ -155,7 +136,7 @@ function loadProfiles(){
 
 
 
-/* SEARCH FUNCTION */
+/* SEARCH */
 
 const searchInput =
 document.querySelector(".search-box input");
@@ -172,22 +153,22 @@ searchInput.addEventListener("keyup", () => {
 
 
 
-  allProfiles.forEach(card => {
+  allProfiles.forEach(profile => {
 
     const text =
-    card.innerText.toLowerCase();
+    profile.innerText.toLowerCase();
 
 
 
     if(text.includes(value)){
 
-      card.style.display = "block";
+      profile.style.display = "block";
 
     }
 
     else{
 
-      card.style.display = "none";
+      profile.style.display = "none";
 
     }
 
@@ -197,16 +178,64 @@ searchInput.addEventListener("keyup", () => {
 
 
 
-/* MENU BUTTON */
+/* MENU */
 
 const menuBtn =
-document.querySelector(".menu-btn");
+document.getElementById("menuBtn");
+
+const mobileNavbar =
+document.getElementById("mobileNavbar");
 
 
 
 menuBtn.addEventListener("click", () => {
 
-  document.body.classList.toggle("menu-open");
+  mobileNavbar.classList.toggle("active");
+
+
+
+  /* PHONE BACK BUTTON SUPPORT */
+
+  if(mobileNavbar.classList.contains("active")){
+
+    history.pushState(
+      {menu:true},
+      ""
+    );
+
+  }
+
+});
+
+
+
+/* BACK BUTTON */
+
+window.addEventListener("popstate", () => {
+
+  if(mobileNavbar.classList.contains("active")){
+
+    mobileNavbar.classList.remove("active");
+
+  }
+
+});
+
+
+
+/* TAP SCREEN TO CLOSE */
+
+document.addEventListener("click", (e) => {
+
+  if(
+    !mobileNavbar.contains(e.target)
+    &&
+    !menuBtn.contains(e.target)
+  ){
+
+    mobileNavbar.classList.remove("active");
+
+  }
 
 });
 
@@ -214,21 +243,19 @@ menuBtn.addEventListener("click", () => {
 
 /* START BUTTON */
 
-const startButton =
-document.querySelector(".overlay button");
+const startBtn =
+document.getElementById("startBtn");
 
 
 
-startButton.addEventListener("click", () => {
+startBtn.addEventListener("click", () => {
 
   alert(
-    "Welcome to MatchConnect!"
+    "Welcome To MatchConnect"
   );
 
 });
 
 
-
-/* LOAD WEBSITE */
 
 loadProfiles();
