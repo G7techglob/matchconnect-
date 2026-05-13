@@ -26,8 +26,8 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:15px 25px;
-  background:rgba(255,255,255,0.08);
+  padding:10px 18px;
+  background:rgba(15,23,42,0.92);
   backdrop-filter:blur(10px);
   z-index:1000;
 }
@@ -35,21 +35,92 @@ body{
 .logo-area{
   display:flex;
   align-items:center;
-  gap:15px;
+  gap:10px;
 }
 
 .logo{
-  width:45px;
-  height:45px;
+  width:38px;
+  height:38px;
+  object-fit:cover;
 }
 
 .logo-area h1{
-  font-size:24px;
+  font-size:18px;
+  font-weight:bold;
 }
 
+
+
+/* MENU BUTTON */
+
 .menu-btn{
-  font-size:24px;
+  font-size:28px;
   cursor:pointer;
+  color:white;
+  user-select:none;
+}
+
+
+
+/* NAVBAR */
+
+.navbar{
+  position:fixed;
+  top:0;
+  right:-100%;
+  width:270px;
+  height:100vh;
+  background:#111827;
+  padding:80px 20px;
+  transition:0.4s;
+  z-index:999;
+}
+
+.navbar.active{
+  right:0;
+}
+
+.navbar a{
+  display:block;
+  color:white;
+  text-decoration:none;
+  margin:18px 0;
+  font-size:18px;
+  transition:0.3s;
+}
+
+.navbar a:hover{
+  color:#ff1493;
+}
+
+
+
+/* SOCIAL MEDIA LINKS */
+
+.social-links{
+  margin-top:40px;
+  display:flex;
+  gap:15px;
+  flex-wrap:wrap;
+}
+
+.social-links a{
+  width:45px;
+  height:45px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:rgba(255,255,255,0.12);
+  color:white;
+  font-size:20px;
+  text-decoration:none;
+  transition:0.3s;
+}
+
+.social-links a:hover{
+  background:#ff1493;
+  transform:translateY(-5px);
 }
 
 
@@ -57,12 +128,16 @@ body{
 /* SEARCH */
 
 .search-box{
+  margin-top:90px;
   display:flex;
   align-items:center;
-  background:rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.12);
   padding:10px 15px;
   border-radius:30px;
-  width:320px;
+  width:90%;
+  max-width:400px;
+  margin-left:auto;
+  margin-right:auto;
 }
 
 .search-box input{
@@ -71,6 +146,7 @@ body{
   border:none;
   outline:none;
   color:white;
+  font-size:15px;
 }
 
 .search-box input::placeholder{
@@ -82,131 +158,61 @@ body{
 /* HERO */
 
 .hero-card{
-  height:90vh;
+  height:100vh;
   background:url(
   'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1400'
   ) center/cover;
   display:flex;
   align-items:center;
   justify-content:center;
+  padding:20px;
 }
 
 .overlay{
-  background:rgba(0,0,0,0.45);
-  padding:40px;
-  border-radius:30px;
+  background:rgba(0,0,0,0.5);
+  padding:35px;
+  border-radius:25px;
   text-align:center;
-  max-width:700px;
+  max-width:650px;
   backdrop-filter:blur(8px);
 }
 
 .overlay h2{
-  font-size:48px;
+  font-size:42px;
   margin-bottom:20px;
 }
 
 .overlay p{
   color:#ddd;
   margin-bottom:25px;
-  font-size:18px;
+  font-size:17px;
+  line-height:1.6;
 }
 
-.overlay button{
-  padding:14px 30px;
+
+
+/* BUTTONS */
+
+button,
+.photo-btn,
+.video-btn{
+  padding:13px 25px;
   border:none;
   border-radius:30px;
-  background:#ff1493;
   color:white;
-  font-size:16px;
+  font-size:15px;
   cursor:pointer;
-}
-
-
-
-/* DASHBOARD */
-
-.dashboard{
-  padding:40px 20px;
-}
-
-.stats{
-  display:grid;
-  grid-template-columns:
-  repeat(auto-fit,minmax(250px,1fr));
-  gap:20px;
-}
-
-.card{
-  background:white;
-  color:black;
-  padding:25px;
-  border-radius:25px;
-  box-shadow:0 4px 15px rgba(0,0,0,0.2);
-}
-
-.transparent-card{
-  background:rgba(255,255,255,0.12);
-  backdrop-filter:blur(10px);
-  color:white;
-}
-
-.card p{
-  font-size:35px;
-  margin-top:15px;
-  font-weight:bold;
-}
-
-
-
-/* PROFILE SECTION */
-
-.title{
-  margin:50px 0 25px;
-  font-size:35px;
-}
-
-.profiles{
-  display:grid;
-  grid-template-columns:
-  repeat(auto-fit,minmax(300px,1fr));
-  gap:25px;
-}
-
-.profile-card{
-  background:white;
-  border-radius:25px;
-  overflow:hidden;
-  color:black;
   transition:0.3s;
 }
 
-.profile-card:hover{
-  transform:translateY(-10px);
+button:hover,
+.photo-btn:hover,
+.video-btn:hover{
+  transform:scale(1.05);
 }
 
-.profile-card img{
-  width:100%;
-  height:320px;
-  object-fit:cover;
-}
-
-.profile-content{
-  padding:20px;
-}
-
-.profile-buttons{
-  display:flex;
-  gap:10px;
-  margin-top:15px;
-}
-
-.profile-buttons a{
-  flex:1;
-  text-align:center;
-  padding:12px;
-  border-radius:12px;
-  text-decoration:none;
-  color:white;
+.overlay button{
+  background:#ff1493;
 }
 
 .photo-btn{
@@ -219,13 +225,78 @@ body{
 
 
 
+/* PROFILE SECTION */
+
+.dashboard{
+  padding:40px 20px;
+}
+
+.title{
+  margin:40px 0 25px;
+  font-size:32px;
+  text-align:center;
+}
+
+.profiles{
+  display:grid;
+  grid-template-columns:
+  repeat(auto-fit,minmax(280px,1fr));
+  gap:25px;
+}
+
+.profile-card{
+  background:rgba(255,255,255,0.08);
+  border-radius:20px;
+  overflow:hidden;
+  backdrop-filter:blur(8px);
+  transition:0.3s;
+}
+
+.profile-card:hover{
+  transform:translateY(-8px);
+}
+
+.profile-card img{
+  width:100%;
+  height:320px;
+  object-fit:cover;
+}
+
+.profile-content{
+  padding:20px;
+}
+
+.profile-content h3{
+  margin-bottom:10px;
+}
+
+.profile-content p{
+  color:#ddd;
+  font-size:15px;
+  line-height:1.5;
+}
+
+.profile-buttons{
+  display:flex;
+  gap:10px;
+  margin-top:15px;
+}
+
+.profile-buttons a{
+  flex:1;
+  text-align:center;
+  text-decoration:none;
+}
+
+
+
 /* ACTIVITIES */
 
 .activities{
   margin-top:50px;
   background:rgba(255,255,255,0.08);
   padding:25px;
-  border-radius:25px;
+  border-radius:20px;
   backdrop-filter:blur(8px);
 }
 
@@ -233,7 +304,23 @@ body{
   background:rgba(255,255,255,0.1);
   padding:15px;
   margin-top:15px;
-  border-radius:15px;
+  border-radius:12px;
+}
+
+
+
+/* FOOTER */
+
+.footer{
+  margin-top:50px;
+  padding:30px 20px;
+  text-align:center;
+  background:rgba(255,255,255,0.05);
+}
+
+.footer p{
+  color:#bbb;
+  margin-top:15px;
 }
 
 
@@ -242,17 +329,20 @@ body{
 
 @media(max-width:768px){
 
-  .header{
-    flex-direction:column;
-    gap:15px;
-  }
-
-  .search-box{
-    width:100%;
-  }
-
   .overlay h2{
-    font-size:32px;
+    font-size:30px;
   }
 
-    }
+  .overlay p{
+    font-size:15px;
+  }
+
+  .logo-area h1{
+    font-size:16px;
+  }
+
+  .menu-btn{
+    font-size:24px;
+  }
+
+  }
