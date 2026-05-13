@@ -2,24 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MatchConnect Dashboard</title>
+  <meta name="viewport"
+  content="width=device-width, initial-scale=1.0">
+
+  <title>MatchConnect</title>
 
   <link rel="stylesheet" href="index.css">
 
+  <!-- FONT AWESOME -->
+
   <link rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 </head>
 
 <body>
+
+
+
+<!-- HEADER -->
 
 <header class="header">
 
   <div class="logo-area">
 
+    <!-- MENU BUTTON -->
+
     <div class="menu-btn">
       <i class="fas fa-bars"></i>
     </div>
+
+    <!-- LOGO -->
 
     <img
     src="https://cdn-icons-png.flaticon.com/512/1041/1041916.png"
@@ -30,10 +43,13 @@
   </div>
 
 
+
+  <!-- SEARCH -->
+
   <div class="search-box">
 
     <input type="text"
-    placeholder="Search profiles, videos...">
+    placeholder="Search people, videos, chats...">
 
     <i class="fas fa-search"></i>
 
@@ -43,21 +59,38 @@
 
 
 
+
+
+<!-- HERO SECTION -->
+
 <section class="hero-card">
 
   <div class="overlay">
 
     <h2>
-      Find Fun, Friends & Perfect Matches
+      Meet New People Worldwide
     </h2>
 
     <p>
-      Connect with people around the world
-      through photos, videos and live chats.
+
+      MatchConnect helps you discover
+      friendships, relationships and fun
+      connections through live chat,
+      photos and short videos.
+
+    </p>
+
+    <p>
+
+      Join thousands of active users,
+      explore profiles and enjoy a modern
+      social experience designed for fun,
+      communication and real connections.
+
     </p>
 
     <button>
-      Get Started
+      Start Connecting
     </button>
 
   </div>
@@ -66,95 +99,294 @@
 
 
 
-<div class="dashboard">
 
-  <section class="stats">
 
-    <div class="card transparent-card">
+<!-- ABOUT SECTION -->
 
-      <h2>Active Members</h2>
+<section class="about-section">
 
-      <p>12.4K</p>
+  <h2>
+    Why Choose MatchConnect?
+  </h2>
+
+  <p>
+
+    MatchConnect is a modern social and
+    matchmaking platform created to help
+    people build meaningful relationships,
+    discover new friends and enjoy secure
+    online communication.
+
+  </p>
+
+  <p>
+
+    Upload photos, share videos,
+    connect through messaging and explore
+    exciting profiles from different
+    countries around the world.
+
+  </p>
+
+</section>
+
+
+
+
+
+<!-- FEATURED PROFILES -->
+
+<section class="dashboard">
+
+  <h2 class="title">
+    Featured Profiles
+  </h2>
+
+  <div class="profiles"
+  id="profiles">
+
+    <!-- PROFILE 1 -->
+
+    <div class="profile-item">
+
+      <img
+      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=800">
+
+      <div class="profile-content">
+
+        <h3>Jessica, 24</h3>
+
+        <p>
+          Loves travelling, music,
+          photography and adventure.
+        </p>
+
+        <div class="profile-buttons">
+
+          <a href="#"
+          class="photo-btn">
+
+          Photos
+
+          </a>
+
+          <a href="#"
+          class="video-btn">
+
+          Videos
+
+          </a>
+
+        </div>
+
+      </div>
 
     </div>
 
 
-    <div class="card">
 
-      <h2>New Matches</h2>
 
-      <p>1,280</p>
+    <!-- PROFILE 2 -->
+
+    <div class="profile-item">
+
+      <img
+      src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=800">
+
+      <div class="profile-content">
+
+        <h3>Daniel, 28</h3>
+
+        <p>
+          Fitness lover, entrepreneur
+          and video creator.
+        </p>
+
+        <div class="profile-buttons">
+
+          <a href="#"
+          class="photo-btn">
+
+          Photos
+
+          </a>
+
+          <a href="#"
+          class="video-btn">
+
+          Videos
+
+          </a>
+
+        </div>
+
+      </div>
 
     </div>
 
 
-    <div class="card">
 
-      <h2>Video Uploads</h2>
 
-      <p>845</p>
+    <!-- PROFILE 3 -->
+
+    <div class="profile-item">
+
+      <img
+      src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?q=80&w=800">
+
+      <div class="profile-content">
+
+        <h3>Sophia, 22</h3>
+
+        <p>
+          Fashion model, dancer
+          and content creator.
+        </p>
+
+        <div class="profile-buttons">
+
+          <a href="#"
+          class="photo-btn">
+
+          Photos
+
+          </a>
+
+          <a href="#"
+          class="video-btn">
+
+          Videos
+
+          </a>
+
+        </div>
+
+      </div>
 
     </div>
 
-  </section>
+  </div>
+
+</section>
 
 
 
-  <section>
-
-    <h2 class="title">
-      Featured Profiles
-    </h2>
-
-    <div class="profiles"
-    id="profiles"></div>
-
-  </section>
 
 
+<!-- COMMUNITY SECTION -->
 
-  <section class="activities">
+<section class="community-section">
 
-    <h2>Recent Activities</h2>
+  <h2>
+    Join Our Growing Community
+  </h2>
 
-    <div class="activity">
-      Sophia uploaded a new video
-    </div>
+  <p>
 
-    <div class="activity">
-      Daniel matched with Amara
-    </div>
+    Thousands of users join MatchConnect
+    daily to make friends, build
+    relationships and enjoy entertaining
+    conversations.
 
-    <div class="activity">
-      5 new photos added today
-    </div>
+  </p>
 
-  </section>
-</div>
+  <p>
 
-<div class="social-links">
+    Start exploring exciting profiles,
+    discover video content and meet people
+    who share your interests today.
 
-<a href="https://facebook.com" target="_blank">
-<i class="fab fa-facebook-f"></i>
-</a>
+  </p>
 
-<a href="https://instagram.com" target="_blank">
-<i class="fab fa-instagram"></i>
-</a>
+</section>
 
-<a href="https://twitter.com" target="_blank">
-<i class="fab fa-twitter"></i>
-</a>
 
-<a href="https://tiktok.com" target="_blank">
-<i class="fab fa-tiktok"></i>
-</a>
 
-<a href="https://youtube.com" target="_blank">
-<i class="fab fa-youtube"></i>
-</a>
 
-</div>
+
+<!-- SOCIAL MEDIA -->
+
+<section class="social-section">
+
+  <h2>
+    Follow Us
+  </h2>
+
+  <div class="social-links">
+
+    <a href="https://facebook.com"
+    target="_blank">
+
+    <i class="fab fa-facebook-f"></i>
+
+    </a>
+
+
+    <a href="https://instagram.com"
+    target="_blank">
+
+    <i class="fab fa-instagram"></i>
+
+    </a>
+
+
+    <a href="https://twitter.com"
+    target="_blank">
+
+    <i class="fab fa-twitter"></i>
+
+    </a>
+
+
+    <a href="https://tiktok.com"
+    target="_blank">
+
+    <i class="fab fa-tiktok"></i>
+
+    </a>
+
+
+    <a href="https://youtube.com"
+    target="_blank">
+
+    <i class="fab fa-youtube"></i>
+
+    </a>
+
+  </div>
+
+</section>
+
+
+
+
+
+<!-- FOOTER -->
+
+<footer class="footer">
+
+  <h2>
+    MatchConnect
+  </h2>
+
+  <p>
+
+    Connect, chat, match and explore
+    exciting people around the world.
+
+  </p>
+
+  <p>
+
+    © 2026 MatchConnect.
+    All Rights Reserved.
+
+  </p>
+
+</footer>
+
+
+
 <script src="index.js"></script>
 
 </body>
