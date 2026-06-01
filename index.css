@@ -448,3 +448,20 @@ body{
   margin-top:10px;
 }
 
+.media-description{
+    padding:15px;
+    margin-bottom:25px;
+    background:#f8f8f8;
+    border-radius:10px;
+    color:#333;
+}
+
+.media-description h3{
+    margin-bottom:8px;
+    font-size:22px;
+}
+
+.media-description p{
+    line-height:1.6;
+    font-size:16px;
+      }
