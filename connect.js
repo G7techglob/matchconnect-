@@ -1,6 +1,13 @@
 const menuBtn = document.getElementById("menuBtn");
-const navbar = document.getElementById("navbar");
+const nav = document.getElementById("nav");
 
 menuBtn.addEventListener("click", () => {
-    navbar.classList.toggle("active");
+    nav.classList.toggle("active");
+});
+
+// close menu when clicking a link (better UX)
+document.querySelectorAll(".nav a").forEach(link => {
+    link.addEventListener("click", () => {
+        nav.classList.remove("active");
+    });
 });
