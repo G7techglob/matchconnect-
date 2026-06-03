@@ -259,3 +259,7 @@ startBtn.addEventListener("click", () => {
 
 
 loadProfiles();
+
+document.getElementById("startBtn").addEventListener("click", function() {
+    window.location.href = "connect.html";
+});
