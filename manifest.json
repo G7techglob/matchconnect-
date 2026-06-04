@@ -1,11 +1,11 @@
 {
   "name": "MatchConnect",
   "short_name": "MatchConnect",
-  "start_url": "./index.html",
+  "start_url": "/Realme.com/index.html",
+  "scope": "/Realme.com/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ff4d6d",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "images/icon-192.png",
