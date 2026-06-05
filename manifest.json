@@ -1,8 +1,9 @@
 {
   "name": "MatchConnect",
   "short_name": "MatchConnect",
-"start_url": "./",
-"scope": "./"
+  "description": "MatchConnect is a social platform for meeting new people, chatting, and building real connections.",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ff4d6d",
