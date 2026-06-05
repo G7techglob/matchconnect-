@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat - MatchConnect</title>
+
+<link rel="stylesheet" href="chat.css">
+</head>
+
+<body>
+
+<header class="topbar">
+    <h2>MatchConnect Chat</h2>
+    <button id="logoutBtn">Logout</button>
+</header>
+
+<div class="container">
+
+    <div class="users">
+        <h3>Users</h3>
+        <div id="usersList"></div>
+    </div>
+
+    <div class="chatBox">
+        <div id="messages"></div>
+
+        <div class="inputBox">
+            <input type="text" id="messageInput" placeholder="Type message...">
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
+
+</div>
+
+<script type="module" src="chat.js"></script>
+
+</body>
+</html>
