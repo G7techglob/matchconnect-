@@ -21,6 +21,31 @@
   <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ff4d6d">
   <meta name="app-version" content="1.0.1">
+
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  // Your Firebase config (PASTE YOURS HERE)
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
+    authDomain: "matchconnect-44a3e.firebaseapp.com",
+    projectId: "matchconnect-44a3e",
+    storageBucket: "matchconnect-44a3e.firebasestorage.app",
+    messagingSenderId: "283382943870",
+    appId: "1:283382943870:web:ee1d08c65bcbac400cc82f"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+
+  // Firestore database
+  const db = getFirestore(app);
+
+  // Make database available globally
+  window.db = db;
+</script>
+
 </head>
 
 <body>
