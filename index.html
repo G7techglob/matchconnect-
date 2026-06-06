@@ -1,50 +1,466 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+  content="width=device-width, initial-scale=1.0">
+
   <title>MatchConnect</title>
 
+  <link rel="stylesheet"
+  href="index.css">
+
+  <!-- FONT AWESOME -->
+
+  <link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ff4d6d">
+  <meta name="app-version" content="1.0.1">
+
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
-      authDomain: "matchconnect-44a3e.firebaseapp.com",
-      projectId: "matchconnect-44a3e",
-      storageBucket: "matchconnect-44a3e.firebasestorage.app",
-      messagingSenderId: "283382943870",
-      appId: "1:283382943870:web:ee1d08c65bcbac400cc82f"
-    };
+  // Your Firebase config (PASTE YOURS HERE)
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
+    authDomain: "matchconnect-44a3e.firebaseapp.com",
+    projectId: "matchconnect-44a3e",
+    storageBucket: "matchconnect-44a3e.firebasestorage.app",
+    messagingSenderId: "283382943870",
+    appId: "1:283382943870:web:ee1d08c65bcbac400cc82f"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
 
-    // MAKE BUTTON WORK HERE
-    window.createUser = async function () {
-      try {
-        const docRef = await addDoc(collection(db, "users"), {
-          name: "Mira",
-          age: 22,
-          city: "Tripoli",
-          bio: "Hello",
-          createdAt: new Date()
-        });
+  // Firestore database
+  const db = getFirestore(app);
 
-        console.log("User created:", docRef.id);
-        alert("User created!");
-      } catch (e) {
-        console.error(e);
-        alert("Error creating user");
-      }
-    };
-  </script>
+  // Make database available globally
+  window.db = db;
+</script>
+
 </head>
 
 <body>
 
-  <h1>MatchConnect</h1>
 
-  <button onclick="createUser()">Create User</button>
 
+<!-- NAVBAR -->
+
+<div class="mobile-navbar"
+id="mobileNavbar">
+
+  <a href="#hero">
+    Home
+  </a>
+
+  <a href="about.html">
+    About
+  </a>
+
+  <a href="#profiles">
+    Profiles
+  </a>
+
+  <a href="connect.html">
+    Connect
+  </a>
+
+  <a href="contact.html">
+    Contact
+  </a>
+
+  <a href="community.html">Community</a>
+
+  <a href="safety.html">report</a>
+  
+</div>
+
+
+
+
+
+<!-- HEADER -->
+
+<header class="header">
+
+  <div class="left-header">
+
+    <!-- MENU BUTTON -->
+
+    <div class="menu-btn"
+    id="menuBtn">
+
+      <i class="fas fa-bars"></i>
+
+    </div>
+
+
+
+    <!-- LOGO -->
+
+    <img
+    src="images/logo4.png"
+    class="logo">
+
+    <h1>
+      MatchConnect
+    </h1>
+
+  </div>
+
+
+
+
+
+  <!-- SEARCH -->
+
+  <div class="search-box">
+
+    <input type="text"
+    placeholder="Search profiles...">
+
+    <i class="fas fa-search"></i>
+
+  </div>
+
+</header>
+
+
+<button onclick="createUser()">Create User</button>
+
+
+<!-- HERO -->
+
+<section class="hero-card"
+id="hero">
+
+  <div class="overlay">
+
+    <h2>
+      Meet New People Worldwide
+    </h2>
+
+    <p>
+
+      Connect through live chats,
+      photos and videos with people
+      around the world.
+
+    </p>
+
+    <button id="startBtn">
+
+      Start Connecting
+
+    </button>
+
+  </div>
+
+</section>
+
+
+
+
+
+<!-- ABOUT -->
+
+<section class="about-section"
+id="about">
+
+  <h2>
+    About MatchConnect
+  </h2>
+
+  <p>
+
+    MatchConnect is a social
+       platform designed
+    for friendship, fun and real
+    connections.
+
+  </p>
+
+</section>
+  <!-- IMAGE -->
+<img src="images/love1.png" width="100%" alt="Romantic Moment">
+
+<div class="media-description">
+    <h3>Romantic Connection</h3>
+    <p>
+        A beautiful moment that celebrates love, attraction, and meaningful
+        relationships. This image highlights the emotions and connections
+        that bring people together.
+    </p>
+</div>
+
+<!-- VIDEO -->
+<video controls width="100%">
+    <source src="videos/lvo.mp4" type="video/mp4">
+</video>
+
+<div class="media-description">
+    <h3>Featured Video</h3>
+    <p>
+        Watch this exclusive video showcasing memorable moments, exciting
+        experiences, and engaging content designed for our audience.
+    </p>
+</div>
+
+
+
+
+
+<!-- PROFILES -->
+
+<section class="dashboard">
+
+  <h2 class="title">
+    Featured Profiles
+  </h2>
+
+  <img src="images/love1.png" width="100%" alt="Romantic Moment">
+
+<div class="media-description">
+    <h3>Romantic Connection</h3>
+    <p>
+        A beautiful moment that celebrates love, attraction, and meaningful
+        relationships. This image highlights the emotions and connections
+        that bring people together.
+    </p>
+</div>
+
+<!-- VIDEO -->
+<video controls width="100%">
+    <source src="videos/lov4.mp4" type="video/mp4">
+</video>
+
+<div class="media-description">
+    <h3>Featured Video</h3>
+    <p>
+        Watch this exclusive video showcasing memorable moments, exciting
+        experiences, and engaging content designed for our audience.
+    </p>
+</div>
+
+
+  <img src="images/love1.png" width="100%" alt="Romantic Moment">
+
+<div class="media-description">
+    <h3>Romantic Connection</h3>
+    <p>
+        A beautiful moment that celebrates love, attraction, and meaningful
+        relationships. This image highlights the emotions and connections
+        that bring people together.
+    </p>
+</div>
+
+<!-- VIDEO -->
+<video controls width="100%">
+    <source src="videos/lvo.mp4" type="video/mp4">
+</video>
+
+<div class="media-description">
+    <h3>Featured Video</h3>
+    <p>
+        Watch this exclusive video showcasing memorable moments, exciting
+        experiences, and engaging content designed for our audience.
+    </p>
+</div>
+
+
+  <img src="images/lov2.png" width="100%" alt="Romantic Moment">
+
+<div class="media-description">
+    <h3>Romantic Connection</h3>
+    <p>
+        A beautiful moment that celebrates love, attraction, and meaningful
+        relationships. This image highlights the emotions and connections
+        that bring people together.
+    </p>
+</div>
+
+<!-- VIDEO -->
+<video controls width="100%">
+    <source src="videos/lov2.mp4" type="video/mp4">
+</video>
+
+<div class="media-description">
+    <h3>Featured Video</h3>
+    <p>
+        Watch this exclusive video showcasing memorable moments, exciting
+        experiences, and engaging content designed for our audience.
+    </p>
+</div>
+
+  <img src="images/love1.png" width="100%" alt="Romantic Moment">
+
+<div class="media-description">
+    <h3>Romantic Connection</h3>
+    <p>
+        A beautiful moment that celebrates love, attraction, and meaningful
+        relationships. This image highlights the emotions and connections
+        that bring people together.
+    </p>
+</div>
+
+<!-- VIDEO -->
+<video controls width="100%">
+    <source src="videos/lvo.mp4" type="video/mp4">
+</video>
+
+<div class="media-description">
+    <h3>Featured Video</h3>
+    <p>
+        Watch this exclusive video showcasing memorable moments, exciting
+        experiences, and engaging content designed for our audience.
+    </p>
+</div>
+
+  <img src="images/love1.png" width="100%" alt="Romantic Moment">
+
+<div class="media-description">
+    <h3>Romantic Connection</h3>
+    <p>
+        A beautiful moment that celebrates love, attraction, and meaningful
+        relationships. This image highlights the emotions and connections
+        that bring people together.
+    </p>
+</div>
+
+<!-- VIDEO -->
+<video controls width="100%">
+    <source src="videos/lov3.mp4" type="video/mp4">
+</video>
+
+<div class="media-description">
+    <h3>Featured Video</h3>
+    <p>
+        Watch this exclusive video showcasing memorable moments, exciting
+        experiences, and engaging content designed for our audience.
+    </p>
+</div>
+
+</section>
+
+
+
+
+
+<!-- COMMUNITY -->
+
+<section class="community-section"
+id="community">
+
+  <h2>
+    Join Our Community
+  </h2>
+
+  <p>
+
+    Thousands of users connect daily
+    through photos, messaging and
+    entertaining video content.
+
+  </p>
+
+</section>
+
+
+
+
+
+<!-- SOCIAL -->
+
+<section class="social-section">
+
+  <h2>
+    Follow Us
+  </h2>
+
+  <div class="social-links">
+
+    <a href="https://facebook.com"
+    target="_blank">
+
+      <i class="fab fa-facebook-f"></i>
+
+    </a>
+
+
+    <a href="https://instagram.com"
+    target="_blank">
+
+      <i class="fab fa-instagram"></i>
+
+    </a>
+
+
+    <a href="https://twitter.com"
+    target="_blank">
+
+      <i class="fab fa-twitter"></i>
+
+    </a>
+
+
+    <a href="https://tiktok.com"
+    target="_blank">
+
+      <i class="fab fa-tiktok"></i>
+
+    </a>
+
+
+    <a href="https://youtube.com"
+    target="_blank">
+
+      <i class="fab fa-youtube"></i>
+
+    </a>
+
+  </div>
+
+</section>
+
+
+
+
+
+<!-- FOOTER -->
+
+<footer class="footer" id="footer">
+
+  <h2>MatchConnect</h2>
+
+  <p>© 2026 All Rights Reserved</p>
+
+  <p>
+    <a href="privacy.html">Privacy Policy</a> |
+    <a href="terms.html">Terms of Service</a>
+  </p>
+
+</footer>
+
+
+
+<script src="index.js"></script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(() => console.log("Service Worker Registered"));
+}
+</script>
+
+  <script type="module" src="firebase.js"></script>
+  
 </body>
 </html>
