@@ -465,3 +465,20 @@ body{
     line-height:1.6;
     font-size:16px;
       }
+.desktop-links {
+  display: flex;
+  gap: 15px;
+  margin-left: 20px;
+}
+
+.desktop-links a {
+  text-decoration: none;
+  color: black;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .desktop-links {
+    display: none;
+  }
+}
