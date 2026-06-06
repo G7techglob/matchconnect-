@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/fireba
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-// Firebase config (YOUR CODE — already correct)
+// Firebase config (YOUR REAL DATA)
 const firebaseConfig = {
   apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
   authDomain: "matchconnect-44a3e.firebaseapp.com",
@@ -17,18 +17,18 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Register user
+// REGISTER BUTTON
 document.getElementById("registerBtn").addEventListener("click", async () => {
 
   const email = document.getElementById("registerEmail").value;
   const password = document.getElementById("registerPassword").value;
 
   try {
-    // Create account in Firebase Auth
+    // 1. Create user in Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Save user profile in Firestore
+    // 2. Save user profile in Firestore
     await setDoc(doc(db, "users", user.uid), {
       email: user.email,
       name: "",
