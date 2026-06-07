@@ -62,8 +62,41 @@ function setupFeed() {
       div.className = "post";
 
       div.innerHTML = `
-        <p>${escapeHTML(post.content || "")}</p>
-      `;
+
+<div class="post-header">
+
+  <img
+    src="${post.photoURL || 'images/default-avatar.png'}"
+    class="post-avatar"
+  >
+
+  <span class="post-user">
+    ${post.username || "User"}
+  </span>
+
+</div>
+
+<p>
+  ${escapeHTML(post.content || "")}
+</p>
+
+<div class="post-actions">
+
+  <button class="like-btn">
+    ❤️ ${post.likes || 0}
+  </button>
+
+  <button class="comment-btn">
+    💬 Comment
+  </button>
+
+  <button class="share-btn">
+    🔄 Share
+  </button>
+
+</div>
+
+`;
 
       postsContainer.appendChild(div);
     });
