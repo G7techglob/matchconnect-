@@ -4,9 +4,7 @@ import {
   collection,
   addDoc,
   getDocs
-}
-
-from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
@@ -24,43 +22,53 @@ const postBtn = document.getElementById("postBtn");
 const postContent = document.getElementById("postContent");
 const postsContainer = document.getElementById("postsContainer");
 
+// safer loader
 async function loadPosts() {
+  try {
+    const snapshot = await getDocs(collection(db, "posts"));
 
-  postsContainer.innerHTML = "";
+    postsContainer.innerHTML = "";
 
-  const snapshot = await getDocs(
-  collection(db, "posts")
-);
+    snapshot.forEach((doc) => {
+      const post = doc.data();
 
-  snapshot.forEach((doc) => {
+      const div = document.createElement("div");
+      div.className = "post";
 
-    const post = doc.data();
-
-    postsContainer.innerHTML += `
-      <div class="post">
+      div.innerHTML = `
         <p>${post.content}</p>
-      </div>
-    `;
+      `;
 
-  });
+      postsContainer.appendChild(div);
+    });
 
+  } catch (error) {
+    console.error("Load error:", error);
+  }
 }
 
-postBtn.addEventListener("click", async () => {
-
-  const content = postContent.value.trim();
-
-  if (!content) return;
-
-  await addDoc(collection(db, "posts"), {
-    content,
-    createdAt: new Date()
-  });
-
-  postContent.value = "";
-
+// wait until DOM is ready
+window.addEventListener("DOMContentLoaded", () => {
   loadPosts();
 
-});
+  postBtn.addEventListener("click", async () => {
+    const content = postContent.value.trim();
 
-loadPosts();
+    if (!content) return;
+
+    try {
+      await addDoc(collection(db, "posts"), {
+        content,
+        createdAt: new Date()
+      });
+
+      postContent.value = "";
+
+      // reload feed AFTER saving
+      loadPosts();
+
+    } catch (error) {
+      console.error("Post error:", error);
+    }
+  });
+});
