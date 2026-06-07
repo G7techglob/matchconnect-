@@ -1,8 +1,9 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-// Your Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
   authDomain: "matchconnect-44a3e.firebaseapp.com",
@@ -12,9 +13,15 @@ const firebaseConfig = {
   appId: "1:283382943870:web:ee1d08c65bcbac400cc82f"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-// Services
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+onAuthStateChanged(auth, (user) => {
+
+  if (user) {
+    console.log("Logged in:", user.email);
+  } else {
+    console.log("No user logged in");
+  }
+
+});
