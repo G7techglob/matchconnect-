@@ -1,1 +1,110 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  onSnapshot,
+  query,
+  orderBy,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
+  authDomain: "matchconnect-44a3e.firebaseapp.com",
+  projectId: "matchconnect-44a3e",
+  storageBucket: "matchconnect-44a3e.firebasestorage.app",
+  messagingSenderId: "283382943870",
+  appId: "1:283382943870:web:ee1d08c65bcbac400cc82f"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// UI ELEMENTS
+let postBtn;
+let postContent;
+let postsContainer;
+
+// INIT AFTER PAGE LOAD
+window.addEventListener("DOMContentLoaded", () => {
+
+  postBtn = document.getElementById("postBtn");
+  postContent = document.getElementById("postContent");
+  postsContainer = document.getElementById("postsContainer");
+
+  if (!postBtn || !postContent || !postsContainer) {
+    console.error("Missing HTML elements for posts system");
+    return;
+  }
+
+  setupFeed();
+  setupPosting();
+});
+
+
+// REALTIME FEED
+function setupFeed() {
+
+  const q = query(
+    collection(db, "posts"),
+    orderBy("createdAt", "desc")
+  );
+
+  onSnapshot(q, (snapshot) => {
+
+    postsContainer.innerHTML = "";
+
+    snapshot.forEach((doc) => {
+      const post = doc.data();
+
+      const div = document.createElement("div");
+      div.className = "post";
+
+      div.innerHTML = `
+        <p>${escapeHTML(post.content || "")}</p>
+      `;
+
+      postsContainer.appendChild(div);
+    });
+
+  }, (error) => {
+    console.error("Feed error:", error);
+  });
+}
+
+
+// CREATE POST
+function setupPosting() {
+
+  postBtn.addEventListener("click", async () => {
+
+    const content = postContent.value.trim();
+    if (!content) return;
+
+    try {
+      await addDoc(collection(db, "posts"), {
+        content: content,
+        createdAt: serverTimestamp()
+      });
+
+      postContent.value = "";
+
+    } catch (error) {
+      console.error("Post error:", error);
+    }
+
+  });
+
+}
+
+
+// SECURITY (prevents HTML injection)
+function escapeHTML(str) {
+  return str
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+                           }
