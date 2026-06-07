@@ -1,11 +1,12 @@
-
-
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
   getFirestore,
   collection,
   addDoc,
-  getDocs
+  onSnapshot,
+  query,
+  orderBy,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -20,14 +21,37 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const postBtn = document.getElementById("postBtn");
-const postContent = document.getElementById("postContent");
-const postsContainer = document.getElementById("postsContainer");
+// UI ELEMENTS
+let postBtn;
+let postContent;
+let postsContainer;
 
-// safer loader
-async function loadPosts() {
-  try {
-    const snapshot = await getDocs(collection(db, "posts"));
+// INIT AFTER PAGE LOAD
+window.addEventListener("DOMContentLoaded", () => {
+
+  postBtn = document.getElementById("postBtn");
+  postContent = document.getElementById("postContent");
+  postsContainer = document.getElementById("postsContainer");
+
+  if (!postBtn || !postContent || !postsContainer) {
+    console.error("Missing HTML elements for posts system");
+    return;
+  }
+
+  setupFeed();
+  setupPosting();
+});
+
+
+// REALTIME FEED
+function setupFeed() {
+
+  const q = query(
+    collection(db, "posts"),
+    orderBy("createdAt", "desc")
+  );
+
+  onSnapshot(q, (snapshot) => {
 
     postsContainer.innerHTML = "";
 
@@ -38,39 +62,49 @@ async function loadPosts() {
       div.className = "post";
 
       div.innerHTML = `
-        <p>${post.content}</p>
+        <p>${escapeHTML(post.content || "")}</p>
       `;
 
       postsContainer.appendChild(div);
     });
 
-  } catch (error) {
-    console.error("Load error:", error);
-  }
+  }, (error) => {
+    console.error("Feed error:", error);
+  });
 }
 
-// wait until DOM is ready
-window.addEventListener("DOMContentLoaded", () => {
-  loadPosts();
+
+// CREATE POST
+function setupPosting() {
 
   postBtn.addEventListener("click", async () => {
-    const content = postContent.value.trim();
 
+    const content = postContent.value.trim();
     if (!content) return;
 
     try {
       await addDoc(collection(db, "posts"), {
-        content,
-        createdAt: new Date()
+        content: content,
+        createdAt: serverTimestamp()
       });
 
       postContent.value = "";
 
-      // reload feed AFTER saving
-      loadPosts();
-
     } catch (error) {
       console.error("Post error:", error);
     }
+
   });
-});
+
+}
+
+
+// SECURITY (prevents HTML injection)
+function escapeHTML(str) {
+  return str
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
