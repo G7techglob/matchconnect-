@@ -75,29 +75,45 @@ function setupFeed() {
 
 
 // CREATE POST
+
 function setupPosting() {
 
   postBtn.addEventListener("click", async () => {
 
     const content = postContent.value.trim();
+
     if (!content) return;
 
     try {
+
+      const user = auth.currentUser;
+
+      if (!user) {
+        alert("Please login first");
+        return;
+      }
+
       await addDoc(collection(db, "posts"), {
         content: content,
+        userId: user.uid,
+        username: user.displayName || user.email,
+        photoURL: user.photoURL || "images/default-avatar.png",
+        likes: 0,
+        comments: 0,
         createdAt: serverTimestamp()
       });
 
       postContent.value = "";
 
     } catch (error) {
+
       console.error("Post error:", error);
+
     }
 
   });
 
 }
-
 
 // SECURITY (prevents HTML injection)
 function escapeHTML(str) {
