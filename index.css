@@ -482,3 +482,25 @@ body{
     display: none;
   }
 }
+.create-post{
+  padding:20px;
+}
+
+.create-post textarea{
+  width:100%;
+  min-height:120px;
+  padding:10px;
+}
+
+.create-post button{
+  margin-top:10px;
+  padding:10px 20px;
+}
+
+.post{
+  background:#fff;
+  padding:15px;
+  margin:15px;
+  border-radius:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
