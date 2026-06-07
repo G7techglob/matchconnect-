@@ -123,6 +123,9 @@ function setupPosting() {
 
       const user = auth.currentUser;
 
+      console.log("Current User:", user);
+alert("User = " + JSON.stringify(user));
+
       if (!user) {
         alert("Please login first");
         return;
