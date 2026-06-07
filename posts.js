@@ -113,7 +113,16 @@ function setupPosting() {
 
   postBtn.addEventListener("click", async () => {
 
-    alert("Publish button clicked");
+    alert("Step 1");
+
+const user = auth.currentUser;
+
+alert("Step 2: " + user);
+
+if (!user) {
+  alert("Step 3: No user found");
+  return;
+}
 
     const content = postContent.value.trim();
 
