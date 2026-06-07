@@ -113,6 +113,8 @@ function setupPosting() {
 
   postBtn.addEventListener("click", async () => {
 
+    alert("Publish button clicked");
+
     const content = postContent.value.trim();
 
     if (!content) return;
