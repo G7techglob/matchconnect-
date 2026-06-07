@@ -1,13 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-
 import {
   getFirestore,
   collection,
   addDoc,
-  getDocs,
-  query,
-  orderBy
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  getDocs
+}
+
+from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
@@ -29,12 +28,9 @@ async function loadPosts() {
 
   postsContainer.innerHTML = "";
 
-  const q = query(
-    collection(db, "posts"),
-    orderBy("createdAt", "desc")
-  );
-
-  const snapshot = await getDocs(q);
+  const snapshot = await getDocs(
+  collection(db, "posts")
+);
 
   snapshot.forEach((doc) => {
 
