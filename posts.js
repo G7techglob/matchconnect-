@@ -9,6 +9,10 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
+import {
+  getAuth
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
   authDomain: "matchconnect-44a3e.firebaseapp.com",
@@ -20,6 +24,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 // UI ELEMENTS
 let postBtn;
@@ -113,16 +118,7 @@ function setupPosting() {
 
   postBtn.addEventListener("click", async () => {
 
-    alert("Step 1");
-
-const user = auth.currentUser;
-
-alert("Step 2: " + user);
-
-if (!user) {
-  alert("Step 3: No user found");
-  return;
-}
+    
 
     const content = postContent.value.trim();
 
@@ -132,8 +128,7 @@ if (!user) {
 
       const user = auth.currentUser;
 
-      console.log("Current User:", user);
-alert("User = " + JSON.stringify(user));
+      
 
       if (!user) {
         alert("Please login first");
