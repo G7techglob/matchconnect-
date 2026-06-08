@@ -121,7 +121,7 @@ function setupPosting() {
 
   postBtn.addEventListener("click", async () => {
 
-    
+    alert("Post button clicked");
 
     const content = postContent.value.trim();
 
