@@ -122,52 +122,38 @@ function setupPosting() {
 
   postBtn.addEventListener("click", async () => {
 
-    
+  const content = postContent.value.trim();
 
-    const content = postContent.value.trim();
+  if (!content) return;
 
-    if (!content) return;
+  try {
 
-    try {
-  
+    const user = auth.currentUser;
 
-  const user = auth.currentUser;
-
-  
-
-  
-
-} catch (e) {
-
-  
-  console.error(e);
-
-  return;
+    if (!user) {
+      alert("Please login first");
+      return;
     }
 
+    await addDoc(collection(db, "posts"), {
+      content: content,
+      userId: user.uid,
+      username: user.displayName || user.email,
+      photoURL: user.photoURL || "images/default-avatar.png",
+      likes: 0,
+      comments: 0,
+      createdAt: serverTimestamp()
+    });
 
-      await addDoc(collection(db, "posts"), {
-        content: content,
-        userId: user.uid,
-        username: user.displayName || user.email,
-        photoURL: user.photoURL || "images/default-avatar.png",
-        likes: 0,
-        comments: 0,
-        createdAt: serverTimestamp()
-      });
+    postContent.value = "";
 
-      postContent.value = "";
+  } catch (error) {
 
-    } catch (error) {
+    console.error("Post error:", error);
 
-      console.error("Post error:", error);
+  }
 
-    }
-
-  });
-
-}
-
+});
 // SECURITY (prevents HTML injection)
 function escapeHTML(str) {
   return str
