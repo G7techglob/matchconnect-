@@ -1,5 +1,4 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-
 import {
   getFirestore,
   collection,
@@ -7,12 +6,9 @@ import {
   onSnapshot,
   query,
   orderBy,
-  serverTimestamp,
-  doc,
-  updateDoc,
-  increment
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-import { auth } from "./firebase.js";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
@@ -50,6 +46,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 
 // REALTIME FEED
+
 function setupFeed() {
 
   const q = query(
@@ -61,8 +58,9 @@ function setupFeed() {
 
     postsContainer.innerHTML = "";
 
-    snapshot.forEach((doc) => {
-      const post = doc.data();
+    snapshot.forEach((postDoc) => {
+
+      const post = postDoc.data();
 
       const div = document.createElement("div");
       div.className = "post";
@@ -88,12 +86,9 @@ function setupFeed() {
 
 <div class="post-actions">
 
-  <button
-  class="like-btn"
-  data-id="${doc.id}"
->
-  ❤️ ${post.likes || 0}
-</button>
+  <button class="like-btn">
+    ❤️ ${post.likes || 0}
+  </button>
 
   <button class="comment-btn">
     💬 Comment
@@ -109,27 +104,16 @@ function setupFeed() {
 
       postsContainer.appendChild(div);
 
-const likeBtn =
-  div.querySelector(".like-btn");
+    });
 
-likeBtn.addEventListener("click", async () => {
+  }, (error) => {
 
-  try {
+    console.error("Feed error:", error);
 
-    await updateDoc(
-      doc(db, "posts", likeBtn.dataset.id),
-      {
-        likes: increment(1)
-      }
-    );
+  });
 
-  } catch (error) {
+}
 
-    console.error("Like error:", error);
-
-  }
-
-});
 
 // CREATE POST
 
