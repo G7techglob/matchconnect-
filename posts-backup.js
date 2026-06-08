@@ -9,6 +9,8 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
+import { auth } from "./firebase.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
   authDomain: "matchconnect-44a3e.firebaseapp.com",
@@ -20,6 +22,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
 
 // UI ELEMENTS
 let postBtn;
@@ -44,6 +47,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 
 // REALTIME FEED
+
 function setupFeed() {
 
   const q = query(
@@ -55,49 +59,114 @@ function setupFeed() {
 
     postsContainer.innerHTML = "";
 
-    snapshot.forEach((doc) => {
-      const post = doc.data();
+    snapshot.forEach((postDoc) => {
+
+      const post = postDoc.data();
 
       const div = document.createElement("div");
       div.className = "post";
 
       div.innerHTML = `
-        <p>${escapeHTML(post.content || "")}</p>
-      `;
+
+<div class="post-header">
+
+  <img
+    src="${post.photoURL || 'images/default-avatar.png'}"
+    class="post-avatar"
+  >
+
+  <span class="post-user">
+    ${post.username || "User"}
+  </span>
+
+</div>
+
+<p>
+  ${escapeHTML(post.content || "")}
+</p>
+
+<div class="post-actions">
+
+  <button class="like-btn">
+    ❤️ ${post.likes || 0}
+  </button>
+
+  <button class="comment-btn">
+    💬 Comment
+  </button>
+
+  <button class="share-btn">
+    🔄 Share
+  </button>
+
+</div>
+
+`;
 
       postsContainer.appendChild(div);
+
     });
 
   }, (error) => {
+
     console.error("Feed error:", error);
+
   });
+
 }
 
 
 // CREATE POST
+
 function setupPosting() {
 
   postBtn.addEventListener("click", async () => {
 
+    alert("Post button clicked");
+
     const content = postContent.value.trim();
+
     if (!content) return;
 
     try {
+  alert("Before auth");
+
+  const user = auth.currentUser;
+
+  alert("After auth");
+
+  alert("User: " + (user ? user.email : "NULL"));
+
+} catch (e) {
+
+  alert("ERROR: " + e.message);
+  console.error(e);
+
+  return;
+    }
+
+
       await addDoc(collection(db, "posts"), {
         content: content,
+        userId: user.uid,
+        username: user.displayName || user.email,
+        photoURL: user.photoURL || "images/default-avatar.png",
+        likes: 0,
+        comments: 0,
         createdAt: serverTimestamp()
       });
 
       postContent.value = "";
 
     } catch (error) {
+
       console.error("Post error:", error);
+
     }
 
   });
 
 }
-
 
 // SECURITY (prevents HTML injection)
 function escapeHTML(str) {
@@ -107,4 +176,4 @@ function escapeHTML(str) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
-                           }
+    }
