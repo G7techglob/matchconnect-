@@ -131,6 +131,8 @@ function setupPosting() {
 
       const user = auth.currentUser;
 
+      alert("User: " + (user ? user.email : "NULL"));
+
       
 
       if (!user) {
