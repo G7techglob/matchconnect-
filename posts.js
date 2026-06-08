@@ -109,15 +109,26 @@ function setupFeed() {
 
       postsContainer.appendChild(div);
 
-    });
+const likeBtn = div.querySelector(".like-btn");
 
-  }, (error) => {
+likeBtn.addEventListener("click", async () => {
 
-    console.error("Feed error:", error);
+  try {
 
-  });
+    await updateDoc(
+      doc(db, "posts", likeBtn.dataset.id),
+      {
+        likes: increment(1)
+      }
+    );
 
-}
+  } catch (error) {
+
+    console.error("Like error:", error);
+
+  }
+
+});
 
 // CREATE POST
 function setupPosting() {
