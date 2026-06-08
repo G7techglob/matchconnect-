@@ -1,4 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+
 import {
   getFirestore,
   collection,
@@ -23,7 +24,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-
 // UI ELEMENTS
 let postBtn;
 let postContent;
@@ -43,11 +43,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
   setupFeed();
   setupPosting();
+
 });
 
-
 // REALTIME FEED
-
 function setupFeed() {
 
   const q = query(
@@ -115,51 +114,54 @@ function setupFeed() {
 
 }
 
-
 // CREATE POST
-
 function setupPosting() {
 
   postBtn.addEventListener("click", async () => {
 
-  const content = postContent.value.trim();
+    const content = postContent.value.trim();
 
-  if (!content) return;
+    if (!content) return;
 
-  try {
+    try {
 
-    const user = auth.currentUser;
+      const user = auth.currentUser;
 
-    if (!user) {
-      alert("Please login first");
-      return;
+      if (!user) {
+        alert("Please login first");
+        return;
+      }
+
+      await addDoc(collection(db, "posts"), {
+        content: content,
+        userId: user.uid,
+        username: user.displayName || user.email,
+        photoURL: user.photoURL || "images/default-avatar.png",
+        likes: 0,
+        comments: 0,
+        createdAt: serverTimestamp()
+      });
+
+      postContent.value = "";
+
+    } catch (error) {
+
+      console.error("Post error:", error);
+
     }
 
-    await addDoc(collection(db, "posts"), {
-      content: content,
-      userId: user.uid,
-      username: user.displayName || user.email,
-      photoURL: user.photoURL || "images/default-avatar.png",
-      likes: 0,
-      comments: 0,
-      createdAt: serverTimestamp()
-    });
+  });
 
-    postContent.value = "";
+}
 
-  } catch (error) {
-
-    console.error("Post error:", error);
-
-  }
-
-});
-// SECURITY (prevents HTML injection)
+// SECURITY
 function escapeHTML(str) {
+
   return str
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
-    }
+
+}
