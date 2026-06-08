@@ -129,17 +129,22 @@ function setupPosting() {
     if (!content) return;
 
     try {
+  alert("Before auth");
 
-      const user = auth.currentUser;
+  const user = auth.currentUser;
 
-      alert("User: " + (user ? user.email : "NULL"));
+  alert("After auth");
 
-      
+  alert("User: " + (user ? user.email : "NULL"));
 
-      if (!user) {
-        alert("Please login first");
-        return;
-      }
+} catch (e) {
+
+  alert("ERROR: " + e.message);
+  console.error(e);
+
+  return;
+    }
+
 
       await addDoc(collection(db, "posts"), {
         content: content,
