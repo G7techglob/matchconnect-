@@ -89,9 +89,11 @@ function setupFeed() {
 
 <div class="post-actions">
 
-  <button class="like-btn">
-    ❤️ ${post.likes || 0}
-  </button>
+<button
+  class="like-btn"
+  data-id="${postDoc.id}">
+  ❤️ ${post.likes || 0}
+</button>
 
   <button class="comment-btn">
     💬 Comment
