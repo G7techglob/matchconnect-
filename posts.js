@@ -1,4 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+
 import {
   getFirestore,
   collection,
@@ -6,9 +7,11 @@ import {
   onSnapshot,
   query,
   orderBy,
-  serverTimestamp
+  serverTimestamp,
+  doc,
+  updateDoc,
+  increment
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
 import { auth } from "./firebase.js";
 
 const firebaseConfig = {
@@ -85,9 +88,12 @@ function setupFeed() {
 
 <div class="post-actions">
 
-  <button class="like-btn">
-    ❤️ ${post.likes || 0}
-  </button>
+  <button
+  class="like-btn"
+  data-id="${doc.id}"
+>
+  ❤️ ${post.likes || 0}
+</button>
 
   <button class="comment-btn">
     💬 Comment
@@ -102,13 +108,28 @@ function setupFeed() {
 `;
 
       postsContainer.appendChild(div);
-    });
 
-  }, (error) => {
-    console.error("Feed error:", error);
-  });
-}
+const likeBtn =
+  div.querySelector(".like-btn");
 
+likeBtn.addEventListener("click", async () => {
+
+  try {
+
+    await updateDoc(
+      doc(db, "posts", likeBtn.dataset.id),
+      {
+        likes: increment(1)
+      }
+    );
+
+  } catch (error) {
+
+    console.error("Like error:", error);
+
+  }
+
+});
 
 // CREATE POST
 
