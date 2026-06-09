@@ -7,7 +7,7 @@ import {
   onSnapshot,
   query,
   orderBy,
-  serverTimestamp
+  serverTimestamp,
   doc,
   updateDoc,
   increment
