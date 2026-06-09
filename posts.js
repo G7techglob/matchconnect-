@@ -117,6 +117,21 @@ function setupFeed() {
    }
    
 
+<div class="comment-section">
+
+  <input
+    type="text"
+    class="comment-input"
+    data-id="${postDoc.id}"
+    placeholder="Write a comment..."
+  >
+
+  <button
+    class="send-comment-btn"
+    data-id="${postDoc.id}">
+    Send
+  </button>
+  </div>
 </div>
 
 `;
