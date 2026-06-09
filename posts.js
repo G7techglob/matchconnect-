@@ -291,6 +291,59 @@ document.addEventListener("click", async (e) => {
 
 });
 
+document.addEventListener("click", async (e) => {
+
+  if (!e.target.classList.contains("send-comment-btn")) return;
+
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert("Please login first");
+    return;
+  }
+
+  const postId = e.target.dataset.id;
+
+  const input = document.querySelector(
+    `.comment-input[data-id="${postId}"]`
+  );
+
+  const text = input.value.trim();
+
+  if (!text) return;
+
+  try {
+
+    await addDoc(
+      collection(db, "posts", postId, "comments"),
+      {
+        text,
+        userId: user.uid,
+        username: user.displayName || user.email,
+        createdAt: serverTimestamp()
+      }
+    );
+
+    input.value = "";
+
+    await updateDoc(
+      doc(db, "posts", postId),
+      {
+        comments: increment(1)
+      }
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Comment error:",
+      error
+    );
+
+  }
+
+});
+
 // SECURITY
 function escapeHTML(str) {
 
