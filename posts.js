@@ -103,6 +103,16 @@ function setupFeed() {
     🔄 Share
   </button>
 
+   ${
+    auth.currentUser &&
+    auth.currentUser.uid === post.userId
+      ? `<button class="delete-btn" data-id="${postDoc.id}">
+           🗑 Delete
+         </button>`
+      : ""
+   }
+   
+
 </div>
 
 `;
