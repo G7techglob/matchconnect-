@@ -7,7 +7,10 @@ import {
   onSnapshot,
   query,
   orderBy,
-  serverTimestamp
+  serverTimestamp,
+  doc,
+  updateDoc,
+  increment
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import { auth } from "./firebase.js";
@@ -86,7 +89,8 @@ function setupFeed() {
 
 <div class="post-actions">
 
-  <button class="like-btn">
+  <button class="like-btn"
+  data-id="${postDoc.id}">
     ❤️ ${post.likes || 0}
   </button>
 
@@ -164,4 +168,4 @@ function escapeHTML(str) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 
-}
+        }
