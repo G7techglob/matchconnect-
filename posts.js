@@ -115,7 +115,7 @@ function setupFeed() {
          </button>`
       : ""
    }
-   
+   </div>
 
 <div class="comment-section">
 
@@ -132,7 +132,7 @@ function setupFeed() {
     Send
   </button>
   </div>
-</div>
+
 
 `;
 
