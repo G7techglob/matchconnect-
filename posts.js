@@ -295,6 +295,8 @@ document.addEventListener("click", async (e) => {
 
   if (!e.target.classList.contains("send-comment-btn")) return;
 
+  console.log("COMMENT BUTTON CLICKED");
+
   const user = auth.currentUser;
 
   if (!user) {
@@ -304,11 +306,15 @@ document.addEventListener("click", async (e) => {
 
   const postId = e.target.dataset.id;
 
+  console.log("POST ID:", postId);
+
   const input = document.querySelector(
     `.comment-input[data-id="${postId}"]`
   );
 
   const text = input.value.trim();
+
+  console.log("COMMENT TEXT:", text);
 
   if (!text) return;
 
@@ -324,6 +330,8 @@ document.addEventListener("click", async (e) => {
       }
     );
 
+    console.log("COMMENT SAVED");
+
     input.value = "";
 
     await updateDoc(
@@ -335,10 +343,7 @@ document.addEventListener("click", async (e) => {
 
   } catch (error) {
 
-    console.error(
-      "Comment error:",
-      error
-    );
+    console.error("COMMENT ERROR:", error);
 
   }
 
