@@ -192,6 +192,37 @@ document.addEventListener("click", async (e) => {
 
 });
 
+document.addEventListener("click", async (e) => {
+
+  if (!e.target.classList.contains("delete-btn")) return;
+
+  const postId = e.target.dataset.id;
+
+  const confirmed = confirm(
+    "Are you sure you want to delete this post?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+
+    await deleteDoc(
+      doc(db, "posts", postId)
+    );
+
+    console.log("Post deleted");
+
+  } catch (error) {
+
+    console.error(
+      "Delete error:",
+      error
+    );
+
+  }
+
+});
+
 // SECURITY
 function escapeHTML(str) {
 
