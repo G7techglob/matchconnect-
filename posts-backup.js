@@ -10,7 +10,8 @@ import {
   serverTimestamp,
   doc,
   updateDoc,
-  increment
+  increment,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import { auth } from "./firebase.js";
@@ -102,6 +103,16 @@ function setupFeed() {
     🔄 Share
   </button>
 
+   ${
+    auth.currentUser &&
+    auth.currentUser.uid === post.userId
+      ? `<button class="delete-btn" data-id="${postDoc.id}">
+           🗑 Delete
+         </button>`
+      : ""
+   }
+   
+
 </div>
 
 `;
@@ -176,6 +187,37 @@ document.addEventListener("click", async (e) => {
   } catch (error) {
 
     console.error("Like error:", error);
+
+  }
+
+});
+
+document.addEventListener("click", async (e) => {
+
+  if (!e.target.classList.contains("delete-btn")) return;
+
+  const postId = e.target.dataset.id;
+
+  const confirmed = confirm(
+    "Are you sure you want to delete this post?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+
+    await deleteDoc(
+      doc(db, "posts", postId)
+    );
+
+    console.log("Post deleted");
+
+  } catch (error) {
+
+    console.error(
+      "Delete error:",
+      error
+    );
 
   }
 
