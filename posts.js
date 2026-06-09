@@ -196,26 +196,35 @@ document.addEventListener("click", async (e) => {
 
   if (!e.target.classList.contains("delete-btn")) return;
 
+  console.log("DELETE CLICKED");
+
   const postId = e.target.dataset.id;
+
+  console.log("POST ID:", postId);
 
   const confirmed = confirm(
     "Are you sure you want to delete this post?"
   );
 
-  if (!confirmed) return;
+  if (!confirmed) {
+    console.log("DELETE CANCELLED");
+    return;
+  }
 
   try {
+
+    console.log("ATTEMPTING DELETE");
 
     await deleteDoc(
       doc(db, "posts", postId)
     );
 
-    console.log("Post deleted");
+    console.log("DELETE SUCCESS");
 
   } catch (error) {
 
     console.error(
-      "Delete error:",
+      "DELETE ERROR:",
       error
     );
 
