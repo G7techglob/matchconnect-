@@ -11,7 +11,9 @@ import {
   doc,
   updateDoc,
   increment,
-  deleteDoc
+  deleteDoc,
+  setDoc,
+getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import { auth } from "./firebase.js";
@@ -173,20 +175,60 @@ document.addEventListener("click", async (e) => {
 
   if (!e.target.classList.contains("like-btn")) return;
 
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert("Please login first");
+    return;
+  }
+
   const postId = e.target.dataset.id;
+
+  const likeRef = doc(
+    db,
+    "posts",
+    postId,
+    "likes",
+    user.uid
+  );
 
   try {
 
-    await updateDoc(
-      doc(db, "posts", postId),
-      {
-        likes: increment(1)
-      }
-    );
+    const existingLike = await getDoc(likeRef);
+
+    if (existingLike.exists()) {
+
+      await deleteDoc(likeRef);
+
+      await updateDoc(
+        doc(db, "posts", postId),
+        {
+          likes: increment(-1)
+        }
+      );
+
+    } else {
+
+      await setDoc(likeRef, {
+        userId: user.uid,
+        createdAt: Date.now()
+      });
+
+      await updateDoc(
+        doc(db, "posts", postId),
+        {
+          likes: increment(1)
+        }
+      );
+
+    }
 
   } catch (error) {
 
-    console.error("Like error:", error);
+    console.error(
+      "Like error:",
+      error
+    );
 
   }
 
