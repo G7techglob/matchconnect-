@@ -158,6 +158,29 @@ function setupPosting() {
 
 }
 
+document.addEventListener("click", async (e) => {
+
+  if (!e.target.classList.contains("like-btn")) return;
+
+  const postId = e.target.dataset.id;
+
+  try {
+
+    await updateDoc(
+      doc(db, "posts", postId),
+      {
+        likes: increment(1)
+      }
+    );
+
+  } catch (error) {
+
+    console.error("Like error:", error);
+
+  }
+
+});
+
 // SECURITY
 function escapeHTML(str) {
 
@@ -168,4 +191,4 @@ function escapeHTML(str) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 
-        }
+}
