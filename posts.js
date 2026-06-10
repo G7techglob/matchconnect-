@@ -330,6 +330,8 @@ document.addEventListener("click", async (e) => {
       }
     );
 
+    alert("Comment saved");
+
     console.log("COMMENT SAVED");
 
     input.value = "";
@@ -341,11 +343,16 @@ document.addEventListener("click", async (e) => {
       }
     );
 
-  } catch (error) {
+  catch (error) {
 
-    console.error("COMMENT ERROR:", error);
+  console.error("Comment error:", error);
 
-  }
+  alert(
+    "Comment Error: " +
+    error.message
+  );
+
+}
 
 });
 
