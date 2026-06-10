@@ -349,6 +349,12 @@ document.addEventListener("click", async (e) => {
     return;
   }
 
+  const userProfile = await getDoc(
+  doc(db, "users", user.uid)
+);
+
+const profileData = userProfile.data();
+
   const postId = e.target.dataset.id;
 
   console.log("POST ID:", postId);
@@ -370,7 +376,7 @@ document.addEventListener("click", async (e) => {
       {
         text,
         userId: user.uid,
-        username: user.displayName || user.email,
+        username: profileData.name || user.email,
         createdAt: serverTimestamp()
       }
     );
