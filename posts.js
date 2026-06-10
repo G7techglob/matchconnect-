@@ -343,7 +343,7 @@ document.addEventListener("click", async (e) => {
       }
     );
 
-  catch (error) {
+  } catch (error) {
 
   console.error("Comment error:", error);
 
