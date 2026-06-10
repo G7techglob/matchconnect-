@@ -117,7 +117,13 @@ function setupFeed() {
    }
    </div>
 
+
 <div class="comment-section">
+
+  <div
+    class="comments-list"
+    id="comments-${postDoc.id}">
+  </div>
 
   <input
     type="text"
@@ -131,7 +137,8 @@ function setupFeed() {
     data-id="${postDoc.id}">
     Send
   </button>
-  </div>
+
+</div>
 
 
 `;
