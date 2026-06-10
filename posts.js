@@ -369,7 +369,7 @@ document.addEventListener("click", async (e) => {
       }
     );
 
-    alert("Comment saved");
+    
 
     console.log("COMMENT SAVED");
 
@@ -386,10 +386,7 @@ document.addEventListener("click", async (e) => {
 
   console.error("Comment error:", error);
 
-  alert(
-    "Comment Error: " +
-    error.message
-  );
+  
 
 }
 
