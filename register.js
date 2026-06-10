@@ -20,8 +20,13 @@ const db = getFirestore(app);
 // REGISTER BUTTON
 document.getElementById("registerBtn").addEventListener("click", async () => {
 
+  const name = document.getElementById("registerName").value.trim();
   const email = document.getElementById("registerEmail").value;
   const password = document.getElementById("registerPassword").value;
+  if (!name) {
+  alert("Please enter a username");
+  return;
+  }
 
   try {
     // 1. Create user in Firebase Auth
@@ -31,7 +36,7 @@ document.getElementById("registerBtn").addEventListener("click", async () => {
     // 2. Save user profile in Firestore
     await setDoc(doc(db, "users", user.uid), {
       email: user.email,
-      name: "",
+      name: name,
       bio: "",
       photoURL: "",
       createdAt: new Date()
