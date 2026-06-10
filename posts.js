@@ -205,10 +205,16 @@ function setupPosting() {
         return;
       }
 
+      const userProfile = await getDoc(
+  doc(db, "users", user.uid)
+);
+
+const profileData = userProfile.data();
+
       await addDoc(collection(db, "posts"), {
         content: content,
         userId: user.uid,
-        username: user.displayName || user.email,
+        username: profileData.name || user.email,
         photoURL: user.photoURL || "images/default-avatar.png",
         likes: 0,
         comments: 0,
