@@ -215,7 +215,7 @@ const profileData = userProfile.data();
         content: content,
         userId: user.uid,
         username: profileData.name || user.email,
-        photoURL: user.photoURL || "images/default-avatar.png",
+        photoURL: profileData.photoURL || "images/default-avatar.png",
         likes: 0,
         comments: 0,
         createdAt: serverTimestamp()
