@@ -73,6 +73,12 @@ auth.onAuthStateChanged(
   data.bio || "No bio yet";
 
     document.getElementById(
+  "profilePhoto"
+).src =
+  data.photoURL ||
+  "images/default-avatar.png";
+
+    document.getElementById(
   "editName"
 ).value =
   data.name || "";
@@ -82,6 +88,10 @@ document.getElementById(
 ).value =
   data.bio || "";
     
+   document.getElementById(
+  "photoURLInput"
+).value =
+  data.photoURL || ""; 
   }
 );
 
@@ -108,6 +118,11 @@ document.getElementById(
         "editBio"
       ).value.trim();
 
+    const photoURL =
+  document.getElementById(
+    "photoURLInput"
+  ).value.trim();
+
     try {
 
       await updateDoc(
@@ -117,8 +132,9 @@ document.getElementById(
           user.uid
         ),
         {
-          name,
-          bio
+  name,
+  bio,
+  photoURL
         }
       );
 
