@@ -1,10 +1,15 @@
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-
 import {
   getFirestore,
   doc,
-  getDoc
+  getDoc,
+  collection,
+  getDocs,
+  query,
+  where
+}
+
 }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
@@ -64,6 +69,46 @@ if (uid) {
     ).textContent =
       data.bio ||
       "No bio yet";
+
+
+    const postsQuery =
+  query(
+    collection(db, "posts"),
+    where(
+      "userId",
+      "==",
+      uid
+    )
+  );
+
+const postsSnapshot =
+  await getDocs(postsQuery);
+
+const postsContainer =
+  document.getElementById(
+    "userPosts"
+  );
+
+postsContainer.innerHTML = "";
+
+postsSnapshot.forEach(
+  (postDoc) => {
+
+    const post =
+      postDoc.data();
+
+    const div =
+      document.createElement("div");
+
+    div.innerHTML =
+      `<p>${post.content}</p><hr>`;
+
+    postsContainer.appendChild(
+      div
+    );
+
+  }
+);
 
   }
 
