@@ -77,13 +77,17 @@ function setupFeed() {
 <div class="post-header">
 
   <img
-    src="${post.photoURL || 'images/default-avatar.png'}"
-    class="post-avatar"
-  >
+  src="${post.photoURL || 'images/default-avatar.png'}"
+  class="post-avatar view-profile"
+  data-uid="${post.userId}"
+>
 
-  <span class="post-user">
-    ${post.username || "User"}
-  </span>
+  <span
+  class="post-user view-profile"
+  data-uid="${post.userId}"
+>
+  ${post.username || "User"}
+</span>
 
 </div>
 
