@@ -81,3 +81,59 @@ document.getElementById(
   data.bio || "";
   }
 );
+
+document.getElementById(
+  "saveProfileBtn"
+).addEventListener(
+  "click",
+  async () => {
+
+    alert("SAVE BUTTON CLICKED");
+
+    const user =
+      auth.currentUser;
+
+    if (!user) return;
+
+    const name =
+      document.getElementById(
+        "editName"
+      ).value.trim();
+
+    const bio =
+      document.getElementById(
+        "editBio"
+      ).value.trim();
+
+    try {
+
+      await updateDoc(
+        doc(
+          db,
+          "users",
+          user.uid
+        ),
+        {
+          name,
+          bio
+        }
+      );
+
+      alert(
+        "Profile updated!"
+      );
+
+      location.reload();
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        error.message
+      );
+
+    }
+
+  }
+);
