@@ -88,7 +88,7 @@ document.getElementById(
   "click",
   async () => {
 
-    alert("SAVE BUTTON CLICKED");
+    
 
     const user =
       auth.currentUser;
