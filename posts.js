@@ -408,6 +408,26 @@ const profileData = userProfile.data();
 
 });
 
+document.addEventListener(
+  "click",
+  (e) => {
+
+    if (
+      !e.target.classList.contains(
+        "view-profile"
+      )
+    ) return;
+
+    const uid =
+      e.target.dataset.uid;
+
+    window.location.href =
+      `user.html?uid=${uid}`;
+
+  }
+);
+
+
 // SECURITY
 function escapeHTML(str) {
 
