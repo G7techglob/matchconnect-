@@ -48,11 +48,7 @@ auth.onAuthStateChanged(
           user.uid
         )
 
-        document.getElementById(
-  "profilePhoto"
-).src =
-  data.photoURL ||
-  "images/default-avatar.png";
+        
       );
 
     if (!userDoc.exists())
