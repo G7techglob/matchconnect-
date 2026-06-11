@@ -47,6 +47,12 @@ auth.onAuthStateChanged(
           "users",
           user.uid
         )
+
+        document.getElementById(
+  "profilePhoto"
+).src =
+  data.photoURL ||
+  "images/default-avatar.png";
       );
 
     if (!userDoc.exists())
@@ -79,6 +85,7 @@ document.getElementById(
   "editBio"
 ).value =
   data.bio || "";
+    
   }
 );
 
