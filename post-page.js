@@ -32,7 +32,11 @@ const params =
 
 const postId =
   params.get("id");
-console.log("POST ID:", postId);
+
+document.getElementById(
+  "postContainer"
+).innerHTML =
+  "POST ID: " + postId;
 
 if (postId) {
 
