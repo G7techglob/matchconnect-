@@ -105,11 +105,11 @@ function setupFeed() {
   <button
   class="comment-btn"
   data-id="${postDoc.id}">
-  💬 Comment
+  💬 ${post.comments || 0}
 </button>
 
   <button class="share-btn">
-    🔄 Share
+    🔄 share
   </button>
 
    ${
