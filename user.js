@@ -14,7 +14,8 @@ import {
   setDoc,
   deleteDoc,
   addDoc,
-serverTimestamp
+serverTimestamp,
+  onSnapshot
 }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
@@ -74,7 +75,21 @@ if (uid) {
     ).textContent =
       data.bio ||
       "No bio yet";
+    
+const followBtn =
+  document.getElementById(
+    "followBtn"
+  );
 
+const followersCount =
+  document.getElementById(
+    "followersCount"
+  );
+
+const followingCount =
+  document.getElementById(
+    "followingCount"
+  );
 
     const postsQuery =
   query(
