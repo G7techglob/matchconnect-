@@ -12,7 +12,9 @@ import {
   updateDoc,
   increment,
   setDoc,
-  deleteDoc
+  deleteDoc,
+  addDoc,
+serverTimestamp
 }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
@@ -263,6 +265,97 @@ document.addEventListener(
 
       console.error(
         "Like error:",
+        error
+      );
+
+    }
+
+  }
+);
+
+document.addEventListener(
+  "click",
+  async (e) => {
+
+    if (
+      !e.target.classList.contains(
+        "send-comment-btn"
+      )
+    ) return;
+
+    const user =
+      auth.currentUser;
+
+    if (!user) {
+      alert("Please login first");
+      return;
+    }
+
+    const postId =
+      e.target.dataset.id;
+
+    const input =
+      document.querySelector(
+        `.comment-input[data-id="${postId}"]`
+      );
+
+    const text =
+      input.value.trim();
+
+    if (!text) return;
+
+    try {
+
+      const userProfile =
+        await getDoc(
+          doc(
+            db,
+            "users",
+            user.uid
+          )
+        );
+
+      const profileData =
+        userProfile.data();
+
+      await addDoc(
+        collection(
+          db,
+          "posts",
+          postId,
+          "comments"
+        ),
+        {
+          text,
+          userId: user.uid,
+          username:
+            profileData.name ||
+            user.email,
+          createdAt:
+            serverTimestamp()
+        }
+      );
+
+      await updateDoc(
+        doc(
+          db,
+          "posts",
+          postId
+        ),
+        {
+          comments:
+            increment(1)
+        }
+      );
+
+      input.value = "";
+
+      location.reload();
+
+    } catch (error) {
+
+      console.error(
+        "Comment error:",
         error
       );
 
