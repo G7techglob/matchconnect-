@@ -147,6 +147,18 @@ const followingCount =
     "followingCount"
   );
 
+    const followersSnapshot =
+  await getDocs(
+    collection(
+      db,
+      "users",
+      uid,
+      "followers"
+    )
+  );
+
+followersCount.textContent =
+  followersSnapshot.size;
     const postsQuery =
   query(
     collection(db, "posts"),
