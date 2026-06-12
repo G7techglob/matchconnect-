@@ -7,8 +7,11 @@ import {
   collection,
   getDocs,
   query,
-  where
-
+  where,
+  updateDoc,
+  increment,
+  setDoc,
+  deleteDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
