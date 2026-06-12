@@ -83,6 +83,37 @@ const followBtn =
 
 const currentUser =
   auth.currentUser;
+
+if (
+  currentUser &&
+  currentUser.uid !== uid
+) {
+
+  const followRef =
+    doc(
+      db,
+      "users",
+      uid,
+      "followers",
+      currentUser.uid
+    );
+
+  const existingFollow =
+    await getDoc(
+      followRef
+    );
+
+  if (
+    existingFollow.exists()
+  ) {
+
+    followBtn.textContent =
+      "Following";
+
+  }
+
+}
+    
     if (
   currentUser &&
   currentUser.uid !== uid
