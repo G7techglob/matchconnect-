@@ -81,6 +81,62 @@ const followBtn =
     "followBtn"
   );
 
+const currentUser =
+  auth.currentUser;
+    if (
+  currentUser &&
+  currentUser.uid !== uid
+) {
+
+  followBtn.addEventListener(
+    "click",
+    async () => {
+
+      const followRef =
+        doc(
+          db,
+          "users",
+          uid,
+          "followers",
+          currentUser.uid
+        );
+
+      const existingFollow =
+        await getDoc(
+          followRef
+        );
+
+      if (
+        existingFollow.exists()
+      ) {
+
+        await deleteDoc(
+          followRef
+        );
+
+        followBtn.textContent =
+          "Follow";
+
+      } else {
+
+        await setDoc(
+          followRef,
+          {
+            userId:
+              currentUser.uid
+          }
+        );
+
+        followBtn.textContent =
+          "Following";
+
+      }
+
+    }
+  );
+
+    }
+    
 const followersCount =
   document.getElementById(
     "followersCount"
