@@ -10,7 +10,11 @@ import {
   getFirestore,
   doc,
   getDoc,
-  updateDoc
+  updateDoc,
+  collection,
+  getDocs,
+  query,
+  where
 }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 const firebaseConfig = {
@@ -92,8 +96,94 @@ document.getElementById(
   "photoURLInput"
 ).value =
   data.photoURL || ""; 
+
+    const followersSnapshot =
+  await getDocs(
+    collection(
+      db,
+      "users",
+      user.uid,
+      "followers"
+    )
+  );
+
+document.getElementById(
+  "followersCount"
+).textContent =
+  followersSnapshot.size;
+
+let followingCount = 0;
+
+const usersSnapshot =
+  await getDocs(
+    collection(db, "users")
+  );
+
+for (const userDoc of usersSnapshot.docs) {
+
+  const followCheck =
+    await getDoc(
+      doc(
+        db,
+        "users",
+        userDoc.id,
+        "followers",
+        user.uid
+      )
+    );
+
+  if (followCheck.exists()) {
+    followingCount++;
+  }
+
+}
+
+document.getElementById(
+  "followingCount"
+).textContent =
+  followingCount;
+
+    const myPostsContainer =
+  document.getElementById(
+    "myPosts"
+  );
+
+myPostsContainer.innerHTML = "";
+
+const postsQuery =
+  query(
+    collection(db, "posts"),
+    where(
+      "userId",
+      "==",
+      user.uid
+    )
+  );
+
+const postsSnapshot =
+  await getDocs(postsQuery);
+
+postsSnapshot.forEach(
+  (postDoc) => {
+
+    const post =
+      postDoc.data();
+
+    const div =
+      document.createElement("div");
+
+    div.innerHTML = `
+      <p>${post.content}</p>
+      ❤️ ${post.likes || 0}
+      💬 ${post.comments || 0}
+      <hr>
+    `;
+
+    myPostsContainer.appendChild(div);
+
   }
 );
+
 
 document.getElementById(
   "saveProfileBtn"
