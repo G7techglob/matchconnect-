@@ -108,9 +108,11 @@ function setupFeed() {
   💬 ${post.comments || 0}
 </button>
 
-  <button class="share-btn">
-    🔄 share
-  </button>
+  <button
+class="share-btn"
+data-id="${postDoc.id}">
+  🔄 Share
+</button>
 
    ${
     auth.currentUser &&
@@ -427,6 +429,32 @@ document.addEventListener(
   }
 );
 
+document.addEventListener(
+  "click",
+  (e) => {
+
+    if (
+      !e.target.classList.contains(
+        "share-btn"
+      )
+    ) return;
+
+    const postId =
+      e.target.dataset.id;
+
+    const postLink =
+      `https://g7techglob.github.io/matchconnect-/post.html?id=${postId}`;
+
+    const whatsappUrl =
+      `https://wa.me/?text=${encodeURIComponent(postLink)}`;
+
+    window.open(
+      whatsappUrl,
+      "_blank"
+    );
+
+  }
+);
 
 // SECURITY
 function escapeHTML(str) {
