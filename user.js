@@ -161,11 +161,11 @@ postsSnapshot.forEach(
     placeholder="Write a comment..."
   >
 
-  <button
-    class="send-comment-btn"
-    data-id="${postDoc.id}">
-    Send
-  </button>
+<button
+  class="send-comment-btn"
+  data-id="${postDoc.id}">
+  Send
+</button>
 
 </div>
 
