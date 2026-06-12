@@ -126,22 +126,44 @@ postsSnapshot.forEach(
 <div class="post-actions">
 
   <button
-  class="like-btn"
-  data-id="${postDoc.id}">
-  ❤️ ${post.likes || 0}
-</button>
+    class="like-btn"
+    data-id="${postDoc.id}">
+    ❤️ ${post.likes || 0}
+  </button>
 
-<button
-  class="comment-btn"
-  data-id="${postDoc.id}">
-  💬 ${post.comments || 0}
-</button>
+  <button
+    class="comment-btn"
+    data-id="${postDoc.id}">
+    💬 ${post.comments || 0}
+  </button>
 
-<button
-  class="share-btn"
-  data-id="${postDoc.id}">
-  🔄 Share
-</button>
+  <button
+    class="share-btn"
+    data-id="${postDoc.id}">
+    🔄 Share
+  </button>
+
+</div>
+
+<div class="comment-section">
+
+  <div
+    class="comments-list"
+    id="comments-${postDoc.id}">
+  </div>
+
+  <input
+    type="text"
+    class="comment-input"
+    data-id="${postDoc.id}"
+    placeholder="Write a comment..."
+  >
+
+  <button
+    class="send-comment-btn"
+    data-id="${postDoc.id}">
+    Send
+  </button>
 
 </div>
 
