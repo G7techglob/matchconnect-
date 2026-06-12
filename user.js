@@ -121,17 +121,23 @@ postsSnapshot.forEach(
 
 <div class="post-actions">
 
-  <button>
-    ❤️ ${post.likes || 0}
-  </button>
+  <button
+  class="like-btn"
+  data-id="${postDoc.id}">
+  ❤️ ${post.likes || 0}
+</button>
 
-  <button>
-    💬 ${post.comments || 0}
-  </button>
+<button
+  class="comment-btn"
+  data-id="${postDoc.id}">
+  💬 ${post.comments || 0}
+</button>
 
-  <button>
-    🔄 Share
-  </button>
+<button
+  class="share-btn"
+  data-id="${postDoc.id}">
+  🔄 Share
+</button>
 
 </div>
 
