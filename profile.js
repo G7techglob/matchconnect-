@@ -183,9 +183,8 @@ postsSnapshot.forEach(
 
   }
 );
-    }
+  }
 );
-
 
 document.getElementById(
   "saveProfileBtn"
