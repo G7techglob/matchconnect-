@@ -167,6 +167,22 @@ if (
   );
 
     }
+
+  await addDoc(
+  collection(
+    db,
+    "notifications"
+  ),
+  {
+    userId: uid,
+    senderId:
+      currentUser.uid,
+    type: "follow",
+    createdAt:
+      serverTimestamp(),
+    read: false
+  }
+);
     
 const followersCount =
   document.getElementById(
