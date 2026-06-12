@@ -191,6 +191,11 @@ const commentsSnapshot =
     )
   );
 
+   console.log(
+  "Comments found:",
+  commentsSnapshot.size
+);
+
 commentsSnapshot.forEach(
   (commentDoc) => {
 
