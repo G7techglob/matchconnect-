@@ -183,6 +183,8 @@ postsSnapshot.forEach(
 
   }
 );
+    }
+);
 
 
 document.getElementById(
