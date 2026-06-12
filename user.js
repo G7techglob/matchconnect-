@@ -402,3 +402,28 @@ document.addEventListener(
 
   }
 );
+
+document.addEventListener(
+  "click",
+  (e) => {
+
+    if (
+      !e.target.classList.contains(
+        "share-btn"
+      )
+    ) return;
+
+    const profileLink =
+      window.location.href;
+
+    const whatsappUrl =
+      `https://wa.me/?text=${encodeURIComponent(profileLink)}`;
+
+    window.open(
+      whatsappUrl,
+      "_blank"
+    );
+
+  }
+);
+
