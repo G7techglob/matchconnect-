@@ -136,5 +136,13 @@ if (postId) {
     );
 
   }
+  else {
+
+  document.getElementById(
+    "postContainer"
+  ).innerHTML =
+    "Post not found";
+
+}
 
           }
