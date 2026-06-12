@@ -32,6 +32,7 @@ const params =
 
 const postId =
   params.get("id");
+console.log("POST ID:", postId);
 
 if (postId) {
 
@@ -43,6 +44,10 @@ if (postId) {
         postId
       )
     );
+  console.log(
+  "POST EXISTS:",
+  postDoc.exists()
+);
 
   if (postDoc.exists()) {
 
