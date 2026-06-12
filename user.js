@@ -99,9 +99,45 @@ postsSnapshot.forEach(
     const div =
       document.createElement("div");
 
-    div.innerHTML =
-      `<p>${post.content}</p><hr>`;
+    div.innerHTML = `
 
+<div class="post-header">
+
+  <img
+    src="${post.photoURL || 'images/default-avatar.png'}"
+    class="post-avatar"
+    width="50"
+  >
+
+  <span class="post-user">
+    ${post.username || "User"}
+  </span>
+
+</div>
+
+<p>
+  ${post.content}
+</p>
+
+<div class="post-actions">
+
+  <button>
+    ❤️ ${post.likes || 0}
+  </button>
+
+  <button>
+    💬 ${post.comments || 0}
+  </button>
+
+  <button>
+    🔄 Share
+  </button>
+
+</div>
+
+<hr>
+
+`;
     postsContainer.appendChild(
       div
     );
