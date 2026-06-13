@@ -420,7 +420,38 @@ const profileData = userProfile.data();
       }
     );
 
-    
+    const postDocSnap =
+  await getDoc(
+    doc(db, "posts", postId)
+  );
+
+const postData =
+  postDocSnap.data();
+
+if (
+  postData.userId !== user.uid
+) {
+
+  await addDoc(
+    collection(
+      db,
+      "notifications"
+    ),
+    {
+      userId:
+        postData.userId,
+      senderId:
+        user.uid,
+      type: "comment",
+      postId:
+        postId,
+      createdAt:
+        serverTimestamp(),
+      read: false
+    }
+  );
+
+}
 
     console.log("COMMENT SAVED");
 
