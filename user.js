@@ -248,6 +248,27 @@ followersCount.textContent =
 
 followingCount.textContent =
   followingSnapshot.size;
+
+followersCount.addEventListener(
+  "click",
+  () => {
+
+    window.location.href =
+      `followers.html?uid=${uid}`;
+
+  }
+);
+
+followingCount.addEventListener(
+  "click",
+  () => {
+
+    window.location.href =
+      `following.html?uid=${uid}`;
+
+  }
+);
+    
     const postsQuery =
   query(
     collection(db, "posts"),
