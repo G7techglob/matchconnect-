@@ -105,15 +105,6 @@ else if (
 ) {
 
   div.innerHTML =
-    `<p><strong>${senderName}</strong> liked your post</p>`;
-
-}
-
-else if (
-  notif.type === "like"
-) {
-
-  div.innerHTML =
     `<p><strong>${senderName}</strong> liked your post ❤️</p>`;
 
 }
