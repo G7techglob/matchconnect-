@@ -148,18 +148,35 @@ if (
         followBtn.textContent =
           "Follow";
 
-      } else {
+      
+        } else {
 
-        await setDoc(
-          followRef,
-          {
-            userId:
-              currentUser.uid
-          }
-        );
+  await setDoc(
+    followRef,
+    {
+      userId:
+        currentUser.uid
+    }
+  );
 
-        followBtn.textContent =
-          "Following";
+  await addDoc(
+    collection(
+      db,
+      "notifications"
+    ),
+    {
+      userId: uid,
+      senderId:
+        currentUser.uid,
+      type: "follow",
+      createdAt:
+        serverTimestamp(),
+      read: false
+    }
+  );
+
+  followBtn.textContent =
+    "Following";
 
       }
 
