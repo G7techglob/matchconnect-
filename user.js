@@ -249,25 +249,15 @@ followersCount.textContent =
 followingCount.textContent =
   followingSnapshot.size;
 
-followersCount.addEventListener(
-  "click",
-  () => {
+document.getElementById(
+  "followersLink"
+).href =
+  `followers.html?uid=${uid}`;
 
-    window.location.href =
-      `followers.html?uid=${uid}`;
-
-  }
-);
-
-followingCount.addEventListener(
-  "click",
-  () => {
-
-    window.location.href =
-      `following.html?uid=${uid}`;
-
-  }
-);
+document.getElementById(
+  "followingLink"
+).href =
+  `following.html?uid=${uid}`;
     
     const postsQuery =
   query(
