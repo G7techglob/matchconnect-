@@ -277,17 +277,50 @@ document.addEventListener("click", async (e) => {
 
     } else {
 
-      await setDoc(likeRef, {
-        userId: user.uid,
-        createdAt: Date.now()
-      });
+  await setDoc(likeRef, {
+    userId: user.uid,
+    createdAt: Date.now()
+  });
 
-      await updateDoc(
-        doc(db, "posts", postId),
-        {
-          likes: increment(1)
-        }
-      );
+  await updateDoc(
+    doc(db, "posts", postId),
+    {
+      likes: increment(1)
+    }
+  );
+
+  const postDocSnap =
+    await getDoc(
+      doc(db, "posts", postId)
+    );
+
+  const postData =
+    postDocSnap.data();
+
+  if (
+    postData.userId !== user.uid
+  ) {
+
+    await addDoc(
+      collection(
+        db,
+        "notifications"
+      ),
+      {
+        userId:
+          postData.userId,
+        senderId:
+          user.uid,
+        type: "like",
+        postId:
+          postId,
+        createdAt:
+          serverTimestamp(),
+        read: false
+      }
+    );
+
+  }
 
     }
 
