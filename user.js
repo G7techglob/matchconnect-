@@ -144,6 +144,18 @@ if (
         await deleteDoc(
           followRef
         );
+        const followingRef =
+  doc(
+    db,
+    "users",
+    currentUser.uid,
+    "following",
+    uid
+  );
+
+await deleteDoc(
+  followingRef
+);
 
         followBtn.textContent =
           "Follow";
@@ -158,6 +170,21 @@ if (
         currentUser.uid
     }
   );
+        const followingRef =
+  doc(
+    db,
+    "users",
+    currentUser.uid,
+    "following",
+    uid
+  );
+
+await setDoc(
+  followingRef,
+  {
+    userId: uid
+  }
+);
 
   await addDoc(
     collection(
@@ -209,6 +236,18 @@ const followingCount =
 
 followersCount.textContent =
   followersSnapshot.size;
+    const followingSnapshot =
+  await getDocs(
+    collection(
+      db,
+      "users",
+      uid,
+      "following"
+    )
+  );
+
+followingCount.textContent =
+  followingSnapshot.size;
     const postsQuery =
   query(
     collection(db, "posts"),
