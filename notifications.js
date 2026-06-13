@@ -108,6 +108,14 @@ else if (
     `<p><strong>${senderName}</strong> liked your post ❤️</p>`;
 
 }
+      else if (
+  notif.type === "comment"
+) {
+
+  div.innerHTML =
+    `<p><strong>${senderName}</strong> commented on your post 💬</p>`;
+
+      }
 
       container.appendChild(
         div
