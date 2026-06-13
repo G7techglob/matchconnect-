@@ -92,13 +92,22 @@ auth.onAuthStateChanged(
         );
 
       if (
-        notif.type === "follow"
-      ) {
+  notif.type === "follow"
+) {
 
-        div.innerHTML =
-          `<p><strong>${senderName}</strong> followed you</p>`;
+  div.innerHTML =
+    `<p><strong>${senderName}</strong> followed you</p>`;
 
-      }
+}
+
+else if (
+  notif.type === "like"
+) {
+
+  div.innerHTML =
+    `<p><strong>${senderName}</strong> liked your post ❤️</p>`;
+
+}
 
       container.appendChild(
         div
