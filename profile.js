@@ -17,7 +17,8 @@ import {
   where,
   addDoc,
   serverTimestamp,
-  increment
+  increment,
+  orderBy
 }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 const firebaseConfig = {
