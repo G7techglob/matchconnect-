@@ -43,6 +43,8 @@ alert("PROFILE JS LOADED");
 
 console.log("STEP 1: JS STARTED");
 
+console.log("REACHED AUTH SECTION");
+
 auth.onAuthStateChanged(
   async (user) => {
 
