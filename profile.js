@@ -173,11 +173,31 @@ postsSnapshot.forEach(
       document.createElement("div");
 
     div.innerHTML = `
-      <p>${post.content}</p>
-      ❤️ ${post.likes || 0}
-      💬 ${post.comments || 0}
-      <hr>
-    `;
+  <p>${post.content}</p>
+
+  ❤️ ${post.likes || 0}
+  💬 ${post.comments || 0}
+
+  <div
+    class="comments-list"
+    id="comments-${postDoc.id}">
+  </div>
+
+  <input
+    type="text"
+    class="comment-input"
+    data-id="${postDoc.id}"
+    placeholder="Write a comment..."
+  >
+
+  <button
+    class="send-comment-btn"
+    data-id="${postDoc.id}">
+    Send
+  </button>
+
+  <hr>
+`;
 
     myPostsContainer.appendChild(div);
 
