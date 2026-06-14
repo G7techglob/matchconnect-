@@ -170,9 +170,8 @@ const postsQuery =
 const postsSnapshot =
   await getDocs(postsQuery);
 
-postsSnapshot.forEach(
-  (postDoc) => {
-
+for (const postDoc of postsSnapshot.docs) {
+  
     const post =
       postDoc.data();
 
@@ -221,7 +220,7 @@ const commentsSnapshot =
       postDoc.id,
       "comments"
     )
-  );
+    }
 
 commentsSnapshot.forEach(
   (commentDoc) => {
