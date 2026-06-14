@@ -1,9 +1,15 @@
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 
+
 import {
-  getAuth,
-  onAuthStateChanged
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc,
+  addDoc,
+  collection,
+  serverTimestamp
 }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
@@ -152,6 +158,83 @@ if (saveBtn) {
         );
 
         location.reload();
+
+      } catch (error) {
+
+        console.error(error);
+        alert(error.message);
+
+      }
+
+    }
+  );
+
+}
+
+const profilePostBtn =
+  document.getElementById("profilePostBtn");
+
+if (profilePostBtn) {
+
+  profilePostBtn.addEventListener(
+    "click",
+    async () => {
+
+      const user =
+        auth.currentUser;
+
+      if (!user) {
+        alert("Please login");
+        return;
+      }
+
+      const content =
+        document.getElementById(
+          "profilePostContent"
+        ).value.trim();
+
+      if (!content) {
+        alert("Write something first");
+        return;
+      }
+
+      try {
+
+        const userSnap =
+          await getDoc(
+            doc(
+              db,
+              "users",
+              user.uid
+            )
+          );
+
+        const profileData =
+          userSnap.data();
+
+        await addDoc(
+          collection(db, "posts"),
+          {
+            content,
+            userId: user.uid,
+            username:
+              profileData.name ||
+              user.email,
+            photoURL:
+              profileData.photoURL ||
+              "images/default-avatar.png",
+            likes: 0,
+            comments: 0,
+            createdAt:
+              serverTimestamp()
+          }
+        );
+
+        alert("Post created!");
+
+        document.getElementById(
+          "profilePostContent"
+        ).value = "";
 
       } catch (error) {
 
