@@ -35,6 +35,8 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 const db = getFirestore(app);
+
+alert("PROFILE JS LOADED");
 console.log("PROFILE JS LOADED");
 
 auth.onAuthStateChanged(
