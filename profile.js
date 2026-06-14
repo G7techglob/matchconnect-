@@ -251,6 +251,9 @@ if (profilePostBtn) {
 
 async function loadMyPosts() {
 
+  console.log("LOAD POSTS STARTED");
+alert("LOAD POSTS STARTED");
+
   const myPosts =
     document.getElementById("myPosts");
 
