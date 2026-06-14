@@ -346,6 +346,38 @@ alert("LOAD POSTS STARTED");
 
     myPosts.appendChild(div);
 
+const commentsContainer =
+  div.querySelector(
+    `#comments-${postDoc.id}`
+  );
+
+const commentsSnapshot =
+  await getDocs(
+    collection(
+      db,
+      "posts",
+      postDoc.id,
+      "comments"
+    )
+  );
+
+commentsSnapshot.forEach(
+  (commentDoc) => {
+
+    const comment =
+      commentDoc.data();
+
+    const p =
+      document.createElement("p");
+
+    p.innerHTML =
+      `<strong>${comment.username}</strong>: ${comment.text}`;
+
+    commentsContainer.appendChild(p);
+
+  }
+);
+
   });
 
 }
