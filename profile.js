@@ -6,6 +6,7 @@ import {
   onAuthStateChanged
 }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
 import {
   getFirestore,
   doc,
@@ -20,6 +21,9 @@ import {
   increment,
   orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+alert("PROFILE JS STARTED");
+
 const firebaseConfig = {
   apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
   authDomain: "matchconnect-44a3e.firebaseapp.com",
