@@ -49,6 +49,10 @@ const followersSnapshot =
       "followers"
     )
   );
+document.getElementById(
+  "followersTotal"
+).textContent =
+  followersSnapshot.size;
 
 if (
   followersSnapshot.empty
