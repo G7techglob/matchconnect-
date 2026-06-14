@@ -1,5 +1,3 @@
-alert("PROFILE JS FILE REACHED");
-
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 
@@ -37,6 +35,8 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 const db = getFirestore(app);
+alert("AFTER FIREBASE");
+console.log("AFTER FIREBASE");
 
 console.log("STEP 1: JS STARTED");
 alert("PROFILE JS LOADED");
