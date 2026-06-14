@@ -11,6 +11,7 @@ import {
   getFirestore,
   doc,
   getDoc,
+  getDocs,
   updateDoc,
   addDoc,
   collection,
@@ -94,6 +95,8 @@ onAuthStateChanged(auth, async (user) => {
       "photoURLInput"
     ).value =
       data.photoURL || "";
+
+    await loadMyPosts();
 
   } catch (error) {
 
@@ -242,5 +245,39 @@ if (profilePostBtn) {
 
     }
   );
+
+}
+
+
+async function loadMyPosts() {
+
+  const myPosts =
+    document.getElementById("myPosts");
+
+  if (!myPosts) return;
+
+  myPosts.innerHTML = "";
+
+  const postsSnapshot =
+    await getDocs(
+      collection(db, "posts")
+    );
+
+  postsSnapshot.forEach((postDoc) => {
+
+    const post = postDoc.data();
+
+    const div =
+      document.createElement("div");
+
+    div.innerHTML = `
+      <p><strong>${post.username}</strong></p>
+      <p>${post.content}</p>
+      <hr>
+    `;
+
+    myPosts.appendChild(div);
+
+  });
 
 }
