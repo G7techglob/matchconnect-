@@ -425,6 +425,99 @@ document.addEventListener(
   }
 );
 
+
+document.addEventListener(
+  "click",
+  async (e) => {
+
+    if (
+      !e.target.classList.contains(
+        "send-comment-btn"
+      )
+    ) return;
+
+    const user =
+      auth.currentUser;
+
+    if (!user) {
+      alert("Please login");
+      return;
+    }
+
+    const postId =
+      e.target.dataset.id;
+
+    const input =
+      document.querySelector(
+        `.comment-input[data-id="${postId}"]`
+      );
+
+    const text =
+      input.value.trim();
+
+    if (!text) {
+      alert("Write a comment");
+      return;
+    }
+
+    try {
+
+      const userSnap =
+        await getDoc(
+          doc(
+            db,
+            "users",
+            user.uid
+          )
+        );
+
+      const profileData =
+        userSnap.data();
+
+      await addDoc(
+        collection(
+          db,
+          "posts",
+          postId,
+          "comments"
+        ),
+        {
+          text,
+          userId: user.uid,
+          username:
+            profileData.name ||
+            user.email,
+          createdAt:
+            serverTimestamp()
+        }
+      );
+
+      await updateDoc(
+        doc(
+          db,
+          "posts",
+          postId
+        ),
+        {
+          comments:
+            increment(1)
+        }
+      );
+
+      input.value = "";
+
+      loadMyPosts();
+
+    } catch (error) {
+
+      console.error(error);
+      alert(error.message);
+
+    }
+
+  }
+);
+
 alert("PROFILE JS FINISHED LOADING");
 
 document.addEventListener(
