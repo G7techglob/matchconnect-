@@ -65,6 +65,8 @@ auth.onAuthStateChanged(
 
     const data =
       userDoc.data();
+    
+    console.log("USER DATA LOADED");
 
     document.getElementById(
       "profileName"
@@ -272,7 +274,7 @@ commentsSnapshot.forEach(
           "images/default-avatar.png",
         likes: 0,
         comments: 0,
-        createdAt: new Date()
+        createdAt: serverTimestamp()
       }
     );
 
