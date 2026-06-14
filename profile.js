@@ -220,7 +220,7 @@ const commentsSnapshot =
       postDoc.id,
       "comments"
     )
-    }
+    );
 
 commentsSnapshot.forEach(
   (commentDoc) => {
