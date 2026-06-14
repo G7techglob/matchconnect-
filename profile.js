@@ -8,6 +8,7 @@ import {
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 import {
+import {
   getFirestore,
   doc,
   getDoc,
@@ -15,10 +16,12 @@ import {
   updateDoc,
   addDoc,
   collection,
-  serverTimestamp
+  serverTimestamp,
+  increment,
+  deleteDoc,
+  setDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
 const firebaseConfig = {
   apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
   authDomain: "matchconnect-44a3e.firebaseapp.com",
@@ -347,3 +350,50 @@ alert("LOAD POSTS STARTED");
   });
 
 }
+
+
+document.addEventListener(
+  "click",
+  async (e) => {
+
+    if (
+      !e.target.classList.contains(
+        "delete-btn"
+      )
+    ) return;
+
+    const postId =
+      e.target.dataset.id;
+
+    const confirmed =
+      confirm(
+        "Delete this post?"
+      );
+
+    if (!confirmed) return;
+
+    try {
+
+      await deleteDoc(
+        doc(
+          db,
+          "posts",
+          postId
+        )
+      );
+
+      alert(
+        "Post deleted"
+      );
+
+      loadMyPosts();
+
+    } catch (error) {
+
+      console.error(error);
+      alert(error.message);
+
+    }
+
+  }
+);
