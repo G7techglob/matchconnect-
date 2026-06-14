@@ -15,7 +15,9 @@ import {
   getDocs,
   query,
   where,
-  addDoc
+  addDoc,
+  serverTimestamp,
+  increment
 }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 const firebaseConfig = {
@@ -202,6 +204,38 @@ postsSnapshot.forEach(
 
     myPostsContainer.appendChild(div);
 
+    const commentsContainer =
+  div.querySelector(
+    `#comments-${postDoc.id}`
+  );
+
+const commentsSnapshot =
+  await getDocs(
+    collection(
+      db,
+      "posts",
+      postDoc.id,
+      "comments"
+    )
+  );
+
+commentsSnapshot.forEach(
+  (commentDoc) => {
+
+    const comment =
+      commentDoc.data();
+
+    const p =
+      document.createElement("p");
+
+    p.innerHTML =
+      `<strong>${comment.username}</strong>: ${comment.text}`;
+
+    commentsContainer.appendChild(p);
+
+  }
+);
+
   }
 );
 
@@ -248,6 +282,83 @@ postsSnapshot.forEach(
     
   }
 );
+
+
+document.addEventListener(
+  "click",
+  async (e) => {
+
+    if (
+      !e.target.classList.contains(
+        "send-comment-btn"
+      )
+    ) return;
+
+    const user =
+      auth.currentUser;
+
+    if (!user) return;
+
+    const postId =
+      e.target.dataset.id;
+
+    const input =
+      document.querySelector(
+        `.comment-input[data-id="${postId}"]`
+      );
+
+    const text =
+      input.value.trim();
+
+    if (!text) return;
+
+    const userDoc =
+      await getDoc(
+        doc(
+          db,
+          "users",
+          user.uid
+        )
+      );
+
+    const profileData =
+      userDoc.data();
+
+    await addDoc(
+      collection(
+        db,
+        "posts",
+        postId,
+        "comments"
+      ),
+      {
+        text,
+        userId: user.uid,
+        username:
+          profileData.name ||
+          user.email,
+        createdAt:
+          serverTimestamp()
+      }
+    );
+
+    await updateDoc(
+      doc(
+        db,
+        "posts",
+        postId
+      ),
+      {
+        comments:
+          increment(1)
+      }
+    );
+
+    location.reload();
+
+  }
+);
+
 
 
 document.getElementById(
