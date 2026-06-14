@@ -426,3 +426,82 @@ document.addEventListener(
 );
 
 alert("PROFILE JS FINISHED LOADING");
+
+document.addEventListener(
+  "click",
+  async (e) => {
+
+    if (
+      !e.target.classList.contains(
+        "like-btn"
+      )
+    ) return;
+
+    const user =
+      auth.currentUser;
+
+    if (!user) {
+      alert("Please login");
+      return;
+    }
+
+    const postId =
+      e.target.dataset.id;
+
+    const likeRef =
+      doc(
+        db,
+        "posts",
+        postId,
+        "likes",
+        user.uid
+      );
+
+    try {
+
+      const existingLike =
+        await getDoc(likeRef);
+
+      if (existingLike.exists()) {
+
+        await deleteDoc(likeRef);
+
+        await updateDoc(
+          doc(db, "posts", postId),
+          {
+            likes:
+              increment(-1)
+          }
+        );
+
+      } else {
+
+        await setDoc(
+          likeRef,
+          {
+            userId:
+              user.uid
+          }
+        );
+
+        await updateDoc(
+          doc(db, "posts", postId),
+          {
+            likes:
+              increment(1)
+          }
+        );
+
+      }
+
+      loadMyPosts();
+
+    } catch (error) {
+
+      console.error(error);
+      alert(error.message);
+
+    }
+
+  }
+);
