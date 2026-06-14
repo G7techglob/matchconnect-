@@ -2,10 +2,10 @@ import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 
 import {
-  getAuth
+  getAuth,
+  onAuthStateChanged
 }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-
 import {
   getFirestore,
   doc,
@@ -19,8 +19,7 @@ import {
   serverTimestamp,
   increment,
   orderBy
-}
-from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
   authDomain: "matchconnect-44a3e.firebaseapp.com",
@@ -45,7 +44,8 @@ console.log("STEP 1: JS STARTED");
 
 console.log("REACHED AUTH SECTION");
 
-auth.onAuthStateChanged(
+onAuthStateChanged(
+  auth,
   async (user) => {
 
     if (!user) {
