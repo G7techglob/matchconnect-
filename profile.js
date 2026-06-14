@@ -397,4 +397,32 @@ document.addEventListener(
   }
 );
 
+
+document.addEventListener(
+  "click",
+  (e) => {
+
+    if (
+      !e.target.classList.contains(
+        "share-btn"
+      )
+    ) return;
+
+    const postId =
+      e.target.dataset.id;
+
+    const postLink =
+      `https://g7techglob.github.io/matchconnect-/post.html?id=${postId}`;
+
+    const whatsappUrl =
+      `https://wa.me/?text=${encodeURIComponent(postLink)}`;
+
+    window.open(
+      whatsappUrl,
+      "_blank"
+    );
+
+  }
+);
+
 alert("PROFILE JS FINISHED LOADING");
