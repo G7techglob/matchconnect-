@@ -396,3 +396,5 @@ document.addEventListener(
 
   }
 );
+
+alert("PROFILE JS FINISHED LOADING");
