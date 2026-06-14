@@ -14,7 +14,8 @@ import {
   collection,
   getDocs,
   query,
-  where
+  where,
+  addDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 const firebaseConfig = {
@@ -171,6 +172,64 @@ postsSnapshot.forEach(
 
     const div =
       document.createElement("div");
+
+    document.getElementById(
+  "profilePostBtn"
+).addEventListener(
+  "click",
+  async () => {
+
+    const content =
+      document.getElementById(
+        "profilePostContent"
+      ).value.trim();
+
+    if (!content) return;
+
+    const user =
+      auth.currentUser;
+
+    const userProfile =
+      await getDoc(
+        doc(
+          db,
+          "users",
+          user.uid
+        )
+      );
+
+    const profileData =
+      userProfile.data();
+
+    await addDoc(
+      collection(
+        db,
+        "posts"
+      ),
+      {
+        content,
+        userId: user.uid,
+        username:
+          profileData.name ||
+          user.email,
+        photoURL:
+          profileData.photoURL ||
+          "images/default-avatar.png",
+        likes: 0,
+        comments: 0,
+        createdAt:
+          new Date()
+      }
+    );
+
+    document.getElementById(
+      "profilePostContent"
+    ).value = "";
+
+    location.reload();
+
+  }
+);
 
     div.innerHTML = `
   <p>${post.content}</p>
