@@ -274,10 +274,73 @@ alert("LOAD POSTS STARTED");
       document.createElement("div");
 
     div.innerHTML = `
-      <p><strong>${post.username}</strong></p>
-      <p>${post.content}</p>
-      <hr>
-    `;
+
+<div class="post-header">
+
+  <img
+    src="${post.photoURL || 'images/default-avatar.png'}"
+    class="post-avatar"
+    width="40"
+  >
+
+  <strong>
+    ${post.username || "User"}
+  </strong>
+
+</div>
+
+<p>
+  ${post.content}
+</p>
+
+<div class="post-actions">
+
+  <button
+    class="like-btn"
+    data-id="${postDoc.id}">
+    ❤️ ${post.likes || 0}
+  </button>
+
+  <button
+    class="comment-btn"
+    data-id="${postDoc.id}">
+    💬 ${post.comments || 0}
+  </button>
+
+  <button
+    class="share-btn"
+    data-id="${postDoc.id}">
+    🔄 Share
+  </button>
+
+  <button
+    class="delete-btn"
+    data-id="${postDoc.id}">
+    🗑 Delete
+  </button>
+
+</div>
+
+<div
+  class="comments-list"
+  id="comments-${postDoc.id}">
+</div>
+
+<input
+  type="text"
+  class="comment-input"
+  data-id="${postDoc.id}"
+  placeholder="Write a comment..."
+>
+
+<button
+  class="send-comment-btn"
+  data-id="${postDoc.id}">
+  Send
+</button>
+
+<hr>
+`;
 
     myPosts.appendChild(div);
 
