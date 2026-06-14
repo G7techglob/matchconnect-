@@ -35,10 +35,11 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 const db = getFirestore(app);
-console.log("STEP 1: JS STARTED");
 
+console.log("STEP 1: JS STARTED");
 alert("PROFILE JS LOADED");
-console.log("PROFILE JS LOADED");
+
+console.log("STEP 1: JS STARTED");
 
 auth.onAuthStateChanged(
   async (user) => {
