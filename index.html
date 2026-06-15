@@ -29,20 +29,18 @@
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
   <link rel="preconnect" href="https://www.gstatic.com">
   
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="index.css">
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3H+J5wnEsImpPSYo52gNOD/A0f5ccvVB9E/qH9F5jDzF14KJgEqZ5S5v3TFDzBMHBRsD2g7lR4Ow==" crossorigin="anonymous" referrerpolicy="no-referrer">
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   
-  <!-- Firebase Config (Environment-based) -->
+  <!-- Firebase Config -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
     import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-    // Firebase config - In production, fetch from secure backend endpoint
     const firebaseConfig = {
       apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
       authDomain: "matchconnect-44a3e.firebaseapp.com",
@@ -52,21 +50,18 @@
       appId: "1:283382943870:web:ee1d08c65bcbac400cc82f"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    
-    // Make database available globally
     window.db = db;
   </script>
 </head>
 
 <body>
 
-  <!-- Skip to Main Content Link (Accessibility) -->
+  <!-- Skip to Main Content Link -->
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  <!-- Mobile Navbar -->
+  <!-- Mobile Navigation -->
   <nav class="mobile-navbar" id="mobileNavbar" aria-label="Mobile navigation">
     <button class="close-btn" aria-label="Close navigation menu">
       <i class="fas fa-times"></i>
@@ -82,7 +77,7 @@
     </ul>
   </nav>
 
-  <!-- Header/Navigation -->
+  <!-- Header -->
   <header class="header" role="banner">
     <div class="header-container">
       <div class="left-header">
@@ -91,12 +86,12 @@
         </button>
         
         <h1 class="logo-text">
-          <i class="fas fa-heart" aria-hidden="true"></i>
+          <i class="fas fa-heart"></i>
           MatchConnect
         </h1>
       </div>
 
-      <!-- Desktop Navigation Links -->
+      <!-- Desktop Navigation -->
       <nav class="desktop-links" aria-label="Main navigation">
         <a href="index.html" aria-current="page">Home</a>
         <a href="profile.html">Profile</a>
@@ -121,12 +116,10 @@
           
           <div class="hero-buttons">
             <button id="startBtn" class="btn btn-primary">
-              <i class="fas fa-comments"></i>
-              Start Connecting
+              <i class="fas fa-comments"></i> Start Connecting
             </button>
             <a href="profile.html" class="btn btn-secondary">
-              <i class="fas fa-user"></i>
-              My Profile
+              <i class="fas fa-user"></i> My Profile
             </a>
           </div>
         </div>
@@ -151,8 +144,7 @@
             </div>
           </div>
           <button type="submit" id="postBtn" class="btn btn-primary">
-            <i class="fas fa-paper-plane"></i>
-            Publish Post
+            <i class="fas fa-paper-plane"></i> Publish Post
           </button>
         </form>
       </div>
@@ -162,9 +154,7 @@
     <section id="feed" class="feed-section" aria-label="Posts feed">
       <div class="container">
         <h2>Latest Posts</h2>
-        <div id="postsContainer" class="posts-container" role="region" aria-live="polite" aria-label="Posts list">
-          <!-- Posts loaded dynamically -->
-        </div>
+        <div id="postsContainer" class="posts-container" role="region" aria-live="polite" aria-label="Posts list"></div>
       </div>
     </section>
 
@@ -197,9 +187,7 @@
     <section class="profiles-section" id="profiles" aria-label="Featured profiles">
       <div class="container">
         <h2>Featured Profiles</h2>
-        <div class="profiles-grid" id="profiles-container" role="region" aria-live="polite">
-          <!-- Profiles loaded dynamically -->
-        </div>
+        <div class="profiles-grid" id="profiles-container" role="region" aria-live="polite"></div>
       </div>
     </section>
 
@@ -209,8 +197,7 @@
         <h2>Join Our Community</h2>
         <p>Thousands of users connect daily through photos, messaging and entertaining video content. Be part of the MatchConnect family today.</p>
         <a href="register.html" class="btn btn-large btn-primary">
-          <i class="fas fa-user-plus"></i>
-          Get Started Now
+          <i class="fas fa-user-plus"></i> Get Started Now
         </a>
       </div>
     </section>
@@ -251,13 +238,9 @@
   </footer>
 
   <!-- Scripts -->
-  <!-- Posts Module -->
   <script type="module" src="posts.js" defer></script>
-  
-  <!-- Main Script -->
   <script src="index.js" defer></script>
   
-  <!-- Service Worker Registration -->
   <script defer>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -272,7 +255,6 @@
     }
   </script>
 
-  <!-- Firebase Module -->
   <script type="module" src="firebase.js" defer></script>
 
 </body>
