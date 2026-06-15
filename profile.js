@@ -380,8 +380,6 @@ commentsSnapshot.forEach(
   
   );
 
-}
-
 document.addEventListener(
   "click",
   async (e) => {
@@ -424,10 +422,8 @@ document.addEventListener(
       alert(error.message);
 
     }
-
-  }
 );
-
+}
 
 document.addEventListener(
   "click",
