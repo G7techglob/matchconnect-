@@ -340,11 +340,13 @@ postsSnapshot.forEach((postDoc) => {
   Send
 </button>
 
-<hr>
-`;
+<hr>`;
 
 myPosts.appendChild(div);
-});
+  
+}
+  
+  );
 
 }
 
