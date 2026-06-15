@@ -267,9 +267,8 @@ alert("LOAD POSTS STARTED");
     await getDocs(
       collection(db, "posts")
     );
-
-  postsSnapshot.forEach((postDoc) => {
-
+for (const postDoc of postsSnapshot.docs) {
+  
     const post = postDoc.data();
 
     const div =
