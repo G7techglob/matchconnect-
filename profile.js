@@ -345,10 +345,12 @@ for (const postDoc of postsSnapshot.docs) {
 
 myPosts.appendChild(div);
 
+  }
+);
+
 });
 
 }
-
 
 document.addEventListener(
   "click",
