@@ -376,9 +376,9 @@ commentsSnapshot.forEach(
 
     commentsContainer.appendChild(p);
   
+
+  });
 }
-  
-  );
 
 document.addEventListener(
   "click",
@@ -420,10 +420,10 @@ document.addEventListener(
 
       console.error(error);
       alert(error.message);
-
     }
-);
-}
+    
+    });
+
 
 document.addEventListener(
   "click",
