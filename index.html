@@ -2,241 +2,279 @@
 <html lang="en">
 
 <head>
-
   <meta charset="UTF-8">
-
-  <meta name="viewport"
-  content="width=device-width, initial-scale=1.0">
-
-  <title>MatchConnect</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-
-  <!-- FONT AWESOME -->
-
-  <link rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-  <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ff4d6d">
+  <!-- Primary Meta Tags -->
+  <title>MatchConnect - Meet New People Worldwide | Social Platform</title>
+  <meta name="description" content="Connect with people worldwide through live chats, photos, and videos. Join thousands of users on MatchConnect - the global social platform for friendship and real connections.">
+  <meta name="theme-color" content="#ff4d6d">
   <meta name="app-version" content="1.0.1">
-
+  
+  <!-- Open Graph Meta Tags (Facebook, LinkedIn) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://g7techglob.github.io/matchconnect-/">
+  <meta property="og:title" content="MatchConnect - Meet New People Worldwide">
+  <meta property="og:description" content="Connect through live chats, photos and videos with people around the world.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1200&h=630&fit=crop">
+  
+  <!-- Twitter Meta Tags -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://g7techglob.github.io/matchconnect-/">
+  <meta property="twitter:title" content="MatchConnect - Meet New People Worldwide">
+  <meta property="twitter:description" content="Connect through live chats, photos and videos with people around the world.">
+  <meta property="twitter:image" content="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1200&h=630&fit=crop">
+  
+  <!-- Preconnect for External Resources -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://www.gstatic.com">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3H+J5wnEsImpPSYo52gNOD/A0f5ccvVB9E/qH9F5jDzF14KJgEqZ5S5v3TFDzBMHBRsD2g7lR4Ow==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  
+  <!-- Firebase Config (Environment-based) -->
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  // Your Firebase config (PASTE YOURS HERE)
-  const firebaseConfig = {
-    apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
-    authDomain: "matchconnect-44a3e.firebaseapp.com",
-    projectId: "matchconnect-44a3e",
-    storageBucket: "matchconnect-44a3e.firebasestorage.app",
-    messagingSenderId: "283382943870",
-    appId: "1:283382943870:web:ee1d08c65bcbac400cc82f"
-  };
+    // Firebase config - In production, fetch from secure backend endpoint
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
+      authDomain: "matchconnect-44a3e.firebaseapp.com",
+      projectId: "matchconnect-44a3e",
+      storageBucket: "matchconnect-44a3e.firebasestorage.app",
+      messagingSenderId: "283382943870",
+      appId: "1:283382943870:web:ee1d08c65bcbac400cc82f"
+    };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-
-  // Firestore database
-  const db = getFirestore(app);
-
-  // Make database available globally
-  window.db = db;
-</script>
-
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    // Make database available globally
+    window.db = db;
+  </script>
 </head>
 
 <body>
 
+  <!-- Skip to Main Content Link (Accessibility) -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
 
-
-<!-- NAVBAR -->
-
-<div class="mobile-navbar"
-id="mobileNavbar">
-
-<a href="index.html">Home</a>
-  <a href="profile.html">Profile</a>
-<a href="notifications.html">Notifications</a>
-  <a href="terms.html">terms of service</a>
-      <a href="privacy.html">privacy policy</a>
-<a href="register.html">Create Account</a>
-<a href="login.html">Login</a>
-</div>
-
-
-
-
-
-<!-- HEADER -->
-
-<header class="header">
-
-  <div class="left-header">
-
-    <div class="menu-btn" id="menuBtn">
-      <i class="fas fa-bars"></i>
-    </div>
-    
-    <h1>MatchConnect</h1>
-
-    <div class="desktop-links">
-      <a href="index.html">Home</a>
-      <a href="profile.html">Profile</a>
-<a href="notifications.html">Notifications</a>
-       <a href="terms.html">terms of service</a>
-      <a href="privacy.html">privacy policy</a>
-      <a href="register.html">Create Account</a>
-      <a href="login.html">Login</a>
-     
-    </div>
-
-  </div>
-
-</header>
-    
-
-<!-- HERO -->
-
-<section class="hero-card"
-id="hero">
-
-  <div class="overlay">
-
-    <h2>
-      Meet New People Worldwide
-    </h2>
-
-    <p>
-
-      Connect through live chats,
-      photos and videos with people
-      around the world.
-
-    </p>
-
-    <button id="startBtn">
-
-      Start Connecting
-
+  <!-- Mobile Navbar -->
+  <nav class="mobile-navbar" id="mobileNavbar" aria-label="Mobile navigation">
+    <button class="close-btn" aria-label="Close navigation menu">
+      <i class="fas fa-times"></i>
     </button>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="profile.html">Profile</a></li>
+      <li><a href="notifications.html">Notifications</a></li>
+      <li><a href="terms.html">Terms of Service</a></li>
+      <li><a href="privacy.html">Privacy Policy</a></li>
+      <li><a href="register.html">Create Account</a></li>
+      <li><a href="login.html">Login</a></li>
+    </ul>
+  </nav>
 
-    <a href="profile.html">
-  <button>
-    My Profile
-  </button>
-    </a>
+  <!-- Header/Navigation -->
+  <header class="header" role="banner">
+    <div class="header-container">
+      <div class="left-header">
+        <button class="menu-btn" id="menuBtn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobileNavbar">
+          <i class="fas fa-bars"></i>
+        </button>
+        
+        <h1 class="logo-text">
+          <i class="fas fa-heart" aria-hidden="true"></i>
+          MatchConnect
+        </h1>
+      </div>
 
-  </div>
+      <!-- Desktop Navigation Links -->
+      <nav class="desktop-links" aria-label="Main navigation">
+        <a href="index.html" aria-current="page">Home</a>
+        <a href="profile.html">Profile</a>
+        <a href="notifications.html">Notifications</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="register.html">Create Account</a>
+        <a href="login.html">Login</a>
+      </nav>
+    </div>
+  </header>
 
-</section>
+  <!-- Main Content -->
+  <main id="main-content">
+    
+    <!-- Hero Section -->
+    <section class="hero-card" id="hero" aria-label="Welcome section">
+      <div class="hero-overlay">
+        <div class="hero-content">
+          <h2>Meet New People Worldwide</h2>
+          <p>Connect through live chats, photos and videos with people around the world.</p>
+          
+          <div class="hero-buttons">
+            <button id="startBtn" class="btn btn-primary">
+              <i class="fas fa-comments"></i>
+              Start Connecting
+            </button>
+            <a href="profile.html" class="btn btn-secondary">
+              <i class="fas fa-user"></i>
+              My Profile
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
 
-<section class="create-post">
+    <!-- Create Post Section -->
+    <section class="create-post-section" aria-label="Create post">
+      <div class="container">
+        <h2>Share Your Thoughts</h2>
+        <form class="create-post" id="createPostForm" novalidate>
+          <div class="post-input-group">
+            <textarea
+              id="postContent"
+              placeholder="What's on your mind?"
+              required
+              aria-label="Post content"
+              maxlength="500"
+            ></textarea>
+            <div class="char-counter">
+              <span id="charCount">0</span>/500
+            </div>
+          </div>
+          <button type="submit" id="postBtn" class="btn btn-primary">
+            <i class="fas fa-paper-plane"></i>
+            Publish Post
+          </button>
+        </form>
+      </div>
+    </section>
 
-  <h2>Create Post</h2>
+    <!-- Feed Section -->
+    <section id="feed" class="feed-section" aria-label="Posts feed">
+      <div class="container">
+        <h2>Latest Posts</h2>
+        <div id="postsContainer" class="posts-container" role="region" aria-live="polite" aria-label="Posts list">
+          <!-- Posts loaded dynamically -->
+        </div>
+      </div>
+    </section>
 
-  <textarea
-    id="postContent"
-    placeholder="What's on your mind?"
-  ></textarea>
+    <!-- About Section -->
+    <section class="about-section" id="about" aria-label="About MatchConnect">
+      <div class="container">
+        <h2>About MatchConnect</h2>
+        <p>MatchConnect is a social platform designed for friendship, fun and real connections. We believe in creating a safe, respectful community where people from around the world can connect authentically.</p>
+        <div class="about-features">
+          <div class="feature">
+            <i class="fas fa-globe"></i>
+            <h3>Global Community</h3>
+            <p>Connect with thousands of people worldwide</p>
+          </div>
+          <div class="feature">
+            <i class="fas fa-shield-alt"></i>
+            <h3>Safe & Secure</h3>
+            <p>Your privacy and security are our priority</p>
+          </div>
+          <div class="feature">
+            <i class="fas fa-video"></i>
+            <h3>Rich Media</h3>
+            <p>Share photos, videos, and live chats</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <button id="postBtn">
-    Publish Post
-  </button>
+    <!-- Featured Profiles Section -->
+    <section class="profiles-section" id="profiles" aria-label="Featured profiles">
+      <div class="container">
+        <h2>Featured Profiles</h2>
+        <div class="profiles-grid" id="profiles-container" role="region" aria-live="polite">
+          <!-- Profiles loaded dynamically -->
+        </div>
+      </div>
+    </section>
 
-</section>
+    <!-- Community Section -->
+    <section class="community-section" id="community" aria-label="Join our community">
+      <div class="container">
+        <h2>Join Our Community</h2>
+        <p>Thousands of users connect daily through photos, messaging and entertaining video content. Be part of the MatchConnect family today.</p>
+        <a href="register.html" class="btn btn-large btn-primary">
+          <i class="fas fa-user-plus"></i>
+          Get Started Now
+        </a>
+      </div>
+    </section>
 
-<section id="feed">
+  </main>
 
-  <h2>Latest Posts</h2>
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>MatchConnect</h3>
+          <p>© 2026 All Rights Reserved</p>
+        </div>
+        <div class="footer-section">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="terms.html">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Follow Us</h4>
+          <div class="social-links">
+            <a href="https://facebook.com/matchconnect" aria-label="Follow us on Facebook" target="_blank" rel="noopener noreferrer">
+              <i class="fab fa-facebook"></i>
+            </a>
+            <a href="https://twitter.com/matchconnect" aria-label="Follow us on Twitter" target="_blank" rel="noopener noreferrer">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="https://instagram.com/matchconnect" aria-label="Follow us on Instagram" target="_blank" rel="noopener noreferrer">
+              <i class="fab fa-instagram"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
 
-  <div id="postsContainer"></div>
-
-</section>
-
-
-
-<!-- ABOUT -->
-
-<section class="about-section"
-id="about">
-
-  <h2>
-    About MatchConnect
-  </h2>
-
-  <p>
-
-    MatchConnect is a social
-       platform designed
-    for friendship, fun and real
-    connections.
-
-  </p>
-
-</section>
-<!-- PROFILES -->
-
-<section class="dashboard">
-
-  <h2 class="title">
-    Featured Profiles
-  </h2>
-
-
-
-</section>
-
-<!-- COMMUNITY -->
-
-<section class="community-section"
-id="community">
-
-  <h2>
-    Join Our Community
-  </h2>
-
-  <p>
-
-    Thousands of users connect daily
-    through photos, messaging and
-    entertaining video content.
-
-  </p>
-
-</section>
-
-<!-- FOOTER -->
-
-<footer class="footer" id="footer">
-
-  <h2>MatchConnect</h2>
-
-  <p>© 2026 All Rights Reserved</p>
-
-  <p>
-    <a href="privacy.html">Privacy Policy</a> |
-    <a href="terms.html">Terms of Service</a>
-  </p>
-
-</footer>
-
-
-
-
-  <script type="module" src="posts.js"></script>
-
-  <script src="index.js"></script>
+  <!-- Scripts -->
+  <!-- Posts Module -->
+  <script type="module" src="posts.js" defer></script>
   
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js')
-    .then(() => console.log("Service Worker Registered"));
-}
-</script>
-
-  <script type="module" src="firebase.js"></script>
+  <!-- Main Script -->
+  <script src="index.js" defer></script>
   
+  <!-- Service Worker Registration -->
+  <script defer>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(registration => {
+            console.log('Service Worker registered successfully:', registration);
+          })
+          .catch(error => {
+            console.log('Service Worker registration failed:', error);
+          });
+      });
+    }
+  </script>
+
+  <!-- Firebase Module -->
+  <script type="module" src="firebase.js" defer></script>
+
 </body>
+
 </html>
