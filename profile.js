@@ -93,26 +93,44 @@ onAuthStateChanged(auth, async (user) => {
 
     const data = userSnap.data();
 
+
     const followersCount =
-  document.getElementById(
-    "followersCount"
-  );
+  document.getElementById("followersCount");
 
 const followingCount =
-  document.getElementById(
-    "followingCount"
+  document.getElementById("followingCount");
+
+const followersSnap =
+  await getDocs(
+    collection(
+      db,
+      "users",
+      user.uid,
+      "followers"
+    )
+  );
+
+const followingSnap =
+  await getDocs(
+    collection(
+      db,
+      "users",
+      user.uid,
+      "following"
+    )
   );
 
 if (followersCount) {
   followersCount.textContent =
-    data.followers || 0;
+    followersSnap.size;
 }
 
 if (followingCount) {
   followingCount.textContent =
-    data.following || 0;
+    followingSnap.size;
 }
 
+    
     // Use textContent instead of innerHTML to prevent XSS
     const profileName = document.getElementById("profileName");
     const profileEmail = document.getElementById("profileEmail");
