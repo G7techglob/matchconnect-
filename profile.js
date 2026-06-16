@@ -216,6 +216,10 @@ async function renderPost(postDoc) {
 
   const post = postDoc.data();
 
+  if (
+  post.userId !== auth.currentUser.uid
+) return;
+
   // Create post container
   const div = document.createElement("div");
   div.className = "post-container";
@@ -236,6 +240,19 @@ async function renderPost(postDoc) {
         onerror="this.src='images/default-avatar.png'"
       >
       <strong>${sanitizedUsername}</strong>
+
+<br>
+
+<small>
+  ${
+    post.createdAt
+      ? new Date(
+          post.createdAt.seconds * 1000
+        ).toLocaleString()
+      : ""
+  }
+</small>
+      
     </div>
     <p class="post-content">${sanitizedContent}</p>
     <div class="post-actions">
