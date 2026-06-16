@@ -93,6 +93,26 @@ onAuthStateChanged(auth, async (user) => {
 
     const data = userSnap.data();
 
+    const followersCount =
+  document.getElementById(
+    "followersCount"
+  );
+
+const followingCount =
+  document.getElementById(
+    "followingCount"
+  );
+
+if (followersCount) {
+  followersCount.textContent =
+    data.followers || 0;
+}
+
+if (followingCount) {
+  followingCount.textContent =
+    data.following || 0;
+}
+
     // Use textContent instead of innerHTML to prevent XSS
     const profileName = document.getElementById("profileName");
     const profileEmail = document.getElementById("profileEmail");
