@@ -70,6 +70,30 @@ if (uid) {
       data.name ||
       "No Name";
 
+    const joinDate =
+  document.getElementById(
+    "joinDate"
+  );
+
+if (
+  joinDate &&
+  data.createdAt
+) {
+
+  const date =
+    data.createdAt.toDate
+      ? data.createdAt.toDate()
+      : new Date(
+          data.createdAt
+        );
+
+  joinDate.textContent =
+    "Member since: " +
+    date.toLocaleDateString();
+
+}
+    
+
     document.getElementById(
       "userBio"
     ).textContent =
