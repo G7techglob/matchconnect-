@@ -130,6 +130,26 @@ if (followingCount) {
     followingSnap.size;
 }
 
+    const followersLink =
+  document.getElementById(
+    "followersLink"
+  );
+
+const followingLink =
+  document.getElementById(
+    "followingLink"
+  );
+
+if (followersLink) {
+  followersLink.href =
+    `followers.html?uid=${user.uid}`;
+}
+
+if (followingLink) {
+  followingLink.href =
+    `following.html?uid=${user.uid}`;
+}
+    
     
     // Use textContent instead of innerHTML to prevent XSS
     const profileName = document.getElementById("profileName");
