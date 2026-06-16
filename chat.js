@@ -11,10 +11,33 @@ import {
     onSnapshot,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+const messagesDiv =
+  document.getElementById(
+    "messagesContainer"
+  );
 
-const messagesDiv = document.getElementById("messages");
-const sendBtn = document.getElementById("sendBtn");
+const sendBtn =
+  document.getElementById(
+    "sendMessageBtn"
+  );
+
 const input = document.getElementById("messageInput");
+
+console.log(
+  "messagesDiv:",
+  messagesDiv
+);
+
+console.log(
+  "sendBtn:",
+  sendBtn
+);
+
+console.log(
+  "input:",
+  input
+);
+
 
 // SEND MESSAGE
 sendBtn.addEventListener("click", async () => {
