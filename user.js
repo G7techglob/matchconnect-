@@ -620,6 +620,28 @@ document.addEventListener(
   }
 );
 
+const messageBtn =
+  document.getElementById(
+    "messageBtn"
+  );
+
+if (
+  messageBtn &&
+  uid
+) {
+
+  messageBtn.addEventListener(
+    "click",
+    () => {
+
+      window.location.href =
+        `chat.html?uid=${uid}`;
+
+    }
+  );
+
+}
+
 document.addEventListener(
   "click",
   (e) => {
