@@ -89,9 +89,5 @@ onSnapshot(q, (snapshot) => {
     });
 });
 
-// LOGOUT
-document.getElementById("logoutBtn").addEventListener("click", () => {
-    signOut(auth).then(() => {
-        window.location.href = "login.html";
-    });
-});
+
+
