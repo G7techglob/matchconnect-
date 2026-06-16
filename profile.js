@@ -228,6 +228,21 @@ if (postCount) {
     totalPosts;
 }
 
+    } catch (error) {
+    console.error(
+      "Error loading posts:",
+      error
+    );
+
+    showNotification(
+      "Error loading posts: " +
+      error.message,
+      true
+    );
+  }
+
+}
+
 /**
  * Render a single post with comments
  */
