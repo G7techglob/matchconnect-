@@ -271,6 +271,16 @@ document.getElementById(
 
 const postsSnapshot =
   await getDocs(postsQuery);
+    
+    const postCount =
+  document.getElementById(
+    "postCount"
+  );
+
+if (postCount) {
+  postCount.textContent =
+    postsSnapshot.size;
+}
 
 const postsContainer =
   document.getElementById(
