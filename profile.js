@@ -201,12 +201,7 @@ async function loadMyPosts() {
     let totalPosts = 0;
     
     // Use Promise.all to wait for all posts to load
-    const postsSnapshot = await getDocs(
-  collection(db, "posts")
-);
-
-let totalPosts = 0;
-
+    
 const postPromises = postsSnapshot.docs.map(postDoc => {
 
   const post = postDoc.data();
