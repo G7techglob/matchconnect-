@@ -18,17 +18,36 @@ const input = document.getElementById("messageInput");
 
 // SEND MESSAGE
 sendBtn.addEventListener("click", async () => {
+
+    console.log("SEND BUTTON CLICKED");
+
     const text = input.value;
 
-    if (text.trim() === "") return;
+    if (text.trim() === "") {
+        console.log("MESSAGE EMPTY");
+        return;
+    }
 
-    await addDoc(collection(db, "messages"), {
-        text: text,
-        user: auth.currentUser.email,
-        time: serverTimestamp()
-    });
+    console.log("MESSAGE:", text);
 
-    input.value = "";
+    try {
+
+        await addDoc(collection(db, "messages"), {
+            text: text,
+            user: auth.currentUser.email,
+            time: serverTimestamp()
+        });
+
+        console.log("MESSAGE SAVED");
+
+        input.value = "";
+
+    } catch (error) {
+
+        console.error("SEND ERROR:", error);
+
+    }
+
 });
 
 // REALTIME MESSAGES
