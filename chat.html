@@ -2,38 +2,34 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chat - MatchConnect</title>
-
-<link rel="stylesheet" href="chat.css">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+<title>Chat</title>
 </head>
-
 <body>
 
-<header class="topbar">
-    <h2>MatchConnect Chat</h2>
-    <button id="logoutBtn">Logout</button>
-</header>
+<h2 id="chatUserName">
+Loading...
+</h2>
 
-<div class="container">
-
-    <div class="users">
-        <h3>Users</h3>
-        <div id="usersList"></div>
-    </div>
-
-    <div class="chatBox">
-        <div id="messages"></div>
-
-        <div class="inputBox">
-            <input type="text" id="messageInput" placeholder="Type message...">
-            <button id="sendBtn">Send</button>
-        </div>
-    </div>
+<div id="messagesContainer">
 
 </div>
 
-<script type="module" src="chat.js"></script>
+<input
+  type="text"
+  id="messageInput"
+  placeholder="Write a message..."
+>
+
+<button id="sendMessageBtn">
+Send
+</button>
+
+<script
+type="module"
+src="chat.js">
+</script>
 
 </body>
 </html>
