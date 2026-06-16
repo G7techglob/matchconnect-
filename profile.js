@@ -197,14 +197,40 @@ async function loadMyPosts() {
 
   try {
     const postsSnapshot = await getDocs(collection(db, "posts"));
+
+    let totalPosts = 0;
     
     // Use Promise.all to wait for all posts to load
-    const postPromises = postsSnapshot.docs.map(postDoc => renderPost(postDoc));
-    await Promise.all(postPromises);
-  } catch (error) {
-    console.error("Error loading posts:", error);
-    showNotification("Error loading posts: " + error.message, true);
+    const postsSnapshot = await getDocs(
+  collection(db, "posts")
+);
+
+let totalPosts = 0;
+
+const postPromises = postsSnapshot.docs.map(postDoc => {
+
+  const post = postDoc.data();
+
+  if (
+    post.userId === auth.currentUser.uid
+  ) {
+    totalPosts++;
   }
+
+  return renderPost(postDoc);
+
+});
+
+await Promise.all(postPromises);
+
+const postCount =
+  document.getElementById(
+    "postCount"
+  );
+
+if (postCount) {
+  postCount.textContent =
+    totalPosts;
 }
 
 /**
