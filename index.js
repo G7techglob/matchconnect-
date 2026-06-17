@@ -157,3 +157,18 @@ setInterval(() => {
 
   loadAd();
 }, 10000);
+
+const ads = [
+  {
+    image: "https://picsum.photos/800/200?random=1",
+    link: "https://example.com/ad1"
+  },
+  {
+    image: "https://picsum.photos/800/200?random=2",
+    link: "https://example.com/ad2"
+  },
+  {
+    image: "https://picsum.photos/800/200?random=3",
+    link: "https://example.com/ad3"
+  }
+];
