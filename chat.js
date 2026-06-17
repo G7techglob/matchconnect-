@@ -1,9 +1,5 @@
 import { auth, db } from "./firebase.js";
 import {
-    signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-import {
     collection,
     addDoc,
     query,
@@ -12,37 +8,16 @@ import {
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const messagesDiv =
-  document.getElementById(
-    "messages"
-  );
-
-const sendBtn =
-  document.getElementById(
-    "sendBtn"
-  );
-
+const messagesDiv = document.getElementById("messages");
+const sendBtn = document.getElementById("sendBtn");
 const input = document.getElementById("messageInput");
 
-console.log(
-  "messagesDiv:",
-  messagesDiv
-);
-
-console.log(
-  "sendBtn:",
-  sendBtn
-);
-
-console.log(
-  "input:",
-  input
-);
-
+if (!messagesDiv || !sendBtn || !input) {
+    console.error("Required DOM elements not found");
+}
 
 // SEND MESSAGE
-sendBtn.addEventListener("click", async () => {
-
+sendBtn?.addEventListener("click", async () => {
     console.log("SEND BUTTON CLICKED");
 
     const text = input.value;
@@ -52,10 +27,14 @@ sendBtn.addEventListener("click", async () => {
         return;
     }
 
+    if (!auth.currentUser) {
+        console.error("User not authenticated");
+        return;
+    }
+
     console.log("MESSAGE:", text);
 
     try {
-
         await addDoc(collection(db, "messages"), {
             text: text,
             user: auth.currentUser.email,
@@ -63,15 +42,11 @@ sendBtn.addEventListener("click", async () => {
         });
 
         console.log("MESSAGE SAVED");
-
         input.value = "";
 
     } catch (error) {
-
         console.error("SEND ERROR:", error);
-
     }
-
 });
 
 // REALTIME MESSAGES
@@ -84,10 +59,10 @@ onSnapshot(q, (snapshot) => {
         const msg = doc.data();
 
         const div = document.createElement("div");
-        div.innerHTML = `<b>${msg.user}</b>: ${msg.text}`;
+        const userSpan = document.createElement("b");
+        userSpan.textContent = msg.user;
+        div.appendChild(userSpan);
+        div.appendChild(document.createTextNode(": " + msg.text));
         messagesDiv.appendChild(div);
     });
 });
-
-
-
