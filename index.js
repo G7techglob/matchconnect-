@@ -124,20 +124,7 @@ self.addEventListener("fetch", e => {
   e.respondWith(fetch(e.request));
 });
 
-const ads = [
-  {
-    image: "ads/ad1.jpg",
-    link: "https://example.com/ad1"
-  },
-  {
-    image: "ads/ad2.jpg",
-    link: "https://example.com/ad2"
-  },
-  {
-    image: "ads/ad3.jpg",
-    link: "https://example.com/ad3"
-  }
-];
+
 
 let currentAd = 0;
 
