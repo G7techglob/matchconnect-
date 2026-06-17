@@ -6,7 +6,7 @@ import {
     orderBy,
     onSnapshot,
     serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const messagesDiv = document.getElementById("messages");
 const sendBtn = document.getElementById("sendBtn");
@@ -35,8 +35,14 @@ auth.onAuthStateChanged((user) => {
 const sendMessage = async () => {
     const text = input.value.trim();
 
-    if (text === "") {
+    // Validation
+    if (!text) {
         console.log("MESSAGE EMPTY");
+        return;
+    }
+
+    if (text.length > 1000) {
+        showError("Message too long (max 1000 characters)");
         return;
     }
 
@@ -68,6 +74,7 @@ const sendMessage = async () => {
 
         console.log("MESSAGE SAVED");
         input.value = "";
+        input.focus();
 
     } catch (error) {
         console.error("SEND ERROR:", error);
@@ -75,7 +82,6 @@ const sendMessage = async () => {
     } finally {
         sendBtn.disabled = false;
         sendBtn.textContent = "Send";
-        input.focus();
     }
 };
 
@@ -94,8 +100,8 @@ const showError = (message) => {
 // Send on button click
 sendBtn?.addEventListener("click", sendMessage);
 
-// Send on Enter key (not Shift+Enter)
-input?.addEventListener("keypress", (e) => {
+// Send on Enter key (not Shift+Enter) - using keydown instead of deprecated keypress
+input?.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         sendMessage();
@@ -106,13 +112,15 @@ input?.addEventListener("keypress", (e) => {
 const q = query(collection(db, "messages"), orderBy("time", "asc"));
 
 let messageIds = new Set(); // Track existing messages to prevent duplicates
+const MAX_MESSAGES = 1000; // Prevent memory leaks
 
 onSnapshot(
     q,
     (snapshot) => {
-        // Clear loading message on first snapshot
-        if (messagesDiv.querySelector(".loading-spinner")) {
-            messagesDiv.innerHTML = "";
+        // Clear loading spinner on first snapshot (don't clear all content)
+        const spinner = messagesDiv.querySelector(".loading-spinner");
+        if (spinner) {
+            spinner.remove();
         }
 
         snapshot.docChanges().forEach((change) => {
@@ -123,6 +131,12 @@ onSnapshot(
                 // Prevent duplicate rendering
                 if (!messageIds.has(docId)) {
                     messageIds.add(docId);
+
+                    // Prevent memory leak - limit Set size
+                    if (messageIds.size > MAX_MESSAGES) {
+                        const idsArray = Array.from(messageIds);
+                        messageIds = new Set(idsArray.slice(-MAX_MESSAGES));
+                    }
 
                     // Create message element
                     const messageDiv = document.createElement("div");
@@ -139,7 +153,7 @@ onSnapshot(
                     timeSpan.className = "message-time";
                     if (msg.time) {
                         const date = new Date(msg.time.toMillis());
-                        timeSpan.textContent = date.toLocaleTimeString();
+                        timeSpan.textContent = date.toLocaleString();
                     } else {
                         timeSpan.textContent = "just now";
                     }
