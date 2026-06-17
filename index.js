@@ -123,3 +123,37 @@ self.addEventListener("install", e => {
 self.addEventListener("fetch", e => {
   e.respondWith(fetch(e.request));
 });
+
+const ads = [
+  {
+    image: "ads/ad1.jpg",
+    link: "https://example.com/ad1"
+  },
+  {
+    image: "ads/ad2.jpg",
+    link: "https://example.com/ad2"
+  },
+  {
+    image: "ads/ad3.jpg",
+    link: "https://example.com/ad3"
+  }
+];
+
+let currentAd = 0;
+
+function loadAd() {
+  document.getElementById("adImage").src =
+    ads[currentAd].image;
+
+  document.getElementById("adLink").href =
+    ads[currentAd].link;
+}
+
+loadAd();
+
+setInterval(() => {
+  currentAd =
+    (currentAd + 1) % ads.length;
+
+  loadAd();
+}, 10000);
