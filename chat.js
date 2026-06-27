@@ -18,6 +18,12 @@ const chatUserName = document.getElementById("chatUserName");
 const params = new URLSearchParams(window.location.search);
 const receiverUid = params.get("uid");
 
+if (!receiverUid) {
+    console.error("No receiver UID found in URL");
+    messagesDiv.innerHTML = "<p>Invalid chat user</p>";
+    sendBtn.disabled = true;
+    input.disabled = true;
+}
 // Validate DOM elements
 if (!messagesDiv || !sendBtn || !input || !chatUserName) {
     console.error("Required DOM elements not found");
