@@ -5,13 +5,18 @@ import {
     query,
     orderBy,
     onSnapshot,
-    serverTimestamp
+    serverTimestamp,
+    doc,
+getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const messagesDiv = document.getElementById("messages");
 const sendBtn = document.getElementById("sendBtn");
 const input = document.getElementById("messageInput");
 const chatUserName = document.getElementById("chatUserName");
+
+const params = new URLSearchParams(window.location.search);
+const receiverUid = params.get("uid");
 
 // Validate DOM elements
 if (!messagesDiv || !sendBtn || !input || !chatUserName) {
@@ -65,12 +70,20 @@ const sendMessage = async () => {
     sendBtn.textContent = "Sending...";
 
     try {
-        await addDoc(collection(db, "messages"), {
-            text: text,
-            user: auth.currentUser.email,
-            userId: auth.currentUser.uid,
-            time: serverTimestamp()
-        });
+        const chatId = [auth.currentUser.uid, receiverUid]
+    .sort()
+    .join("_");
+
+await addDoc(
+    collection(db, "chats", chatId, "messages"),
+    {
+        text: text,
+        senderId: auth.currentUser.uid,
+        receiverId: receiverUid,
+        user: auth.currentUser.email,
+        time: serverTimestamp()
+    }
+);
 
         console.log("MESSAGE SAVED");
         input.value = "";
@@ -109,8 +122,14 @@ input?.addEventListener("keydown", (e) => {
 });
 
 // REALTIME MESSAGES
-const q = query(collection(db, "messages"), orderBy("time", "asc"));
+const chatId = [auth.currentUser.uid, receiverUid]
+    .sort()
+    .join("_");
 
+const q = query(
+    collection(db, "chats", chatId, "messages"),
+    orderBy("time", "asc")
+);
 let messageIds = new Set(); // Track existing messages to prevent duplicates
 const MAX_MESSAGES = 1000; // Prevent memory leaks
 
