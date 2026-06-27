@@ -35,6 +35,82 @@ auth.onAuthStateChanged((user) => {
     if (user) {
         chatUserName.textContent = `Welcome, ${user.email}`;
 
+// Create private chat ID
+const chatId = [user.uid, receiverUid]
+    .sort()
+    .join("_");
+
+// Reference to messages
+const messagesRef = collection(db, "chats", chatId, "messages");
+
+// Query messages
+const q = query(messagesRef, orderBy("time", "asc"));
+
+// Reset tracker (IMPORTANT)
+let messageIds = new Set();
+
+// REALTIME LISTENER
+onSnapshot(q, (snapshot) => {
+
+    const spinner = messagesDiv.querySelector(".loading-spinner");
+    if (spinner) spinner.remove();
+
+    snapshot.docChanges().forEach((change) => {
+
+        if (change.type === "added") {
+
+            const msg = change.doc.data();
+            const docId = change.doc.id;
+
+            if (!messageIds.has(docId)) {
+
+                messageIds.add(docId);
+
+                const messageDiv = document.createElement("div");
+                messageDiv.className = "message";
+
+                const userDiv = document.createElement("div");
+                userDiv.className = "message-user";
+                userDiv.textContent = msg.user || "Anonymous";
+
+                const timeSpan = document.createElement("span");
+                timeSpan.className = "message-time";
+
+                if (msg.time) {
+                    timeSpan.textContent =
+                        new Date(msg.time.toMillis()).toLocaleString();
+                }
+
+                userDiv.appendChild(timeSpan);
+
+                const textDiv = document.createElement("div");
+                textDiv.className = "message-text";
+                textDiv.textContent = msg.text || "";
+
+                messageDiv.appendChild(userDiv);
+                messageDiv.appendChild(textDiv);
+
+                messagesDiv.appendChild(messageDiv);
+
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+        }
+    });
+
+}, (error) => {
+    console.error("CHAT ERROR:", error);
+});
+        const chatId = [user.uid, receiverUid]
+    .sort()
+    .join("_");
+
+const q = query(
+    collection(db, "chats", chatId, "messages"),
+    orderBy("time", "asc")
+);
+
+onSnapshot(q, (snapshot) => {
+
 const chatId = [user.uid, receiverUid]
     .sort()
     .join("_");
@@ -185,72 +261,3 @@ input?.addEventListener("keydown", (e) => {
 });
 
 // REALTIME MESSAGES
-
-let messageIds = new Set(); // Track existing messages to prevent duplicates
-const MAX_MESSAGES = 1000; // Prevent memory leaks
-
-onSnapshot(
-    q,
-    (snapshot) => {
-        // Clear loading spinner on first snapshot (don't clear all content)
-        const spinner = messagesDiv.querySelector(".loading-spinner");
-        if (spinner) {
-            spinner.remove();
-        }
-
-        snapshot.docChanges().forEach((change) => {
-            if (change.type === "added") {
-                const msg = change.doc.data();
-                const docId = change.doc.id;
-
-                // Prevent duplicate rendering
-                if (!messageIds.has(docId)) {
-                    messageIds.add(docId);
-
-                    // Prevent memory leak - limit Set size
-                    if (messageIds.size > MAX_MESSAGES) {
-                        const idsArray = Array.from(messageIds);
-                        messageIds = new Set(idsArray.slice(-MAX_MESSAGES));
-                    }
-
-                    // Create message element
-                    const messageDiv = document.createElement("div");
-                    messageDiv.className = "message";
-                    messageDiv.dataset.docId = docId;
-
-                    // User info
-                    const userDiv = document.createElement("div");
-                    userDiv.className = "message-user";
-                    userDiv.textContent = msg.user || "Anonymous";
-
-                    // Time info
-                    const timeSpan = document.createElement("span");
-                    timeSpan.className = "message-time";
-                    if (msg.time) {
-                        const date = new Date(msg.time.toMillis());
-                        timeSpan.textContent = date.toLocaleString();
-                    } else {
-                        timeSpan.textContent = "just now";
-                    }
-                    userDiv.appendChild(timeSpan);
-
-                    // Message text
-                    const textDiv = document.createElement("div");
-                    textDiv.className = "message-text";
-                    textDiv.textContent = msg.text || "";
-
-                    messageDiv.appendChild(userDiv);
-                    messageDiv.appendChild(textDiv);
-                    messagesDiv.appendChild(messageDiv);
-
-                    // Auto-scroll to latest message
-                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                }
-            }
-        });
-    },
-    (error) => {
-        console.error("SNAPSHOT ERROR:", error);
-        showError("Error loading messages. Please refresh the page.");
-    }
-);
