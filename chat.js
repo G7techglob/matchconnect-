@@ -143,13 +143,15 @@ const sendMessage = async () => {
     .sort()
     .join("_");
 
+        const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
+const userData = userSnap.data();
+
 await addDoc(
     collection(db, "chats", chatId, "messages"),
     {
         text: text,
         senderId: auth.currentUser.uid,
         receiverId: receiverUid,
-        username: auth.currentUser.displayName || "User",
         time: serverTimestamp()
     }
 );
