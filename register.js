@@ -36,7 +36,7 @@ document.getElementById("registerBtn").addEventListener("click", async () => {
     // 2. Save user profile in Firestore
     await setDoc(doc(db, "users", user.uid), {
       email: user.email,
-      name: name,
+      username: name,
       bio: "",
       photoURL: "",
       createdAt: new Date()
