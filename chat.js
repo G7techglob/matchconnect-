@@ -149,7 +149,7 @@ await addDoc(
         text: text,
         senderId: auth.currentUser.uid,
         receiverId: receiverUid,
-        user: auth.currentUser.email,
+        username: auth.currentUser.displayName || "User",
         time: serverTimestamp()
     }
 );
