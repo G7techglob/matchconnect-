@@ -67,7 +67,7 @@ onSnapshot(q, (snapshot) => {
 
                 const userDiv = document.createElement("div");
                 userDiv.className = "message-user";
-                userDiv.textContent = msg.user || "Anonymous";
+                userDiv.textContent = msg.username || "Anonymous";
 
                 const timeSpan = document.createElement("span");
                 timeSpan.className = "message-time";
