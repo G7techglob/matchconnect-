@@ -36,75 +36,7 @@ auth.onAuthStateChanged((user) => {
         chatUserName.textContent = `Welcome, ${user.email}`;
 
 // Create private chat ID
-const chatId = [user.uid, receiverUid]
 
-        const chatId = [user.uid, receiverUid]
-    .sort()
-    .join("_");
-
-const q = query(
-    collection(db, "chats", chatId, "messages"),
-    orderBy("time", "asc")
-);
-
-onSnapshot(q, (snapshot) => {
-
-const chatId = [user.uid, receiverUid]
-    .sort()
-    .join("_");
-
-const q = query(
-    collection(db, "chats", chatId, "messages"),
-    orderBy("time", "asc")
-);
-
-onSnapshot(q, (snapshot) => {
-
-    const spinner = messagesDiv.querySelector(".loading-spinner");
-    if (spinner) spinner.remove();
-
-    snapshot.docChanges().forEach((change) => {
-        if (change.type === "added") {
-
-            const msg = change.doc.data();
-            const docId = change.doc.id;
-
-            if (!messageIds.has(docId)) {
-                messageIds.add(docId);
-
-                const messageDiv = document.createElement("div");
-                messageDiv.className = "message";
-
-                const userDiv = document.createElement("div");
-                userDiv.className = "message-user";
-                userDiv.textContent = msg.user || "Anonymous";
-
-                const timeSpan = document.createElement("span");
-                timeSpan.className = "message-time";
-
-                if (msg.time) {
-                    timeSpan.textContent = new Date(msg.time.toMillis()).toLocaleString();
-                }
-
-                userDiv.appendChild(timeSpan);
-
-                const textDiv = document.createElement("div");
-                textDiv.className = "message-text";
-                textDiv.textContent = msg.text || "";
-
-                messageDiv.appendChild(userDiv);
-                messageDiv.appendChild(textDiv);
-
-                messagesDiv.appendChild(messageDiv);
-
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }
-        }
-    });
-
-}, (error) => {
-    console.error("SNAPSHOT ERROR:", error);
-});
     } else {
         chatUserName.textContent = "Not logged in";
         sendBtn.disabled = true;
