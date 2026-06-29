@@ -152,6 +152,7 @@ await addDoc(
         text: text,
         senderId: auth.currentUser.uid,
         receiverId: receiverUid,
+        username: userData.username || "Anonymous",
         time: serverTimestamp()
     }
 );
