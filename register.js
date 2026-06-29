@@ -42,6 +42,8 @@ document.getElementById("registerBtn").addEventListener("click", async () => {
       createdAt: new Date()
     });
 
+    console.log("User profile saved successfully");
+
     alert("Account created successfully!");
     window.location.href = "login.html";
 
