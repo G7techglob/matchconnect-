@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,9 +9,7 @@
   <meta name="description" content="Connect with people worldwide through live chats, photos, and videos. Join thousands of users on MatchConnect - the global social platform for friendship and real connections.">
   <meta name="theme-color" content="#ff4d6d">
   <meta name="app-version" content="1.0.1">
-  
-  
-  <!-- PWA Manifest -->
+   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   
@@ -34,17 +31,13 @@
     const db = getFirestore(app);
     window.db = db;
   </script>
-
-
-  <link rel="stylesheet"
+ <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   
      <link rel="stylesheet" href="index.css">     
 </head>
-
 <body>
-
-  <!-- Skip to Main Content Link -->
+<!-- Skip to Main Content Link -->
   <a href="#main-content">Skip to main content</a>
 
   <!-- Mobile Navigation -->
@@ -60,8 +53,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
       <li><a href="login.html">Login</a></li>
     </ul>
   </nav>
-
-  <!-- Header -->
+ <!-- Header -->
   <header role="banner">
 
     <div class="header-container">
@@ -75,28 +67,22 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     <a href="search.html" title="Search">
         <i class="fa-solid fa-magnifying-glass"></i>
     </a>
-
     <!-- Chats -->
     <a href="chats.html" title="Chats">
         <i class="fa-regular fa-comments"></i>
     </a>
-
     <!-- Notifications -->
     <a href="notifications.html" title="Notifications">
         <i class="fa-regular fa-bell"></i>
     </a>
-
-    <!-- Menu -->
+ <!-- Menu -->
     <button id="menuBtn"
             aria-label="Open navigation menu"
             aria-expanded="false"
             aria-controls="mobileNavbar">
         <i class="fa-solid fa-bars"></i>
     </button>
-
     </div>
-
-
   <!-- Desktop Navigation -->
   <nav aria-label="Main navigation">
     <a href="index.html" aria-current="page">Home</a>
@@ -108,9 +94,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     <a href="login.html">Login</a>
   </nav>
   </header>
-
-  <h1 class="app-name">MatchConnect</h1>
-
+<div class="app-name">MatchConnect</div>
           <div id="adBoard">
   <a id="adLink" href="#" target="_blank">
     <img id="adImage" src="" alt="Advertisement">
