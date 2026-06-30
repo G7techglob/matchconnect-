@@ -106,8 +106,12 @@ ADVERTISEMENT
 
 #adBoard{
     width:100%;
-    margin:15px auto;
+    position:sticky;
+    top:0;
+    z-index:1000;
+    background:#fff;
     text-align:center;
+    border-bottom:1px solid #eee;
 }
 
 #adBoard img{
@@ -359,4 +363,9 @@ section>div{
 .reel-info p{
     margin-top:5px;
     font-size:13px;
+}
+
+body{
+    padding-top:110px;
+    padding-bottom:110px;
 }
