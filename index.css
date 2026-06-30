@@ -146,7 +146,12 @@ HERO
 CARDS
 ========================= */
 
-section>div{
+#hero > div,
+#createPostForm,
+#feed > div,
+#about > div,
+#profiles > div,
+#community > div{
     background:white;
     margin:15px;
     padding:15px;
