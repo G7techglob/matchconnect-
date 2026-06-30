@@ -147,7 +147,7 @@ HERO
 }
 
 /* =========================
-CARDS
+FLAT LAYOUT
 ========================= */
 
 #hero > div,
@@ -156,11 +156,11 @@ CARDS
 #about > div,
 #profiles > div,
 #community > div{
-    background:white;
+    background:transparent;
     margin:15px;
     padding:15px;
-    border-radius:12px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
+    border-radius:0;
+    box-shadow:none;
 }
 
 /* =========================
