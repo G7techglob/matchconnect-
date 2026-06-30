@@ -35,6 +35,10 @@
     window.db = db;
   </script>
 
+
+  <link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  
      <link rel="stylesheet" href="index.css">     
 </head>
 
@@ -62,29 +66,33 @@
 
     <div class="header-container">
 
-    <!-- Left -->
-    <a href="profile.html" class="profile-icon" title="Profile">👤</a>
+    <!-- Profile -->
+    <a href="profile.html" class="profile-icon" title="Profile">
+        <i class="fa-regular fa-user"></i>
+    </a>
 
-    <!-- Center -->
-    <h1>MatchConnect</h1>
+    <!-- Search -->
+    <a href="search.html" title="Search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </a>
 
-    <!-- Right -->
-    <div class="header-actions">
+    <!-- Chats -->
+    <a href="chats.html" title="Chats">
+        <i class="fa-regular fa-comments"></i>
+    </a>
 
-        <a href="search.html" title="Search">🔍</a>
+    <!-- Notifications -->
+    <a href="notifications.html" title="Notifications">
+        <i class="fa-regular fa-bell"></i>
+    </a>
 
-        <a href="chats.html" title="Chats">💬</a>
-
-        <a href="notifications.html" title="Notifications">🔔</a>
-
-        <button id="menuBtn"
-                aria-label="Open navigation menu"
-                aria-expanded="false"
-                aria-controls="mobileNavbar">
-            ☰
-        </button>
-
-    </div>
+    <!-- Menu -->
+    <button id="menuBtn"
+            aria-label="Open navigation menu"
+            aria-expanded="false"
+            aria-controls="mobileNavbar">
+        <i class="fa-solid fa-bars"></i>
+    </button>
 
     </div>
 
