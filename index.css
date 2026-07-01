@@ -470,7 +470,7 @@ a[href="#main-content"]:focus{
 /* CENTER GROUP */
 .nav-center{
     display:flex;
-    gap:25px;
+    gap:40px;
 }
 
 /* ICON STYLE */
