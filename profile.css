@@ -184,7 +184,7 @@ body {
 /* CENTER GROUP */
 .nav-center {
     display: flex;
-    gap: 60px; /* spacing between search, video, chat */
+    gap: 50px; /* spacing between search, video, chat */
     align-items: center;
 }
 
