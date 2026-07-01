@@ -125,20 +125,19 @@ MENU
 #mobileNavbar{
     position:fixed;
     top:60px;
-    left:0;
+    right:-280px;
     width:260px;
-    height:calc(100% - 60px);
+    height:calc(100vh - 60px);
     background:white;
-    transform:translateX(-100%);
     transition:.3s;
     z-index:1000;
-    box-shadow:2px 0 10px rgba(0,0,0,.2);
+    box-shadow:-2px 0 10px rgba(0,0,0,.2);
     padding-top:20px;
     overflow-y:auto;
 }
 
 #mobileNavbar.active{
-    transform:translateX(0);
+    right:0;
 }
 
 #mobileNavbar ul{
