@@ -479,3 +479,21 @@ a[href="#main-content"]:focus{
     color:#333;
     text-decoration:none;
 }
+
+#videoFeed{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    padding:10px;
+}
+
+.video-post{
+    background:white;
+    padding:10px;
+    border-radius:10px;
+}
+
+.video-post video{
+    width:100%;
+    border-radius:10px;
+}
