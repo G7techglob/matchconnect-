@@ -7,7 +7,7 @@ import {
     onSnapshot,
     serverTimestamp,
     doc,
-getDoc
+    getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const messagesDiv = document.getElementById("messages");
@@ -30,6 +30,17 @@ if (!messagesDiv || !sendBtn || !input || !chatUserName) {
     throw new Error("Required DOM elements not found");
 }
 
+// Function to fetch user profile data
+const getUserProfile = async (userId) => {
+    try {
+        const userSnap = await getDoc(doc(db, "users", userId));
+        return userSnap.data() || {};
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
+        return {};
+    }
+};
+
 // Display current user name
 auth.onAuthStateChanged((user) => {
     if (user) {
@@ -47,12 +58,12 @@ const q = query(messagesRef, orderBy("time", "asc"));
 
 let messageIds = new Set();
 
-onSnapshot(q, (snapshot) => {
+onSnapshot(q, async (snapshot) => {
 
     const spinner = messagesDiv.querySelector(".loading-spinner");
     if (spinner) spinner.remove();
 
-    snapshot.docChanges().forEach((change) => {
+    for (const change of snapshot.docChanges()) {
 
         if (change.type === "added") {
 
@@ -62,36 +73,67 @@ onSnapshot(q, (snapshot) => {
             if (!messageIds.has(docId)) {
                 messageIds.add(docId);
 
-                const messageDiv = document.createElement("div");
-                messageDiv.className = "message";
+                // Fetch sender's profile
+                const userProfile = await getUserProfile(msg.senderId);
 
+                const messageDiv = document.createElement("div");
+                messageDiv.className = msg.senderId === auth.currentUser.uid 
+                    ? "message sent" 
+                    : "message received";
+
+                // Create profile image
+                const profileImg = document.createElement("img");
+                profileImg.src = userProfile.photoURL || "images/default-avatar.png";
+                profileImg.className = "message-avatar";
+                profileImg.width = 40;
+                profileImg.height = 40;
+                profileImg.style.borderRadius = "50%";
+                profileImg.style.cursor = "pointer";
+                profileImg.style.marginRight = "10px";
+                profileImg.style.objectFit = "cover";
+                
+                // Click profile picture to open user profile
+                profileImg.addEventListener("click", () => {
+                    window.location.href = `user.html?uid=${msg.senderId}`;
+                });
+
+                // Create user info
                 const userDiv = document.createElement("div");
                 userDiv.className = "message-user";
-                userDiv.textContent = msg.username || "Anonymous";
+                userDiv.textContent = userProfile.name || msg.username || "Anonymous";
 
                 const timeSpan = document.createElement("span");
                 timeSpan.className = "message-time";
-
                 if (msg.time) {
-                    timeSpan.textContent =
-                        new Date(msg.time.toMillis()).toLocaleString();
+                    timeSpan.textContent = new Date(msg.time.toMillis()).toLocaleString();
                 }
-
                 userDiv.appendChild(timeSpan);
 
+                // Create message text
                 const textDiv = document.createElement("div");
                 textDiv.className = "message-text";
                 textDiv.textContent = msg.text || "";
 
-                messageDiv.appendChild(userDiv);
-                messageDiv.appendChild(textDiv);
-
+                // Create wrapper for content
+                const contentWrapper = document.createElement("div");
+                contentWrapper.style.display = "flex";
+                contentWrapper.style.alignItems = "flex-start";
+                contentWrapper.style.gap = "10px";
+                
+                // Create text wrapper
+                const textWrapper = document.createElement("div");
+                textWrapper.appendChild(userDiv);
+                textWrapper.appendChild(textDiv);
+                
+                contentWrapper.appendChild(profileImg);
+                contentWrapper.appendChild(textWrapper);
+                messageDiv.appendChild(contentWrapper);
                 messagesDiv.appendChild(messageDiv);
 
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
             }
         }
-    });
+    }
 
 }, (error) => {
     console.error("CHAT ERROR:", error);
