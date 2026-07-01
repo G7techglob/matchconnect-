@@ -151,7 +151,7 @@ body {
     border-top: 1px solid #e0e0e0;
 }
 
-#bottomNavbar{
+#bottomNavbar {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -161,3 +161,36 @@ body {
     border-top: 1px solid #ddd;
     z-index: 9999;
 }
+
+#bottomNavbar .header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* KEY FIX */
+    width: 100%;
+    height: 100%;
+    padding: 0 10px;
+}
+
+/* LEFT ICON (HOME) */
+.nav-icon.left {
+    margin-left: 5px;
+}
+
+/* RIGHT ICON (PROFILE) */
+.nav-icon.right {
+    margin-right: 5px;
+}
+
+/* CENTER GROUP */
+.nav-center {
+    display: flex;
+    gap: 60px; /* spacing between search, video, chat */
+    align-items: center;
+}
+
+/* ICON STYLE */
+.nav-icon {
+    font-size: 20px;
+    color: #333;
+    text-decoration: none;
+      }
