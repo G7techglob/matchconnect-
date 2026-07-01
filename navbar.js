@@ -1,14 +1,12 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    const container = document.getElementById("navbar-container");
 
+    const container = document.getElementById("navbar-container");
     if (!container) return;
 
     try {
+
         const path = window.location.origin + "/navbar.html";
-const response = await fetch(path);
-        {
-            cache: "no-store"
-        });
+        const response = await fetch(path);
 
         const html = await response.text();
         container.innerHTML = html;
@@ -16,4 +14,5 @@ const response = await fetch(path);
     } catch (err) {
         console.log("Navbar load error:", err);
     }
+
 });
