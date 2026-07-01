@@ -1,5 +1,5 @@
 /* =========================
-  RESET
+   RESET
 ========================= */
 
 *{
@@ -18,6 +18,60 @@ body{
 h1, h2, h3, p{
     margin:0;
 }
+
+/* =========================
+TOP BAR - NOTIFICATION LEFT, APP NAME CENTER, MENU RIGHT
+========================= */
+
+.top-bar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    background:#fff;
+    border-bottom:1px solid #ddd;
+    z-index:998;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 15px;
+    height:60px;
+}
+
+.notification-btn{
+    font-size:24px;
+    color:#333;
+    text-decoration:none;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.notification-btn:hover{
+    color:#ff4d6d;
+}
+
+.app-name{
+    text-align:center;
+    font-size:22px;
+    font-weight:600;
+    color:#222;
+    flex:1;
+}
+
+#menuBtn{
+    font-size:24px;
+    color:#333;
+    background:none;
+    border:none;
+    cursor:pointer;
+    transition:.2s;
+    padding:0;
+}
+
+#menuBtn:hover{
+    color:#ff4d6d;
+}
+
 /* =========================
 BOTTOM HEADER
 ========================= */
@@ -78,6 +132,7 @@ MENU
     transition:.3s;
     z-index:1000;
     box-shadow:0 0 10px rgba(0,0,0,.2);
+    padding-top:60px;
 }
 
 #mobileNavbar.active{
@@ -103,22 +158,23 @@ MENU
 }
 
 /* =========================
-ADVERTISEMENT
+ADVERTISEMENT - EMBEDDED IN DASHBOARD
 ========================= */
 
 #adBoard{
     width:100%;
     position:sticky;
-    top:0;
-    z-index:1000;
+    top:60px;
+    z-index:997;
     background:#fff;
     text-align:center;
     border-bottom:1px solid #eee;
     margin:0;
+    padding:0;
 }
 
 main{
-    margin-top:0;
+    margin-top:60px;
     padding-top:0;
 }
 
@@ -127,7 +183,7 @@ main{
     height:auto;
     max-height:160px;
     object-fit:cover;
-    border-radius:10px;
+    border-radius:0;
 }
 
 /* =========================
@@ -155,7 +211,7 @@ HERO
 }
 
 /* =========================
-FLAT LAYOUT
+FLAT LAYOUT - REMOVE CARDS EXCEPT BUTTONS
 ========================= */
 
 #hero > div,
@@ -163,12 +219,19 @@ FLAT LAYOUT
 #feed > div,
 #about > div,
 #profiles > div,
-#community > div{
+#community > div,
+#reels > div{
     background:transparent;
     margin:15px;
     padding:15px;
     border-radius:0;
     box-shadow:none;
+}
+
+section > div{
+    background:transparent;
+    box-shadow:none;
+    border:none;
 }
 
 /* =========================
@@ -195,14 +258,16 @@ textarea{
 }
 
 /* =========================
-POSTS
+POSTS - NO CARDS
 ========================= */
 
 .post{
-    background:white;
+    background:transparent;
     margin:15px 0;
     padding:15px;
-    border-radius:10px;
+    border-radius:0;
+    box-shadow:none;
+    border:none;
 }
 
 .post img{
@@ -231,27 +296,35 @@ video{
 }
 
 /* =========================
-FEATURED PROFILES
+FEATURED PROFILES - SMALL ROUND CIRCLES
 ========================= */
 
 #profiles-container{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
-    gap:15px;
+    grid-template-columns:repeat(auto-fill,minmax(100px,1fr));
+    gap:20px;
 }
 
 .profile{
-    background:white;
-    border-radius:10px;
+    background:transparent;
+    border-radius:0;
     text-align:center;
-    padding:15px;
+    padding:10px;
+    box-shadow:none;
+    border:none;
 }
 
 .profile img{
-    width:90px;
-    height:90px;
+    width:70px;
+    height:70px;
     border-radius:50%;
     object-fit:cover;
+    margin:0 auto 10px;
+}
+
+.profile h3,
+.profile p{
+    font-size:12px;
 }
 
 /* =========================
@@ -310,7 +383,7 @@ section>div{
 #reels{
     width:100%;
     padding:20px 10px;
-    background:#fff;
+    background:transparent;
 }
 
 #reels h2{
@@ -427,13 +500,6 @@ a[href="#main-content"]:focus{
     color:#ff4d6d;
 }
 
-.app-name{
-    text-align:center;
-    font-size:22px;
-    font-weight:normal;
-    margin:10px 0;
-    color:#222;
-}
 #logoutBtn{
     width:100%;
     padding:12px;
@@ -488,12 +554,14 @@ a[href="#main-content"]:focus{
 }
 
 .video-post{
-    background:white;
+    background:transparent;
     padding:10px;
-    border-radius:10px;
+    border-radius:0;
+    box-shadow:none;
+    border:none;
 }
 
 .video-post video{
     width:100%;
-    border-radius:10px;
+    border-radius:0;
 }
