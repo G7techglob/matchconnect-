@@ -4,7 +4,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!container) return;
 
     try {
-        const response = await fetch("./navbar.html", {
+        const path = window.location.origin + "/navbar.html";
+const response = await fetch(path);
+        {
             cache: "no-store"
         });
 
