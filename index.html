@@ -37,9 +37,32 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
    <a href="#" id="desktopLogoutBtn">Logout</a>
     </ul>
   </nav>
+
+ <!-- Top Bar -->
+ <div class="top-bar">
+    <a href="notifications.html" class="notification-btn" aria-label="Notifications">
+      <i class="fa-regular fa-bell"></i>
+    </a>
+
+    <div class="app-name">MatchConnect</div>
+
+    <button id="menuBtn"
+            aria-label="Open navigation menu"
+            aria-expanded="false"
+            aria-controls="mobileNavbar">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+</div>
+
+<!-- Advertisement Board - Embedded in Dashboard -->
+<div id="adBoard">
+  <a id="adLink" href="#" target="_blank">
+    <img id="adImage" src="" alt="Advertisement">
+  </a>
+</div>
+
  <!-- Header -->
   <header role="banner">
-
     <div class="header-container">
 
     <!-- LEFT: HOME -->
@@ -84,40 +107,15 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     <a href="logout.html" id="desktopLogoutBtn">Logout</a>
   </nav>
   </header>
-  
-<div class="top-bar">
-    <div class="app-name">MatchConnect</div>
-
-    <div class="top-bar-right">
-        <button id="menuBtn"
-                aria-label="Open navigation menu"
-                aria-expanded="false"
-                aria-controls="mobileNavbar">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-    </div>
-</div>
-  
-          <div id="adBoard">
-  <a id="adLink" href="#" target="_blank">
-    <img id="adImage" src="" alt="Advertisement">
-  </a>
-          </div>
 
   <!-- Main Content -->
   <main id="main-content">
 
-            <!-- Reels Section -->
-<section id="reels" aria-label="Reels">
-
-    <h2>Reels</h2>
-
-    <div id="reelsContainer"></div>
-
-</section>
-     
-    
-    
+    <!-- Reels Section -->
+    <section id="reels" aria-label="Reels">
+      <h2>Reels</h2>
+      <div id="reelsContainer"></div>
+    </section>
 
     <!-- Create Post Section -->
     <section aria-label="Create post">
@@ -148,8 +146,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         <div id="postsContainer" role="region" aria-live="polite" aria-label="Posts list"></div>
       </div>
     </section>
-
-
 
     <!-- Featured Profiles Section -->
     <section id="profiles" aria-label="Featured profiles">
@@ -192,7 +188,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
   <script type="module" src="firebase.js" defer></script>
 
-          <script type="module" src="reels.js"></script>
+  <script type="module" src="reels.js"></script>
 </body>
 
 </html>
