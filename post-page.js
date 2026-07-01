@@ -36,7 +36,7 @@ const postId =
 document.getElementById(
   "postContainer"
 ).innerHTML =
-  "POST ID: " + postId;
+  "Loading post...";
 
 if (postId) {
 
@@ -70,6 +70,7 @@ if (postId) {
   <img
     src="${post.photoURL || 'images/default-avatar.png'}"
     class="post-avatar"
+    alt="${post.username || 'User'}"
   >
 
   <div>
@@ -88,11 +89,13 @@ if (postId) {
 
 <div class="post-actions">
 
-  ❤️ ${post.likes || 0}
+  <button class="action-btn">
+    ❤️ ${post.likes || 0} Likes
+  </button>
 
-  <br><br>
-
-  💬 ${post.comments || 0}
+  <button class="action-btn">
+    💬 ${post.comments || 0} Comments
+  </button>
 
 </div>
 
@@ -124,20 +127,26 @@ if (postId) {
         const comment =
           commentDoc.data();
 
-        const p =
-          document.createElement("p");
+        const commentDiv =
+          document.createElement("div");
+        
+        commentDiv.className = "comment-item";
 
-        p.textContent =
-          comment.username +
-          ": " +
-          comment.text;
+        commentDiv.innerHTML = `
+          <strong>${comment.username || "Anonymous"}</strong>
+          <p>${comment.text}</p>
+        `;
 
         commentsList.appendChild(
-          p
+          commentDiv
         );
 
       }
     );
+
+    if (commentsSnapshot.empty) {
+      commentsList.innerHTML = "<p style='color: #999; font-style: italic;'>No comments yet. Be the first to comment!</p>";
+    }
 
   }
   else {
@@ -145,7 +154,7 @@ if (postId) {
   document.getElementById(
     "postContainer"
   ).innerHTML =
-    "Post not found";
+    "<p style='text-align: center; color: #999;'>Post not found</p>";
 
 }
 
