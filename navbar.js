@@ -1,23 +1,13 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const container = document.getElementById("navbar-container");
 
-    if (!container) {
-        console.log("Navbar container not found");
-        return;
-    }
+    if (!container) return;
 
     try {
-        const res = await fetch("./navbar.html");
-
-        if (!res.ok) {
-            console.log("Failed to load navbar.html");
-            return;
-        }
-
-        const html = await res.text();
+        const response = await fetch("/navbar.html"); // IMPORTANT CHANGE
+        const html = await response.text();
         container.innerHTML = html;
-
-    } catch (error) {
-        console.log("Navbar error:", error);
+    } catch (err) {
+        console.log("Navbar load error:", err);
     }
 });
