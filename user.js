@@ -1,8 +1,5 @@
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { auth } from "./firebase.js";
+import { auth, db } from "./firebase.js";
 import {
-  getFirestore,
   doc,
   getDoc,
   collection,
@@ -14,33 +11,13 @@ import {
   setDoc,
   deleteDoc,
   addDoc,
-serverTimestamp,
+  serverTimestamp,
   onSnapshot
-}
-from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
-  authDomain: "matchconnect-44a3e.firebaseapp.com",
-  projectId: "matchconnect-44a3e",
-  storageBucket: "matchconnect-44a3e.firebasestorage.app",
-  messagingSenderId: "283382943870",
-  appId: "1:283382943870:web:ee1d08c65bcbac400cc82f"
-};
+const params = new URLSearchParams(window.location.search);
 
-const app =
-  initializeApp(firebaseConfig);
-
-const db =
-  getFirestore(app);
-
-const params =
-  new URLSearchParams(
-    window.location.search
-  );
-
-const uid =
-  params.get("uid");
+const uid = params.get("uid");
 
 // Function to show error message
 function showError(message) {
@@ -54,285 +31,91 @@ if (!uid) {
   showError("No user specified");
 } else {
   try {
-    const userDoc =
-      await getDoc(
-        doc(
-          db,
-          "users",
-          uid
-        )
-      );
+    const userDoc = await getDoc(doc(db, "users", uid));
 
     if (userDoc.exists()) {
+      const data = userDoc.data();
 
-      const data =
-        userDoc.data();
+      document.getElementById("userPhoto").src = data.photoURL || "images/default-avatar.png";
 
-      document.getElementById(
-        "userPhoto"
-      ).src =
-        data.photoURL ||
-        "images/default-avatar.png";
+      document.getElementById("userName").textContent = data.name || "No Name";
 
-      document.getElementById(
-        "userName"
-      ).textContent =
-        data.name ||
-        "No Name";
+      const joinDate = document.getElementById("joinDate");
 
-      const joinDate =
-    document.getElementById(
-      "joinDate"
-    );
-
-  if (
-    joinDate &&
-    data.createdAt
-  ) {
-
-    const date =
-      data.createdAt.toDate
-        ? data.createdAt.toDate()
-        : new Date(
-            data.createdAt
-          );
-
-    joinDate.textContent =
-      "Member since: " +
-      date.toLocaleDateString();
-
-  }
-      
-
-      document.getElementById(
-        "userBio"
-      ).textContent =
-        data.bio ||
-        "No bio yet";
-      
-  const followBtn =
-    document.getElementById(
-      "followBtn"
-    );
-
-  const currentUser =
-    auth.currentUser;
-
-  if (
-    currentUser &&
-    currentUser.uid !== uid
-  ) {
-
-    const followRef =
-      doc(
-        db,
-        "users",
-        uid,
-        "followers",
-        currentUser.uid
-      );
-
-    const existingFollow =
-      await getDoc(
-        followRef
-      );
-
-    if (
-      existingFollow.exists()
-    ) {
-
-      followBtn.textContent =
-        "Following";
-
-    }
-
-  }
-      
-      if (
-    currentUser &&
-    currentUser.uid !== uid
-  ) {
-
-    followBtn.addEventListener(
-      "click",
-      async () => {
-
-        const followRef =
-          doc(
-            db,
-            "users",
-            uid,
-            "followers",
-            currentUser.uid
-          );
-
-        const existingFollow =
-          await getDoc(
-            followRef
-          );
-
-        if (
-          existingFollow.exists()
-        ) {
-
-          await deleteDoc(
-            followRef
-          );
-          const followingRef =
-    doc(
-      db,
-      "users",
-      currentUser.uid,
-      "following",
-      uid
-    );
-
-  await deleteDoc(
-    followingRef
-);
-
-          followBtn.textContent =
-            "Follow";
-
-        
-          } else {
-
-    await setDoc(
-      followRef,
-      {
-        userId:
-          currentUser.uid
+      if (joinDate && data.createdAt) {
+        const date = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+        joinDate.textContent = "Member since: " + date.toLocaleDateString();
       }
-    );
-          const followingRef =
-    doc(
-      db,
-      "users",
-      currentUser.uid,
-      "following",
-      uid
-    );
 
-  await setDoc(
-    followingRef,
-    {
-      userId: uid
-    }
-  );
+      document.getElementById("userBio").textContent = data.bio || "No bio yet";
 
-    await addDoc(
-      collection(
-        db,
-        "notifications"
-      ),
-      {
-        userId: uid,
-        senderId:
-          currentUser.uid,
-        type: "follow",
-        createdAt:
-          serverTimestamp(),
-        read: false
-      }
-    );
+      const followBtn = document.getElementById("followBtn");
 
-    followBtn.textContent =
-      "Following";
+      const currentUser = auth.currentUser;
 
+      if (currentUser && currentUser.uid !== uid) {
+        const followRef = doc(db, "users", uid, "followers", currentUser.uid);
+        const existingFollow = await getDoc(followRef);
+        if (existingFollow.exists()) {
+          followBtn.textContent = "Following";
         }
-
-      }
-    );
-
       }
 
-    
-      
-  const followersCount =
-    document.getElementById(
-      "followersCount"
-    );
+      if (currentUser && currentUser.uid !== uid) {
+        followBtn.addEventListener("click", async () => {
+          const followRef = doc(db, "users", uid, "followers", currentUser.uid);
+          const existingFollow = await getDoc(followRef);
+          if (existingFollow.exists()) {
+            await deleteDoc(followRef);
+            const followingRef = doc(db, "users", currentUser.uid, "following", uid);
+            await deleteDoc(followingRef);
+            followBtn.textContent = "Follow";
+          } else {
+            await setDoc(followRef, { userId: currentUser.uid });
+            const followingRef = doc(db, "users", currentUser.uid, "following", uid);
+            await setDoc(followingRef, { userId: uid });
+            await addDoc(collection(db, "notifications"), {
+              userId: uid,
+              senderId: currentUser.uid,
+              type: "follow",
+              createdAt: serverTimestamp(),
+              read: false
+            });
+            followBtn.textContent = "Following";
+          }
+        });
+      }
 
-  const followingCount =
-    document.getElementById(
-      "followingCount"
-    );
+      const followersCount = document.getElementById("followersCount");
+      const followingCount = document.getElementById("followingCount");
 
-      const followersSnapshot =
-    await getDocs(
-      collection(
-        db,
-        "users",
-        uid,
-        "followers"
-      )
-    );
+      const followersSnapshot = await getDocs(collection(db, "users", uid, "followers"));
+      followersCount.textContent = followersSnapshot.size;
+      const followingSnapshot = await getDocs(collection(db, "users", uid, "following"));
+      followingCount.textContent = followingSnapshot.size;
 
-  followersCount.textContent =
-    followersSnapshot.size;
-      const followingSnapshot =
-    await getDocs(
-      collection(
-        db,
-        "users",
-        uid,
-        "following"
-      )
-    );
+      document.getElementById("followersLink").href = `followers.html?uid=${uid}`;
+      document.getElementById("followingLink").href = `following.html?uid=${uid}`;
 
-  followingCount.textContent =
-    followingSnapshot.size;
+      const postsQuery = query(collection(db, "posts"), where("userId", "==", uid));
+      const postsSnapshot = await getDocs(postsQuery);
 
-  document.getElementById(
-    "followersLink"
-  ).href =
-    `followers.html?uid=${uid}`;
+      const postCount = document.getElementById("postCount");
+      if (postCount) {
+        postCount.textContent = postsSnapshot.size;
+      }
 
-  document.getElementById(
-    "followingLink"
-  ).href =
-    `following.html?uid=${uid}`;
-      
-      const postsQuery =
-    query(
-      collection(db, "posts"),
-      where(
-        "userId",
-        "==",
-        uid
-      )
-    );
+      const postsContainer = document.getElementById("userPosts");
+      postsContainer.innerHTML = "";
 
-  const postsSnapshot =
-    await getDocs(postsQuery);
-      
-      const postCount =
-    document.getElementById(
-      "postCount"
-    );
+      // Use for...of so we can await inside the loop and catch per-post errors
+      for (const postDoc of postsSnapshot.docs) {
+        try {
+          const post = postDoc.data();
 
-  if (postCount) {
-    postCount.textContent =
-      postsSnapshot.size;
-  }
+          const div = document.createElement("div");
 
-  const postsContainer =
-    document.getElementById(
-      "userPosts"
-    );
-
-  postsContainer.innerHTML = "";
-
-  postsSnapshot.forEach(
-   async (postDoc) => {
-
-      const post =
-        postDoc.data();
-
-      const div =
-        document.createElement("div");
-
-      div.innerHTML = `
+          div.innerHTML = `
 
   <div class="post-header">
 
@@ -399,51 +182,31 @@ if (!uid) {
   <hr>
 
   `;
-      postsContainer.appendChild(
-        div
-      );
 
-      const commentsContainer =
-    div.querySelector(
-      `#comments-${postDoc.id}`
-    );
+          postsContainer.appendChild(div);
 
-  const commentsSnapshot =
-    await getDocs(
-      collection(
-        db,
-        "posts",
-        postDoc.id,
-        "comments"
-      )
-    );
+          const commentsContainer = div.querySelector(`#comments-${postDoc.id}`);
 
-     console.log(
-    "Comments found:",
-    commentsSnapshot.size
-  );
+          try {
+            const commentsSnapshot = await getDocs(collection(db, "posts", postDoc.id, "comments"));
 
-  commentsSnapshot.forEach(
-    (commentDoc) => {
+            console.log("Comments found:", commentsSnapshot.size);
 
-      const comment =
-        commentDoc.data();
+            commentsSnapshot.forEach((commentDoc) => {
+              const comment = commentDoc.data();
+              const p = document.createElement("p");
+              p.innerHTML = `<strong>${comment.username}</strong>: ${comment.text}`;
+              commentsContainer.appendChild(p);
+            });
 
-      const p =
-        document.createElement("p");
+          } catch (err) {
+            console.error("Error loading comments for post", postDoc.id, err);
+          }
 
-      p.innerHTML =
-        `<strong>${comment.username}</strong>: ${comment.text}`;
-
-      commentsContainer.appendChild(
-        p
-      );
-
-    }
-  );
-
-    }
-  );
+        } catch (err) {
+          console.error('Error loading post', postDoc.id, err);
+        }
+      }
 
     } else {
       // User document doesn't exist
@@ -455,230 +218,78 @@ if (!uid) {
   }
 }
 
-document.addEventListener(
-  "click",
-  async (e) => {
+document.addEventListener("click", async (e) => {
+  if (!e.target.classList.contains("like-btn")) return;
 
-    if (
-      !e.target.classList.contains(
-        "like-btn"
-      )
-    ) return;
-
-    const user =
-      auth.currentUser;
-
-    if (!user) {
-      alert("Please login first");
-      return;
-    }
-
-    const postId =
-      e.target.dataset.id;
-
-    const likeRef =
-      doc(
-        db,
-        "posts",
-        postId,
-        "likes",
-        user.uid
-      );
-
-    try {
-
-      const existingLike =
-        await getDoc(likeRef);
-
-      if (
-        existingLike.exists()
-      ) {
-
-        await deleteDoc(
-          likeRef
-        );
-
-        await updateDoc(
-          doc(
-            db,
-            "posts",
-            postId
-          ),
-          {
-            likes: increment(-1)
-          }
-        );
-
-      } else {
-
-        await setDoc(
-          likeRef,
-          {
-            userId: user.uid
-          }
-        );
-
-        await updateDoc(
-          doc(
-            db,
-            "posts",
-            postId
-          ),
-          {
-            likes: increment(1)
-          }
-        );
-
-      }
-
-      location.reload();
-
-    } catch (error) {
-
-      console.error(
-        "Like error:",
-        error
-      );
-
-    }
-
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Please login first");
+    return;
   }
-);
 
-document.addEventListener(
-  "click",
-  async (e) => {
+  const postId = e.target.dataset.id;
+  const likeRef = doc(db, "posts", postId, "likes", user.uid);
 
-    if (
-      !e.target.classList.contains(
-        "send-comment-btn"
-      )
-    ) return;
-
-    const user =
-      auth.currentUser;
-
-    if (!user) {
-      alert("Please login first");
-      return;
+  try {
+    const existingLike = await getDoc(likeRef);
+    if (existingLike.exists()) {
+      await deleteDoc(likeRef);
+      await updateDoc(doc(db, "posts", postId), { likes: increment(-1) });
+    } else {
+      await setDoc(likeRef, { userId: user.uid });
+      await updateDoc(doc(db, "posts", postId), { likes: increment(1) });
     }
 
-    const postId =
-      e.target.dataset.id;
-
-    const input =
-      document.querySelector(
-        `.comment-input[data-id="${postId}"]`
-      );
-
-    const text =
-      input.value.trim();
-
-    if (!text) return;
-
-    try {
-
-      const userProfile =
-        await getDoc(
-          doc(
-            db,
-            "users",
-            user.uid
-          )
-        );
-
-      const profileData =
-        userProfile.data();
-
-      await addDoc(
-        collection(
-          db,
-          "posts",
-          postId,
-          "comments"
-        ),
-        {
-          text,
-          userId: user.uid,
-          username:
-            profileData.name ||
-            user.email,
-          createdAt:
-            serverTimestamp()
-        }
-      );
-
-      await updateDoc(
-        doc(
-          db,
-          "posts",
-          postId
-        ),
-        {
-          comments:
-            increment(1)
-        }
-      );
-
-      input.value = "";
-
-      location.reload();
-
-    } catch (error) {
-
-      console.error(
-        "Comment error:",
-        error
-      );
-
-    }
-
+    location.reload();
+  } catch (error) {
+    console.error("Like error:", error);
   }
-);
+});
 
-const messageBtn =
-  document.getElementById(
-    "messageBtn"
-  );
+document.addEventListener("click", async (e) => {
+  if (!e.target.classList.contains("send-comment-btn")) return;
 
-if (
-  messageBtn &&
-  uid
-) {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Please login first");
+    return;
+  }
 
-  messageBtn.addEventListener(
-    "click",
-    () => {
+  const postId = e.target.dataset.id;
+  const input = document.querySelector(`.comment-input[data-id="${postId}"]`);
+  const text = input.value.trim();
+  if (!text) return;
 
-      window.location.href =
-        `chat.html?uid=${uid}`;
+  try {
+    const userProfile = await getDoc(doc(db, "users", user.uid));
+    const profileData = userProfile.data();
 
-    }
-  );
+    await addDoc(collection(db, "posts", postId, "comments"), {
+      text,
+      userId: user.uid,
+      username: profileData.name || user.email,
+      createdAt: serverTimestamp()
+    });
 
+    await updateDoc(doc(db, "posts", postId), { comments: increment(1) });
+    input.value = "";
+    location.reload();
+
+  } catch (error) {
+    console.error("Comment error:", error);
+  }
+});
+
+const messageBtn = document.getElementById("messageBtn");
+if (messageBtn && uid) {
+  messageBtn.addEventListener("click", () => {
+    window.location.href = `chat.html?uid=${uid}`;
+  });
 }
 
-document.addEventListener(
-  "click",
-  (e) => {
-
-    if (
-      !e.target.classList.contains(
-        "share-btn"
-      )
-    ) return;
-
-    const profileLink =
-      window.location.href;
-
-    const whatsappUrl =
-      `https://wa.me/?text=${encodeURIComponent(profileLink)}`;
-
-    window.open(
-      whatsappUrl,
-      "_blank"
-    );
-
-  }
-);
-
+document.addEventListener("click", (e) => {
+  if (!e.target.classList.contains("share-btn")) return;
+  const profileLink = window.location.href;
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(profileLink)}`;
+  window.open(whatsappUrl, "_blank");
+});
