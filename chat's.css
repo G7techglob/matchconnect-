@@ -1,0 +1,39 @@
+/* =========================
+CHAT HEADER BASE STYLE
+========================= */
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+}
+
+.profile-icon {
+    font-size: 20px;
+}
+
+/* =========================
+USER PAGE (ICON LEFT)
+========================= */
+
+.user-page .chat-header {
+    justify-content: flex-start;
+}
+
+.user-page .profile-icon {
+    margin-right: 10px;
+}
+
+/* =========================
+PROFILE PAGE (ICON RIGHT)
+========================= */
+
+.profile-page .chat-header {
+    justify-content: space-between;
+}
+
+.profile-page .profile-icon {
+    margin-left: auto;
+}
