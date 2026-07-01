@@ -42,30 +42,31 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
     <div class="header-container">
 
-    <!-- Profile -->
-    <a href="profile.html" class="profile-icon" title="Profile">
+    <!-- LEFT: HOME -->
+    <a href="index.html" class="nav-icon left">
+        <i class="fa-solid fa-house"></i>
+    </a>
+
+    <!-- CENTER ICONS -->
+    <div class="nav-center">
+        <a href="search.html" class="nav-icon">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </a>
+
+        <a href="chats.html" class="nav-icon">
+            <i class="fa-regular fa-comments"></i>
+        </a>
+
+        <a href="notifications.html" class="nav-icon">
+            <i class="fa-regular fa-bell"></i>
+        </a>
+    </div>
+
+    <!-- RIGHT: PROFILE -->
+    <a href="profile.html" class="nav-icon right">
         <i class="fa-regular fa-user"></i>
     </a>
 
-    <!-- Search -->
-    <a href="search.html" title="Search">
-        <i class="fa-solid fa-magnifying-glass"></i>
-    </a>
-    <!-- Chats -->
-    <a href="chats.html" title="Chats">
-        <i class="fa-regular fa-comments"></i>
-    </a>
-    <!-- Notifications -->
-    <a href="notifications.html" title="Notifications">
-        <i class="fa-regular fa-bell"></i>
-    </a>
- <!-- Menu -->
-    <button id="menuBtn"
-            aria-label="Open navigation menu"
-            aria-expanded="false"
-            aria-controls="mobileNavbar">
-        <i class="fa-solid fa-bars"></i>
-    </button>
     </div>
   <!-- Desktop Navigation -->
   <nav aria-label="Main navigation">
@@ -79,7 +80,20 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     <a href="logout.html" id="desktopLogoutBtn">Logout</a>
   </nav>
   </header>
-<div class="app-name">MatchConnect</div>
+  
+<div class="top-bar">
+    <div class="app-name">MatchConnect</div>
+
+    <div class="top-bar-right">
+        <button id="menuBtn"
+                aria-label="Open navigation menu"
+                aria-expanded="false"
+                aria-controls="mobileNavbar">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+</div>
+  
           <div id="adBoard">
   <a id="adLink" href="#" target="_blank">
     <img id="adImage" src="" alt="Advertisement">
