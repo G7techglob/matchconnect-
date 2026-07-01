@@ -450,4 +450,32 @@ a[href="#main-content"]:focus{
     background:#e63b5d;
 }
 
+/* BOTTOM NAV LAYOUT */
+.header-container{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    height:65px;
+    padding:0 15px;
+}
 
+/* LEFT + RIGHT ICONS */
+.nav-icon.left,
+.nav-icon.right{
+    font-size:20px;
+    color:#333;
+    text-decoration:none;
+}
+
+/* CENTER GROUP */
+.nav-center{
+    display:flex;
+    gap:25px;
+}
+
+/* ICON STYLE */
+.nav-icon{
+    font-size:20px;
+    color:#333;
+    text-decoration:none;
+}
