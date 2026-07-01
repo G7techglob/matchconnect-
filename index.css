@@ -517,15 +517,6 @@ a[href="#main-content"]:focus{
     background:#e63b5d;
 }
 
-/* BOTTOM NAV LAYOUT */
-.header-container{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    height:65px;
-    padding:0 15px;
-}
-
 /* LEFT + RIGHT ICONS */
 .nav-icon.left,
 .nav-icon.right{
