@@ -168,7 +168,7 @@ body {
     justify-content: space-between; /* KEY FIX */
     width: 100%;
     height: 100%;
-    padding: 0 5px;
+    padding: 0 0px;
 }
 
 /* LEFT ICON (HOME) */
