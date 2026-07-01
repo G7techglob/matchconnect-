@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
 
         const path = window.location.origin + "/navbar.html";
-        const response = await fetch(path);
+        const response = await fetch("./navbar.html");
 
         const html = await response.text();
         container.innerHTML = html;
