@@ -178,7 +178,7 @@ body {
 
 /* RIGHT ICON (PROFILE) */
 .nav-icon.right {
-    margin-right: 0px;
+    margin-right: -2px;
 }
 
 /* CENTER GROUP */
