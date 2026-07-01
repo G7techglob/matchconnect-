@@ -1,7 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { db, auth } from "./firebase.js";
 
 import {
-  getFirestore,
   collection,
   addDoc,
   getDocs,
@@ -14,22 +13,8 @@ import {
   increment,
   deleteDoc,
   setDoc,
-getDoc
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-import { auth } from "./firebase.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
-  authDomain: "matchconnect-44a3e.firebaseapp.com",
-  projectId: "matchconnect-44a3e",
-  storageBucket: "matchconnect-44a3e.firebasestorage.app",
-  messagingSenderId: "283382943870",
-  appId: "1:283382943870:web:ee1d08c65bcbac400cc82f"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 
 // UI ELEMENTS
 let postBtn;
@@ -106,7 +91,7 @@ function setupFeed() {
   class="comment-btn"
   data-id="${postDoc.id}">
   💬 ${post.comments || 0}
-</button>
+  </button>
 
   <button
 class="share-btn"
@@ -469,6 +454,7 @@ if (
   console.error("Comment error:", error);
 
   
+
 
 }
 
