@@ -1,4 +1,5 @@
 import { auth, db } from "./firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import {
   collection,
   getDocs,
@@ -31,7 +32,7 @@ const formatTime = (ts) => {
   }
 };
 
-auth.onAuthStateChanged(async (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (!user) {
     location.href = "login.html";
     return;
