@@ -65,6 +65,16 @@ content="width=device-width, initial-scale=1.0">
     Loading posts...
   </div>
 </div>
+  
+  <div id="navbar-container"></div>
+
+<script>
+fetch("navbar.html")
+  .then(res => res.text())
+  .then(data => {
+    document.getElementById("navbar-container").innerHTML = data;
+  });
+</script>
 
 <script type="module"
 src="user.js"></script>
