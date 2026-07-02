@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        const response = await fetch("./navbar.html");
+        const response = await fetch("/navbar.html");
 
         if (!response.ok) {
             console.log("Navbar fetch failed:", response.status);
