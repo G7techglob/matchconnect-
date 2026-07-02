@@ -1,0 +1,93 @@
+/* =========================
+   GLOBAL RESET
+========================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f4f4f4; /* everything blends into this */
+  color: #222;
+  padding-bottom: 90px;
+}
+
+/* =========================
+   TITLE
+========================= */
+h2 {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 22px;
+}
+
+/* =========================
+   SEARCH INPUT (FLAT STYLE)
+========================= */
+#searchInput {
+  display: block;
+  width: 90%;
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+  outline: none;
+  background: #fff;
+}
+
+/* =========================
+   RESULTS AREA (NO CARDS HERE)
+========================= */
+#searchResults {
+  width: 90%;
+  max-width: 500px;
+  margin: 10px auto;
+}
+
+/* =========================
+   ONLY BUTTONS LOOK LIKE CARDS
+========================= */
+.result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+/* username stays flat (no card) */
+.result-item span {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* ONLY BUTTON becomes card */
+.result-item button {
+  padding: 8px 14px;
+  border: none;
+  background: #fff;
+  border-radius: 12px;
+  cursor: pointer;
+
+  /* card effect only on button */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  font-size: 13px;
+  transition: 0.2s ease;
+}
+
+.result-item button:hover {
+  transform: scale(1.05);
+  background: #f0f0f0;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+#navbar-container {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
