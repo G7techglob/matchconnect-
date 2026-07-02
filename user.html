@@ -5,7 +5,7 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 <title>User Profile</title>
-  <link rel="stylesheet" href="navbar.css">
+  
     <link rel="stylesheet" href="user.css">
 </head>
 <body class="user-page">
@@ -66,16 +66,6 @@ content="width=device-width, initial-scale=1.0">
   </div>
 </div>
   
-  <div id="navbar-container"></div>
-
-<script>
-fetch("navbar.html")
-  .then(res => res.text())
-  .then(data => {
-    document.getElementById("navbar-container").innerHTML = data;
-  });
-</script>
-
 <script type="module"
 src="user.js"></script>
   
