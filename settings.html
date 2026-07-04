@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - MatchConnect</title>
+
+    <link rel="stylesheet" href="css/settings.css">
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+
+<div class="settings-container">
+
+    <!-- Header -->
+    <header class="settings-header">
+        <button id="backBtn" class="icon-btn">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <h2>Settings</h2>
+
+        <button class="icon-btn">
+            <span class="material-icons">search</span>
+        </button>
+    </header>
+
+    <!-- User Card -->
+    <section class="user-card">
+
+        <img
+            src="assets/images/default-profile.png"
+            id="profileImage"
+            class="profile-image"
+        >
+
+        <div class="user-info">
+            <h3 id="displayName">Loading...</h3>
+            <p id="email">Loading...</p>
+        </div>
+
+    </section>
+
+    <!-- Account -->
+    <div class="settings-group">
+
+        <h4>Account</h4>
+
+        <div class="setting-item" id="editProfile">
+            <span class="material-icons">person</span>
+            <span>Edit Profile</span>
+            <span class="material-icons arrow">chevron_right</span>
+        </div>
+
+        <div class="setting-item" id="accountInfo">
+            <span class="material-icons">badge</span>
+            <span>Account Information</span>
+            <span class="material-icons arrow">chevron_right</span>
+        </div>
+
+        <div class="setting-item" id="changePassword">
+            <span class="material-icons">lock</span>
+            <span>Change Password</span>
+            <span class="material-icons arrow">chevron_right</span>
+        </div>
+
+    </div>
+
+    <!-- Privacy -->
+    <div class="settings-group">
+
+        <h4>Privacy</h4>
+
+        <div class="setting-item">
+            <span class="material-icons">privacy_tip</span>
+            <span>Privacy</span>
+            <span class="material-icons arrow">chevron_right</span>
+        </div>
+
+        <div class="setting-item">
+            <span class="material-icons">block</span>
+            <span>Blocked Users</span>
+            <span class="material-icons arrow">chevron_right</span>
+        </div>
+
+    </div>
+
+    <!-- Notifications -->
+    <div class="settings-group">
+
+        <h4>Notifications</h4>
+
+        <div class="setting-item">
+            <span class="material-icons">notifications</span>
+            <span>Notification Settings</span>
+            <span class="material-icons arrow">chevron_right</span>
+        </div>
+
+    </div>
+
+    <!-- Appearance -->
+    <div class="settings-group">
+
+        <h4>Appearance</h4>
+
+        <div class="setting-item">
+            <span class="material-icons">dark_mode</span>
+            <span>Dark Mode</span>
+
+            <label class="switch">
+                <input type="checkbox" id="darkModeToggle">
+                <span class="slider"></span>
+            </label>
+
+        </div>
+
+    </div>
+
+    <!-- Help -->
+    <div class="settings-group">
+
+        <h4>Support</h4>
+
+        <div class="setting-item">
+            <span class="material-icons">help</span>
+            <span>Help Center</span>
+            <span class="material-icons arrow">chevron_right</span>
+        </div>
+
+        <div class="setting-item">
+            <span class="material-icons">description</span>
+            <span>Privacy Policy</span>
+            <span class="material-icons arrow">chevron_right</span>
+        </div>
+
+        <div class="setting-item">
+            <span class="material-icons">gavel</span>
+            <span>Terms of Service</span>
+            <span class="material-icons arrow">chevron_right</span>
+        </div>
+
+    </div>
+
+    <!-- Logout -->
+
+    <button class="logout-btn" id="logoutBtn">
+        Log Out
+    </button>
+
+</div>
+
+<script type="module" src="js/settings.js"></script>
+
+</body>
+  </html>
