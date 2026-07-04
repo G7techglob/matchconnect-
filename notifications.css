@@ -1,0 +1,139 @@
+/* =========================
+   Notifications Page
+========================= */
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #f5f7fb;
+    font-family: Arial, sans-serif;
+    color: #222;
+}
+
+/* Main Container */
+
+.notifications-container {
+    max-width: 700px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* Header */
+
+.notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.notifications-header h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.mark-read-btn {
+    background: #0066ff;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.mark-read-btn:hover {
+    background: #0052cc;
+}
+
+/* Notification Card */
+
+.notification-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: 0.2s;
+}
+
+.notification-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Unread */
+
+.notification-card.unread {
+    border-left: 4px solid #0066ff;
+    background: #eef5ff;
+}
+
+/* Avatar */
+
+.notification-avatar img {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Content */
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-content h4 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.notification-content p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: gray;
+}
+
+/* Empty State */
+
+.empty-notifications {
+    text-align: center;
+    padding: 60px 20px;
+    color: gray;
+}
+
+.empty-notifications img {
+    width: 140px;
+    margin-bottom: 20px;
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+
+.notification-card {
+    padding: 12px;
+}
+
+.notification-avatar img {
+    width: 45px;
+    height: 45px;
+}
+
+.notifications-header h2 {
+    font-size: 20px;
+}
+
+.mark-read-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+}
+
+  }
