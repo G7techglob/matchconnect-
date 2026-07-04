@@ -1,51 +1,60 @@
-// Get form fields
-const fullName = document.getElementById("fullName");
-const username = document.getElementById("username");
-const bio = document.getElementById("bio");
-const email = document.getElementById("email");
-const phone = document.getElementById("phone");
-const country = document.getElementById("country");
-const city = document.getElementById("city");
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-const saveBtn = document.getElementById("saveProfile");
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
+  authDomain: "matchconnect-44a3e.firebaseapp.com",
+  projectId: "matchconnect-44a3e",
+  storageBucket: "matchconnect-44a3e.firebasestorage.app",
+  messagingSenderId: "283382943870",
+  appId: "1:283382943870:web:ee1d08c65bcbac400cc82f"
+};
 
-// Load saved profile
-window.addEventListener("load", () => {
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-    fullName.value = localStorage.getItem("fullName") || "";
-    username.value = localStorage.getItem("username") || "";
-    bio.value = localStorage.getItem("bio") || "";
-    email.value = localStorage.getItem("email") || "";
-    phone.value = localStorage.getItem("phone") || "";
-    country.value = localStorage.getItem("country") || "";
-    city.value = localStorage.getItem("city") || "";
+// Load user data into form
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
 
+  const ref = doc(db, "users", user.uid);
+  const snap = await getDoc(ref);
+
+  if (snap.exists()) {
+    const data = snap.data();
+
+    document.getElementById("fullName").value = data.name || "";
+    document.getElementById("username").value = data.username || "";
+    document.getElementById("bio").value = data.bio || "";
+    document.getElementById("email").value = data.email || "";
+    document.getElementById("phone").value = data.phone || "";
+    document.getElementById("country").value = data.country || "";
+    document.getElementById("city").value = data.city || "";
+  }
 });
 
-// Save profile
-saveBtn.addEventListener("click", () => {
+// Save profile to Firestore
+document.getElementById("saveProfile").addEventListener("click", async () => {
+  const user = auth.currentUser;
 
-    localStorage.setItem("fullName", fullName.value);
-    localStorage.setItem("username", username.value);
-    localStorage.setItem("bio", bio.value);
-    localStorage.setItem("email", email.value);
-    localStorage.setItem("phone", phone.value);
-    localStorage.setItem("country", country.value);
-    localStorage.setItem("city", city.value);
+  if (!user) return;
 
-    alert("Profile updated successfully!");
+  await updateDoc(doc(db, "users", user.uid), {
+    name: document.getElementById("fullName").value,
+    username: document.getElementById("username").value,
+    bio: document.getElementById("bio").value,
+    email: document.getElementById("email").value,
+    phone: document.getElementById("phone").value,
+    country: document.getElementById("country").value,
+    city: document.getElementById("city").value
+  });
 
-    window.location.href = "profile.html";
-
-});
-
-window.addEventListener("load", () => {
-    document.getElementById("profileName").innerText =
-        localStorage.getItem("fullName") || "No name";
-
-    document.getElementById("profileEmail").innerText =
-        localStorage.getItem("email") || "No email";
-
-    document.getElementById("profileBio").innerText =
-        localStorage.getItem("bio") || "No bio yet";
+  alert("Profile updated successfully!");
+  window.location.href = "profile.html";
 });
