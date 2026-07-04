@@ -30,98 +30,87 @@ const app =
 const db =
   getFirestore(app);
 
-auth.onAuthStateChanged(
-  async (user) => {
+export async function loadNotifications(container) {
+  if (!container) return;
 
-    if (!user) return;
+  container.innerHTML = "Loading...";
 
-    const container =
-      document.getElementById(
-        "notificationsContainer"
-      );
+  return new Promise((resolve) => {
+    auth.onAuthStateChanged(async (user) => {
+      try {
+        if (!user) {
+          container.innerHTML = "Please sign in to view notifications.";
+          resolve();
+          return;
+        }
 
-    container.innerHTML = "";
+        container.innerHTML = "";
 
-    const q =
-      query(
-        collection(
-          db,
-          "notifications"
-        ),
-        where(
-          "userId",
-          "==",
-          user.uid
-        )
-      );
+        const q =
+          query(
+            collection(
+              db,
+              "notifications"
+            ),
+            where(
+              "userId",
+              "==",
+              user.uid
+            )
+          );
 
-    const snapshot =
-      await getDocs(q);
+        const snapshot =
+          await getDocs(q);
 
-    if (snapshot.empty) {
+        if (snapshot.empty) {
+          container.innerHTML = "No notifications yet";
+          resolve();
+          return;
+        }
 
-      container.innerHTML =
-        "No notifications yet";
+        for (const notifDoc of snapshot.docs) {
+          const notif = notifDoc.data();
 
-      return;
+          const senderDoc =
+            await getDoc(
+              doc(
+                db,
+                "users",
+                notif.senderId
+              )
+            );
 
-    }
+          const senderName =
+            senderDoc.exists()
+              ? senderDoc.data().name
+              : "Someone";
 
-    for (const notifDoc of snapshot.docs) {
+          const div =
+            document.createElement("div");
 
-      const notif =
-        notifDoc.data();
+          if (notif.type === "follow") {
+            div.innerHTML =
+              `<p><strong>${senderName}</strong> followed you</p>`;
+          } else if (notif.type === "like") {
+            div.innerHTML =
+              `<p><strong>${senderName}</strong> liked your post ❤️</p>`;
+          } else if (notif.type === "comment") {
+            div.innerHTML =
+              `<p><strong>${senderName}</strong> commented on your post 💬</p>`;
+          } else {
+            div.innerHTML =
+              `<p><strong>${senderName}</strong> sent a notification</p>`;
+          }
 
-      const senderDoc =
-        await getDoc(
-          doc(
-            db,
-            "users",
-            notif.senderId
-          )
-        );
+          container.appendChild(div);
+        }
 
-      const senderName =
-        senderDoc.exists()
-          ? senderDoc.data().name
-          : "Someone";
-
-      const div =
-        document.createElement(
-          "div"
-        );
-
-      if (
-  notif.type === "follow"
-) {
-
-  div.innerHTML =
-    `<p><strong>${senderName}</strong> followed you</p>`;
-
-}
-
-else if (
-  notif.type === "like"
-) {
-
-  div.innerHTML =
-    `<p><strong>${senderName}</strong> liked your post ❤️</p>`;
-
-}
-      else if (
-  notif.type === "comment"
-) {
-
-  div.innerHTML =
-    `<p><strong>${senderName}</strong> commented on your post 💬</p>`;
-
+        resolve();
+      } catch (error) {
+        console.error("Error loading notifications:", error);
+        container.innerHTML = "Failed to load notifications.";
+        resolve();
       }
-
-      container.appendChild(
-        div
-      );
-
-    }
-
-  }
-);
+    });
+  });
+}
