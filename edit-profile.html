@@ -23,30 +23,31 @@
 </section>
     <form>
 
-<label>Full Name</label>
-<input type="text" placeholder="Enter your full name">
+<form>
 
-<label>Username</label>
-<input type="text" placeholder="Username">
+<input type="text" id="fullName" placeholder="Enter your full name">
 
-<label>Bio</label>
-<textarea placeholder="Tell people about yourself"></textarea>
+<input type="text" id="username" placeholder="Username">
 
-<label>Email</label>
-<input type="email" placeholder="Email">
+<textarea id="bio" placeholder="Tell people about yourself"></textarea>
 
-<label>Phone</label>
-<input type="tel" placeholder="Phone Number">
+<input type="email" id="email" placeholder="Email">
 
-<label>Country</label>
-<input type="text" placeholder="Country">
+<input type="tel" id="phone" placeholder="Phone Number">
 
-<label>City</label>
-<input type="text" placeholder="City">
+<input type="text" id="country" placeholder="Country">
 
+<input type="text" id="city" placeholder="City">
+
+</form>
+
+<button class="save-profile" id="saveProfile">
+    Save Changes
+</button>
     </form>
     <button class="save-profile">
     Save Changes
     </button>
+    <script type="module" src="edit-profile.js"></script>
 </body>
 </html>
