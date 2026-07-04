@@ -547,10 +547,16 @@ async function handleLikePost(postId) {
   }
 }
 
-const settingsBtn = document.getElementById("settingsBtn");
+document.addEventListener("DOMContentLoaded", () => {
 
-if (settingsBtn) {
-  settingsBtn.addEventListener("click", () => {
-    window.location.href = "settings.html";
-  });
-}
+  const settingsBtn = document.getElementById("settingsBtn");
+
+  console.log("Settings button:", settingsBtn);
+
+  if (settingsBtn) {
+    settingsBtn.addEventListener("click", () => {
+      window.location.href = "settings.html";
+    });
+  }
+
+});
