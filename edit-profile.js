@@ -38,3 +38,14 @@ saveBtn.addEventListener("click", () => {
     window.location.href = "profile.html";
 
 });
+
+window.addEventListener("load", () => {
+    document.getElementById("profileName").innerText =
+        localStorage.getItem("fullName") || "No name";
+
+    document.getElementById("profileEmail").innerText =
+        localStorage.getItem("email") || "No email";
+
+    document.getElementById("profileBio").innerText =
+        localStorage.getItem("bio") || "No bio yet";
+});
