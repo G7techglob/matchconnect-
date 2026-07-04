@@ -546,3 +546,11 @@ async function handleLikePost(postId) {
     showNotification("Error toggling like: " + error.message, true);
   }
 }
+
+const settingsBtn = document.getElementById("settingsBtn");
+
+if (settingsBtn) {
+  settingsBtn.addEventListener("click", () => {
+    window.location.href = "settings.html";
+  });
+}
