@@ -1,6 +1,3 @@
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-
 import {
   getFirestore,
   collection,
@@ -8,107 +5,110 @@ import {
   where,
   getDocs,
   doc,
-  getDoc
+  getDoc,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+import { app, auth } from "./firebase.js";
+
+const db = getFirestore(app);
+
+function buildNotificationText(type) {
+  switch (type) {
+    case "follow":
+      return " followed you";
+    case "like":
+      return " liked your post ❤️";
+    case "comment":
+      return " commented on your post 💬";
+    default:
+      return " sent a notification";
+  }
 }
-from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-import { auth }
-from "./firebase.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
-  authDomain: "matchconnect-44a3e.firebaseapp.com",
-  projectId: "matchconnect-44a3e",
-  storageBucket: "matchconnect-44a3e.firebasestorage.app",
-  messagingSenderId: "283382943870",
-  appId: "1:283382943870:web:ee1d08c65bcbac400cc82f"
-};
-
-const app =
-  initializeApp(firebaseConfig);
-
-const db =
-  getFirestore(app);
 
 export async function loadNotifications(container) {
   if (!container) return;
 
-  container.innerHTML = "Loading...";
+  container.textContent = "Loading...";
 
   return new Promise((resolve) => {
-    auth.onAuthStateChanged(async (user) => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       try {
         if (!user) {
-          container.innerHTML = "Please sign in to view notifications.";
+          container.textContent = "Please sign in to view notifications.";
+          unsubscribe();
           resolve();
           return;
         }
 
-        container.innerHTML = "";
+        container.textContent = "";
 
-        const q =
-          query(
-            collection(
-              db,
-              "notifications"
-            ),
-            where(
-              "userId",
-              "==",
-              user.uid
-            )
-          );
+        const q = query(
+          collection(db, "notifications"),
+          where("userId", "==", user.uid),
+          orderBy("createdAt", "desc")
+        );
 
-        const snapshot =
-          await getDocs(q);
+        const snapshot = await getDocs(q);
 
         if (snapshot.empty) {
-          container.innerHTML = "No notifications yet";
+          container.textContent = "No notifications yet";
+          unsubscribe();
           resolve();
           return;
         }
+
+        const senderIds = [...new Set(snapshot.docs.map((d) => d.data()?.senderId).filter(Boolean))];
+
+        const senderEntries = await Promise.all(
+          senderIds.map(async (senderId) => {
+            try {
+              const senderSnap = await getDoc(doc(db, "users", senderId));
+              const name = senderSnap.exists() ? senderSnap.data()?.name || "Someone" : "Someone";
+              return [senderId, name];
+            } catch {
+              return [senderId, "Someone"];
+            }
+          })
+        );
+
+        const senderCache = new Map(senderEntries);
+
+        const fragment = document.createDocumentFragment();
 
         for (const notifDoc of snapshot.docs) {
           const notif = notifDoc.data();
+          const senderName = senderCache.get(notif?.senderId) || "Someone";
 
-          const senderDoc =
-            await getDoc(
-              doc(
-                db,
-                "users",
-                notif.senderId
-              )
-            );
+          const wrapper = document.createElement("div");
+          wrapper.className = "notification-item";
 
-          const senderName =
-            senderDoc.exists()
-              ? senderDoc.data().name
-              : "Someone";
+          const p = document.createElement("p");
+          const strong = document.createElement("strong");
+          strong.textContent = senderName;
 
-          const div =
-            document.createElement("div");
+          p.appendChild(strong);
+          p.append(buildNotificationText(notif?.type));
 
-          if (notif.type === "follow") {
-            div.innerHTML =
-              `<p><strong>${senderName}</strong> followed you</p>`;
-          } else if (notif.type === "like") {
-            div.innerHTML =
-              `<p><strong>${senderName}</strong> liked your post ❤️</p>`;
-          } else if (notif.type === "comment") {
-            div.innerHTML =
-              `<p><strong>${senderName}</strong> commented on your post 💬</p>`;
-          } else {
-            div.innerHTML =
-              `<p><strong>${senderName}</strong> sent a notification</p>`;
-          }
-
-          container.appendChild(div);
+          wrapper.appendChild(p);
+          fragment.appendChild(wrapper);
         }
 
+        container.appendChild(fragment);
+
+        unsubscribe();
         resolve();
       } catch (error) {
         console.error("Error loading notifications:", error);
-        container.innerHTML = "Failed to load notifications.";
+
+        if (String(error?.message || "").includes("index")) {
+          container.textContent =
+            "Notifications need a Firestore index (userId + createdAt). Check console for the direct index link.";
+        } else {
+          container.textContent = "Failed to load notifications.";
+        }
+
+        unsubscribe();
         resolve();
       }
     });
