@@ -24,10 +24,23 @@
             autocomplete="off"
         >
         <button id="sendBtn">Send</button>
+     <button id="callBtn">📞 Call</button>
         <button id="recordBtn">🎙️</button>
 <audio id="audioPreview" controls style="display:none;"></audio>
     </div>
 </div>
+
+ <div id="callScreen" class="call-screen hidden">
+    
+    <h2 id="callStatus">Calling...</h2>
+
+    <video id="localVideo" autoplay muted></video>
+    <video id="remoteVideo" autoplay></video>
+
+    <div class="call-controls">
+        <button id="endCallBtn">❌ End</button>
+    </div>
+ </div>
     
 <script type="module" src="chat.js"></script>
     
