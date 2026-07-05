@@ -143,7 +143,7 @@ if (msg.type === "audio") {
                 // Create text wrapper
                 const textWrapper = document.createElement("div");
                 textWrapper.appendChild(userDiv);
-                textWrapper.appendChild(textDiv);
+                textWrapper.appendChild(contentDiv);
                 
                 contentWrapper.appendChild(profileImg);
                 contentWrapper.appendChild(textWrapper);
@@ -257,6 +257,8 @@ input?.addEventListener("keydown", (e) => {
 
 async function uploadAudio(blob) {
 
+    if (!auth.currentUser) return;
+
     const chatId = [auth.currentUser.uid, receiverUid]
         .sort()
         .join("_");
@@ -279,7 +281,10 @@ async function uploadAudio(blob) {
     );
 }
 
-recordBtn.addEventListener("click", async () => {
+if (recordBtn) {
+  recordBtn.addEventListener("click", async () => {
+      });
+}
 
     const stream = await navigator.mediaDevices.getUserMedia({
         audio: true
