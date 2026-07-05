@@ -1,3 +1,8 @@
+import {
+    ref,
+    uploadBytes,
+    getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 import { auth, db, storage } from "./firebase.js";
 import {
     collection,
@@ -13,6 +18,10 @@ import {
 const messagesDiv = document.getElementById("messages");
 const sendBtn = document.getElementById("sendBtn");
 const input = document.getElementById("messageInput");
+const recordBtn = document.getElementById("recordBtn");
+
+let mediaRecorder;
+let audioChunks = [];
 const chatUserName = document.getElementById("chatUserName");
 
 const params = new URLSearchParams(window.location.search);
@@ -110,9 +119,20 @@ onSnapshot(q, async (snapshot) => {
                 userDiv.appendChild(timeSpan);
 
                 // Create message text
-                const textDiv = document.createElement("div");
-                textDiv.className = "message-text";
-                textDiv.textContent = msg.text || "";
+                const contentDiv = document.createElement("div");
+contentDiv.className = "message-text";
+
+if (msg.type === "audio") {
+
+    const audio = document.createElement("audio");
+    audio.controls = true;
+    audio.src = msg.audioUrl;
+
+    contentDiv.appendChild(audio);
+
+} else {
+    contentDiv.textContent = msg.text || "";
+}
 
                 // Create wrapper for content
                 const contentWrapper = document.createElement("div");
@@ -235,4 +255,61 @@ input?.addEventListener("keydown", (e) => {
     }
 });
 
+async function uploadAudio(blob) {
+
+    const chatId = [auth.currentUser.uid, receiverUid]
+        .sort()
+        .join("_");
+
+    const audioRef = ref(storage, `voice/${Date.now()}.webm`);
+
+    await uploadBytes(audioRef, blob);
+
+    const url = await getDownloadURL(audioRef);
+
+    await addDoc(
+        collection(db, "chats", chatId, "messages"),
+        {
+            audioUrl: url,
+            type: "audio",
+            senderId: auth.currentUser.uid,
+            receiverId: receiverUid,
+            time: serverTimestamp()
+        }
+    );
+}
+
+recordBtn.addEventListener("click", async () => {
+
+    const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true
+    });
+
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.start();
+
+    audioChunks = [];
+
+    mediaRecorder.ondataavailable = (e) => {
+        audioChunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = async () => {
+
+        const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+
+        const url = URL.createObjectURL(audioBlob);
+        document.getElementById("audioPreview").src = url;
+        document.getElementById("audioPreview").style.display = "block";
+
+        await uploadAudio(audioBlob);
+    };
+
+    setTimeout(() => {
+        mediaRecorder.stop();
+    }, 8000);
+
+});
+
 // REALTIME MESSAGES
+
