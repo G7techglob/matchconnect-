@@ -106,3 +106,11 @@ logoutBtn.addEventListener("click",async()=>{
     }
 
 });
+
+const chatSettings = document.getElementById("chatSettings");
+
+if (chatSettings) {
+    chatSettings.addEventListener("click", () => {
+        window.location.href = "chat-settings.html";
+    });
+}
