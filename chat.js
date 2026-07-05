@@ -12,7 +12,11 @@ import {
     onSnapshot,
     serverTimestamp,
     doc,
-    getDoc
+    getDoc,
+    setDoc, 
+    doc, 
+    onSnapshot, 
+    updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const messagesDiv = document.getElementById("messages");
@@ -255,6 +259,80 @@ input?.addEventListener("keydown", (e) => {
     }
 });
 
+callBtn.addEventListener("click", async () => {
+
+    callId = [auth.currentUser.uid, receiverUid].sort().join("_");
+
+    peerConnection = new RTCPeerConnection(servers);
+
+    localStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true
+    });
+    onSnapshot(doc(db, "calls", callId), async (snapshot) => {
+
+    const data = snapshot.data();
+    if (!data) return;
+
+    if (data.offer && !peerConnection) {
+
+        peerConnection = new RTCPeerConnection(servers);
+
+        peerConnection.ontrack = (event) => {
+            remoteVideo.srcObject = event.streams[0];
+        };
+
+        localStream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: true
+        });
+
+        localStream.getTracks().forEach(track => {
+            peerConnection.addTrack(track, localStream);
+        });
+
+        localVideo.srcObject = localStream;
+
+        await peerConnection.setRemoteDescription(
+            new RTCSessionDescription(JSON.parse(data.offer))
+        );
+
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+
+        await updateDoc(doc(db, "calls", callId), {
+            answer: JSON.stringify(answer)
+        });
+
+        callScreen.classList.remove("hidden");
+        callStatus.textContent = "In Call";
+    }
+
+    if (data.answer && peerConnection) {
+        await peerConnection.setRemoteDescription(
+            new RTCSessionDescription(JSON.parse(data.answer))
+        );
+    }
+});
+
+    localStream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, localStream);
+    });
+
+    localVideo.srcObject = localStream;
+
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+
+    await setDoc(doc(db, "calls", callId), {
+        offer: JSON.stringify(offer),
+        from: auth.currentUser.uid,
+        to: receiverUid
+    });
+
+    callStatus.textContent = "Calling...";
+    callScreen.classList.remove("hidden");
+});
 async function uploadAudio(blob) {
 
     if (!auth.currentUser) return;
@@ -285,7 +363,23 @@ if (recordBtn) {
   recordBtn.addEventListener("click", async () => {
       });
 }
+const callBtn = document.getElementById("callBtn");
+const callScreen = document.getElementById("callScreen");
+const endCallBtn = document.getElementById("endCallBtn");
 
+const localVideo = document.getElementById("localVideo");
+const remoteVideo = document.getElementById("remoteVideo");
+const callStatus = document.getElementById("callStatus");
+
+let peerConnection;
+let localStream;
+let callId;
+
+const servers = {
+    iceServers: [
+        { urls: "stun:stun.l.google.com:19302" }
+    ]
+};
     const stream = await navigator.mediaDevices.getUserMedia({
         audio: true
     });
@@ -314,6 +408,20 @@ if (recordBtn) {
         mediaRecorder.stop();
     }, 8000);
 
+});
+
+endCallBtn.addEventListener("click", () => {
+
+    if (peerConnection) {
+        peerConnection.close();
+        peerConnection = null;
+    }
+
+    if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+    }
+
+    callScreen.classList.add("hidden");
 });
 
 // REALTIME MESSAGES
