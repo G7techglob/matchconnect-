@@ -18,7 +18,9 @@ import {
   serverTimestamp,
   increment,
   deleteDoc,
-  setDoc
+  setDoc,
+  query,
+  where
 }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
@@ -92,14 +94,6 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     const data = userSnap.data();
-
-
-    const followersCount =
-  document.getElementById("followersCount");
-
-const followingCount =
-  document.getElementById("followingCount");
-
 
 const followersSnap = await getDocs(
   query(
