@@ -271,12 +271,4 @@ hr {
   color: red;
 }
 
-#blockUser:hover {
-  background: #ffe5e5;
-  color: #d60000;
-}
 
-#reportUser:hover {
-  background: #fff0f0;
-  color: #ff0000;
-}
