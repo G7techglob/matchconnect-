@@ -195,3 +195,31 @@ body {
     color: #333;
     text-decoration: none;
       }
+
+.profile-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.header-actions{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.menu-btn,
+.icon-btn{
+    background:none;
+    border:none;
+    cursor:pointer;
+    font-size:22px;
+    padding:8px;
+    border-radius:50%;
+}
+
+.menu-btn:hover,
+.icon-btn:hover{
+    background:#f0f0f0;
+}
