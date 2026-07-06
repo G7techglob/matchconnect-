@@ -1,125 +1,113 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Profile</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Profile</title>
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  
-<link rel="stylesheet" href="profile.css">
-
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet" href="profile.css" />
 </head>
 <body class="profile-page">
+  <main class="profile-box" role="main" aria-labelledby="profilePageTitle">
+    <header class="profile-header">
+      <h1 id="profilePageTitle">My Profile</h1>
 
-<div class="profile-box">
-
-  <div class="profile-header">
-
-    <h2>My Profile</h2>
-
-    <div class="header-actions">
-
-        <button id="menuBtn" class="menu-btn">
-            <i class="fa-solid fa-ellipsis-vertical"></i>
+      <div class="header-actions" aria-label="Profile actions">
+        <button id="menuBtn" class="menu-btn" type="button" aria-label="Open profile menu" aria-controls="profileMenu" aria-expanded="false">
+          <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
         </button>
 
-        <button id="settingsBtn" class="icon-btn">
-            <i class="fa-solid fa-gear"></i>
+        <button id="settingsBtn" class="icon-btn" type="button" aria-label="Open settings">
+          <i class="fa-solid fa-gear" aria-hidden="true"></i>
         </button>
+      </div>
+    </header>
 
-    </div>
+    <!-- Profile Menu -->
+    <section id="profileMenu" class="profile-menu" aria-label="Profile menu" hidden>
+      <button id="shareProfile" type="button">
+        <i class="fa-solid fa-share" aria-hidden="true"></i>
+        <span>Share Profile</span>
+      </button>
 
-  </div>
+      <button id="blockUser" type="button">
+        <i class="fa-solid fa-ban" aria-hidden="true"></i>
+        <span>Block User</span>
+      </button>
 
- <!-- Profile Menu -->
-<div id="profileMenu" class="profile-menu">
+      <button id="reportUser" class="danger" type="button">
+        <i class="fa-solid fa-flag" aria-hidden="true"></i>
+        <span>Report User</span>
+      </button>
+    </section>
 
-    <button id="shareProfile">
-        <i class="fa-solid fa-share"></i>
-        Share Profile
-    </button>
+    <section class="profile-info" aria-label="Profile information">
+      <img
+        id="profilePhoto"
+        src="images/default-avatar.png"
+        alt="User profile photo"
+        width="120"
+        height="120"
+        loading="lazy"
+      />
 
-    <button id="blockUser">
-        <i class="fa-solid fa-ban"></i>
-        Block User
-    </button>
+      <h2 id="profileName">Loading...</h2>
+      <p id="profileEmail">Loading...</p>
+      <p id="profileBio">No bio yet</p>
 
-    <button id="reportUser" class="danger">
-        <i class="fa-solid fa-flag"></i>
-        Report User
-    </button>
+      <a href="edit-profile.html" class="edit-profile-btn" aria-label="Edit your profile">
+        Edit Profile
+      </a>
+    </section>
 
-</div>
+    <section id="profileStats" aria-label="Profile statistics">
+      <p>
+        Posts:
+        <span id="postCount" aria-live="polite">0</span>
+      </p>
+    </section>
 
-  <img
-    id="profilePhoto"
-    src="images/default-avatar.png"
-    width="120"
-  >
+    <nav class="follow-stats" aria-label="Followers and following">
+      <h3>
+        <a id="followersLink" href="#" aria-label="View followers list">
+          Followers:
+          <span id="followersCount" aria-live="polite">0</span>
+        </a>
+      </h3>
 
-  <h3 id="profileName">
-    Loading...
-  </h3>
+      <h3>
+        <a id="followingLink" href="#" aria-label="View following list">
+          Following:
+          <span id="followingCount" aria-live="polite">0</span>
+        </a>
+      </h3>
+    </nav>
 
-  <p id="profileEmail">
-    Loading...
-  </p>
+    <section class="create-post" aria-labelledby="createPostTitle">
+      <h3 id="createPostTitle">Create Post</h3>
 
-  <p id="profileBio">
-    No bio yet
-  </p>
-  
-<a href="edit-profile.html" class="edit-profile-btn">
-    Edit Profile
-</a>
-<div id="profileStats">
- <p>
-    Posts:
-    <span id="postCount">0</span>
-  </p>
+      <label for="profilePostContent" class="sr-only">Write your post</label>
+      <textarea
+        id="profilePostContent"
+        placeholder="What's on your mind?"
+        rows="4"
+        maxlength="500"
+      ></textarea>
 
-</div>
+      <button id="profilePostBtn" type="button">Post</button>
+    </section>
 
-<h3>
-  <a id="followersLink" href="#">
-    Followers:
-    <span id="followersCount">0</span>
-  </a>
-</h3>
+    <section class="my-posts" aria-labelledby="myPostsTitle">
+      <h3 id="myPostsTitle">My Posts</h3>
+      <div id="myPosts" aria-live="polite"></div>
+    </section>
+  </main>
 
-<h3>
-  <a id="followingLink" href="#">
-    Following:
-    <span id="followingCount">0</span>
-  </a>
-</h3>
+  <div id="navbar-container" aria-label="Bottom navigation"></div>
 
-  
-<h3>Create Post</h3>
-
-<textarea
-  id="profilePostContent"
-  placeholder="What's on your mind?">
-</textarea>
-
-<button id="profilePostBtn">
-  Post
-</button>
-
-<h3>My Posts</h3>
-
-<div id="myPosts"></div>
-
-</div>
-
-  <div id="navbar-container"></div>
-  
-<script type="module" src="profile.js"></script>
-
+  <script type="module" src="profile.js"></script>
   <script src="navbar.js"></script>
-  
-  
 </body>
 </html>
