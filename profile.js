@@ -100,34 +100,30 @@ onAuthStateChanged(auth, async (user) => {
 const followingCount =
   document.getElementById("followingCount");
 
-const followersSnap =
-  await getDocs(
-    collection(
-      db,
-      "users",
-      user.uid,
-      "followers"
-    )
-  );
 
-const followingSnap =
-  await getDocs(
-    collection(
-      db,
-      "users",
-      user.uid,
-      "following"
-    )
-  );
+const followersSnap = await getDocs(
+  query(
+    collection(db, "followers"),
+    where("userId", "==", user.uid)
+  )
+);
+
+const followingSnap = await getDocs(
+  query(
+    collection(db, "following"),
+    where("userId", "==", user.uid)
+  )
+);
+
+const followersCount = document.getElementById("followersCount");
+const followingCount = document.getElementById("followingCount");
 
 if (followersCount) {
-  followersCount.textContent =
-    followersSnap.size;
+  followersCount.textContent = followersSnap.size;
 }
 
 if (followingCount) {
-  followingCount.textContent =
-    followingSnap.size;
+  followingCount.textContent = followingSnap.size;
 }
 
     const followersLink =
