@@ -560,3 +560,74 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
+
+const menuBtn = document.getElementById("menuBtn");
+const profileMenu = document.getElementById("profileMenu");
+
+// OPEN / CLOSE MENU
+if (menuBtn && profileMenu) {
+  menuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    profileMenu.classList.toggle("show");
+  });
+}
+
+// CLOSE WHEN CLICKING OUTSIDE
+document.addEventListener("click", (e) => {
+  if (
+    profileMenu &&
+    !profileMenu.contains(e.target) &&
+    !menuBtn.contains(e.target)
+  ) {
+    profileMenu.classList.remove("show");
+  }
+});
+
+const blockUserBtn = document.getElementById("blockUser");
+const reportUserBtn = document.getElementById("reportUser");
+const shareProfileBtn = document.getElementById("shareProfile");
+
+// SHARE PROFILE
+if (shareProfileBtn) {
+  shareProfileBtn.addEventListener("click", async () => {
+    const user = auth.currentUser;
+    const link = `${window.location.origin}/profile.html?uid=${user.uid}`;
+
+    await navigator.clipboard.writeText(link);
+    showNotification("Profile link copied!");
+  });
+}
+
+// BLOCK USER (simple version for now)
+if (blockUserBtn) {
+  blockUserBtn.addEventListener("click", async () => {
+    const user = auth.currentUser;
+
+    const confirmBlock = confirm("Block this user?");
+    if (!confirmBlock) return;
+
+    await setDoc(doc(db, "blockedUsers", user.uid), {
+      createdAt: serverTimestamp()
+    });
+
+    showNotification("User blocked");
+  });
+}
+
+// REPORT USER (simple version)
+if (reportUserBtn) {
+  reportUserBtn.addEventListener("click", async () => {
+    const user = auth.currentUser;
+
+    const reason = prompt("Why are you reporting this user?");
+    if (!reason) return;
+
+    await addDoc(collection(db, "reports"), {
+      userId: user.uid,
+      reason,
+      createdAt: serverTimestamp()
+    });
+
+    showNotification("Report submitted");
+  });
+}
