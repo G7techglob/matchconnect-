@@ -1,0 +1,54 @@
+body{
+    margin:0;
+    background:#f4f4f4;
+    font-family:Arial,sans-serif;
+}
+
+.menu-btn{
+    position:absolute;
+    top:20px;
+    right:20px;
+    border:none;
+    background:none;
+    cursor:pointer;
+}
+
+.menu-btn .material-icons{
+    font-size:32px;
+}
+
+.menu{
+    display:none;
+    position:absolute;
+    top:60px;
+    right:20px;
+    width:220px;
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 4px 15px rgba(0,0,0,.2);
+    overflow:hidden;
+}
+
+.menu.show{
+    display:block;
+}
+
+.menu-item{
+    width:100%;
+    border:none;
+    background:white;
+    padding:16px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.menu-item:hover{
+    background:#f2f2f2;
+}
+
+.report{
+    color:red;
+}
