@@ -1,48 +1,134 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chat</title>
+<title>Chat - MatchConnect</title>
+
+<link rel="stylesheet" href="chat.css">
+<link 
+rel="stylesheet" 
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
 
 <div class="chat-container">
+
     <div class="chat-header">
-        <h2 id="chatUserName">Loading...</h2>
-    </div>
-    
-    <div id="messages">
-        <div class="loading-spinner">Loading messages...</div>
-    </div>
-    
-    <div class="chat-footer">
-        <input
-            type="text"
-            id="messageInput"
-            placeholder="Write a message... (Press Enter to send)"
-            autocomplete="off"
+
+        <button onclick="history.back()">←</button>
+
+        <img
+            id="chatAvatar"
+            src="images/default-avatar.png"
+            width="45"
+            height="45"
         >
-        <button id="sendBtn">Send</button>
-     <button id="callBtn">📞 Call</button>
-        <button id="recordBtn">🎙️</button>
-<audio id="audioPreview" controls style="display:none;"></audio>
+
+        <div class="user-info">
+            <h2 id="chatUserName">Loading...</h2>
+            <small id="userStatus">Offline</small>
+        </div>
+
+        <button id="videoCallBtn" title="Video Call">
+    <i class="fa-solid fa-video"></i>
+</button>
+
+<button id="callBtn" title="Audio Call">
+    <i class="fa-solid fa-phone"></i>
+</button>
     </div>
+
+    <div id="messages">
+        <div class="loading-spinner">
+            Loading messages...
+        </div>
+    </div>
+
+    <div class="chat-footer">
+
+     <button id="imageBtn" title="Image">
+    <i class="fa-solid fa-image"></i>
+     </button>
+            <input
+            type="file"
+            id="imageInput"
+            accept="image/*"
+            hidden
+        >
+
+        <button id="videoBtn" title="Video">
+    <i class="fa-solid fa-film"></i>
+        </button>
+        <input
+            type="file"
+            id="videoInput"
+            accept="video/*"
+            hidden
+        >
+
+        <input
+            id="messageInput"
+            type="text"
+            placeholder="Write a message..."
+        >
+
+        <button id="recordBtn" title="Voice">
+    <i class="fa-solid fa-microphone"></i>
+        </button>
+
+        <button id="sendBtn" title="Send">
+    <i class="fa-solid fa-paper-plane"></i>
+        </button>
+    </div>
+
+    <audio
+        id="audioPreview"
+        controls
+        style="display:none;">
+    </audio>
+
 </div>
 
- <div id="callScreen" class="call-screen hidden">
-    
+<div id="callScreen" class="call-screen hidden">
+
     <h2 id="callStatus">Calling...</h2>
 
-    <video id="localVideo" autoplay muted></video>
-    <video id="remoteVideo" autoplay></video>
+    <video
+        id="remoteVideo"
+        autoplay
+        playsinline>
+    </video>
+
+    <video
+        id="localVideo"
+        autoplay
+        muted
+        playsinline>
+    </video>
 
     <div class="call-controls">
-        <button id="endCallBtn">❌ End</button>
+
+        <button id="muteBtn" title="Mute">
+    <i class="fa-solid fa-microphone"></i>
+</button>
+
+<button id="cameraBtn" title="Camera">
+    <i class="fa-solid fa-camera"></i>
+</button>
+
+<button id="switchCameraBtn" title="Switch Camera">
+    <i class="fa-solid fa-camera-rotate"></i>
+</button>
+
+<button id="endCallBtn" title="End Call">
+    <i class="fa-solid fa-phone-slash"></i>
+</button>
     </div>
- </div>
-    
+
+</div>
+
 <script type="module" src="chat.js"></script>
-    
+
 </body>
 </html>
