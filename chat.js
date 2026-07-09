@@ -20,6 +20,8 @@ const messages = document.getElementById("messages");
 const input = document.getElementById("messageInput");
 const sendBtn = document.getElementById("sendBtn");
 const chatUserName = document.getElementById("chatUserName");
+const chatAvatar = document.getElementById("chatAvatar");
+const userStatus = document.getElementById("userStatus");
 
 const params = new URLSearchParams(window.location.search);
 const receiverUid = params.get("uid");
@@ -43,10 +45,37 @@ onAuthStateChanged(auth, async (user) => {
 
     chatId = createChatId(user.uid, receiverUid);
 
-    loadMessages();
+    await loadReceiver();
+
+loadMessages();
 
 });
 
+async function loadReceiver() {
+
+    const userRef = doc(db, "users", receiverUid);
+
+    onSnapshot(userRef, (snapshot) => {
+
+        if (!snapshot.exists()) return;
+
+        const data = snapshot.data();
+
+        chatUserName.textContent =
+            data.name || data.username || "User";
+
+        chatAvatar.src =
+            data.photoURL || "images/default-avatar.png";
+
+        if (data.online) {
+            userStatus.textContent = "Online";
+        } else {
+            userStatus.textContent = "Offline";
+        }
+
+    });
+
+}
 
 function loadMessages() {
 
