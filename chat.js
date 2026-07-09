@@ -6,7 +6,10 @@ import {
   query,
   orderBy,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  doc,
+  getDoc,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -24,7 +27,7 @@ const receiverUid = params.get("uid");
 let currentUser = null;
 let chatId = null;
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
 
     if (!user) {
         location.href = "login.html";
@@ -32,10 +35,18 @@ onAuthStateChanged(auth, (user) => {
     }
 
     currentUser = user;
+
+    await updateDoc(doc(db, "users", currentUser.uid), {
+        online: true,
+        lastSeen: serverTimestamp()
+    });
+
     chatId = createChatId(user.uid, receiverUid);
 
     loadMessages();
+
 });
+
 
 function loadMessages() {
 
@@ -104,6 +115,17 @@ input.addEventListener("keydown", (e) => {
         sendMessage();
 
     }
+
+});
+
+window.addEventListener("beforeunload", async () => {
+
+    if (!currentUser) return;
+
+    await updateDoc(doc(db, "users", currentUser.uid), {
+        online: false,
+        lastSeen: serverTimestamp()
+    });
 
 });
 
