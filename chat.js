@@ -9,7 +9,7 @@ import {
   serverTimestamp,
   doc,
   getDoc,
-  updateDoc
+  updateDoc,
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
@@ -173,6 +173,7 @@ input.addEventListener("keydown", (e) => {
 let typingTimer;
 
 input.addEventListener("input", async () => {
+  if (!chatId || !currentUser) return;
 
     await setDoc(doc(db, "typing", chatId), {
         uid: currentUser.uid,
