@@ -198,6 +198,37 @@ sendBtn.addEventListener("click", sendMessage);
 imageBtn.addEventListener("click", () => {
     imageInput.click();
 });
+imageInput.addEventListener("change", async () => {
+
+    const file = imageInput.files[0];
+
+    if (!file) return;
+
+    const imageRef = ref(
+        storage,
+        `chatImages/${chatId}/${Date.now()}_${file.name}`
+    );
+
+    await uploadBytes(imageRef, file);
+
+    const imageURL = await getDownloadURL(imageRef);
+
+    await addDoc(
+        collection(db, "chats", chatId, "messages"),
+        {
+            imageURL,
+            senderId: currentUser.uid,
+            receiverId: receiverUid,
+            type: "image",
+            status: "sent",
+            seen: false,
+            time: serverTimestamp()
+        }
+    );
+
+    imageInput.value = "";
+
+});
 input.addEventListener("keydown", (e) => {
 
     if (e.key === "Enter") {
