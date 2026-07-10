@@ -253,3 +253,9 @@ chatList.appendChild(div);
 
 
 });
+
+document.getElementById("chatSettingsBtn").onclick = ()=>{
+
+    location.href = "chat-settings.html";
+
+};
