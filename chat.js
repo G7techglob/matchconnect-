@@ -94,6 +94,19 @@ function loadMessages() {
         snapshot.forEach((doc) => {
 
             const msg = doc.data();
+          if (
+    msg.receiverId === currentUser.uid &&
+    !msg.seen
+) {
+
+    updateDoc(
+        doc(db, "chats", chatId, "messages", doc.id),
+        {
+            seen: true
+        }
+    );
+
+          }
 
             const mine = msg.senderId === currentUser.uid;
 
@@ -102,8 +115,16 @@ function loadMessages() {
                     <div class="bubble">
                         ${escapeHTML(msg.text || "")}
                         <div class="time">
-                            ${msg.time ? formatTime(msg.time) : ""}
-                        </div>
+
+    ${msg.time ? formatTime(msg.time) : ""}
+
+    ${
+        mine 
+        ? (msg.seen ? " ✓✓" : " ✓")
+        : ""
+    }
+
+</div>
                     </div>
                 </div>
             `;
@@ -144,15 +165,17 @@ async function sendMessage() {
     if (!text) return;
 
     await addDoc(
-        collection(db, "chats", chatId, "messages"),
-        {
-            text,
-            senderId: currentUser.uid,
-            receiverId: receiverUid,
-            type: "text",
-            time: serverTimestamp()
-        }
-    );
+    collection(db, "chats", chatId, "messages"),
+    {
+        text,
+        senderId: currentUser.uid,
+        receiverId: receiverUid,
+        type: "text",
+        status: "sent",
+        seen: false,
+        time: serverTimestamp()
+    }
+);
 
     input.value = "";
 }
