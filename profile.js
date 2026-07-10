@@ -159,6 +159,13 @@ if (followingLink) {
     if (photoURLInput) photoURLInput.value = data.photoURL || "";
 
     await loadMyPosts();
+    const viewMedia = document.getElementById("viewMedia");
+
+if (viewMedia) {
+  viewMedia.onclick = () => {
+    location.href = `media.html?uid=${user.uid}`;
+  };
+}
   } catch (error) {
     console.error("Error loading profile:", error);
     showNotification("Error loading profile: " + error.message, true);
