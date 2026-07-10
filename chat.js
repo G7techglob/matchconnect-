@@ -10,7 +10,8 @@ import {
   doc,
   getDoc,
   updateDoc,
-  setDoc
+  setDoc,
+ deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import {
     ref,
@@ -104,48 +105,92 @@ function loadMessages() {
 
     onSnapshot(q, (snapshot) => {
 
-        messages.innerHTML = "";
+        messages.innerHTML += `
 
-        snapshot.forEach((messageDoc) => {
+<div class="message ${mine ? "sent" : "received"}"
+data-id="${messageDoc.id}">
 
-    const msg = messageDoc.data();
-          if (
-    msg.receiverId === currentUser.uid &&
-    !msg.seen
-) {
+<div class="bubble">
 
-    updateDoc(
-        doc(db, "chats", chatId, "messages", messageDoc.id), {
-            seen: true
-        }
-    );
+${
+msg.type === "image"
+?
+`<img src="${msg.imageURL}" class="chat-image">`
+:
+escapeHTML(msg.text || "")
+}
 
-          }
 
-            const mine = msg.senderId === currentUser.uid;
+<div class="reaction-display"></div>
 
-            messages.innerHTML += `
-                <div class="message ${mine ? "sent" : "received"}">
-                    <div class="bubble">
-                        ${
-    msg.type === "image"
-    ? `<img src="${msg.imageURL}" class="chat-image">`
-    : escapeHTML(msg.text || "")
-                        }
-                        <div class="time">
 
-    ${msg.time ? formatTime(msg.time) : ""}
+<div class="message-buttons">
 
-    ${
-        mine 
-        ? (msg.seen ? " ✓✓" : " ✓")
-        : ""
-    }
+<button class="reply-msg"
+data-id="${messageDoc.id}">
+↩ Reply
+</button>
+
+
+${
+mine
+?
+`
+<button class="delete-msg"
+data-id="${messageDoc.id}">
+🗑 Delete
+</button>
+`
+:
+""
+}
+
+
+<button class="react-btn"
+data-id="${messageDoc.id}"
+data-reaction="❤️">
+❤️
+</button>
+
+
+<button class="react-btn"
+data-id="${messageDoc.id}"
+data-reaction="😂">
+😂
+</button>
+
+
+<button class="react-btn"
+data-id="${messageDoc.id}"
+data-reaction="👍">
+👍
+</button>
 
 </div>
-                    </div>
-                </div>
-            `;
+
+
+<div class="time">
+
+${msg.time ? formatTime(msg.time) : ""}
+
+
+${
+mine
+?
+(msg.seen ? " ✓✓" : " ✓")
+:
+""
+}
+
+</div>
+
+
+</div>
+
+</div>
+
+`;
+
 
         });
 
@@ -264,6 +309,99 @@ input.addEventListener("input", async () => {
         });
 
     }, 1500);
+
+});
+
+document.addEventListener("click", async(e)=>{
+
+
+if(!e.target.classList.contains("delete-msg"))
+return;
+
+
+const id=e.target.dataset.id;
+
+
+const confirmDelete =
+confirm("Delete this message?");
+
+
+if(!confirmDelete) return;
+
+
+await deleteDoc(
+doc(db,"chats",chatId,"messages",id)
+);
+
+
+});
+
+document.addEventListener("click",async(e)=>{
+
+
+if(!e.target.classList.contains("reply-msg"))
+return;
+
+
+const id=e.target.dataset.id;
+
+
+const messageSnap =
+await getDoc(
+doc(db,"chats",chatId,"messages",id)
+);
+
+
+if(messageSnap.exists()){
+
+
+const data=messageSnap.data();
+
+
+input.value =
+"Reply: " + (data.text || "");
+
+
+input.focus();
+
+
+}
+
+
+});
+document.addEventListener("click",async(e)=>{
+
+
+if(!e.target.classList.contains("react-btn"))
+return;
+
+
+const id=e.target.dataset.id;
+
+const reaction =
+e.target.dataset.reaction;
+
+
+
+await setDoc(
+
+doc(
+db,
+"chats",
+chatId,
+"messages",
+id,
+"reactions",
+currentUser.uid
+),
+
+{
+reaction:reaction,
+userId:currentUser.uid
+}
+
+);
+
 
 });
 
