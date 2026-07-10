@@ -3,7 +3,7 @@ from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 
 import {
   getAuth,
-  onAuthStateChanged
+  onAuthStateChanged 
 }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
@@ -621,3 +621,4 @@ if (reportUserBtn) {
     showNotification("Report submitted");
   });
 }
+
