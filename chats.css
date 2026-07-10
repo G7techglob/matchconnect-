@@ -3,6 +3,11 @@ CHAT HEADER BASE STYLE
 ========================= */
 
 .chat-header {
+    position: fixed;          /* keep header static at top */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
     display: flex;
     align-items: center;
     padding: 10px 15px;
@@ -12,6 +17,17 @@ CHAT HEADER BASE STYLE
 
 .profile-icon {
     font-size: 20px;
+}
+
+/* Smaller circular profile image */
+.profile-icon img,
+.chat-header .profile-image,
+.chat-header .profile-pic {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
 }
 
 /* =========================
@@ -38,10 +54,24 @@ PROFILE PAGE (ICON RIGHT)
     margin-left: auto;
 }
 
+/* =========================
+BOTTOM NAVBAR (FIXED BOTTOM)
+========================= */
+
+#bottomNavbar {
+    position: fixed;          /* keep navbar static at bottom */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: #fff;
+    border-top: 1px solid #ddd;
+}
+
 #bottomNavbar .header-container {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* KEY FIX */
+    justify-content: space-between;
     width: 100%;
     height: 100%;
     padding: 0 5px;
@@ -69,3 +99,10 @@ PROFILE PAGE (ICON RIGHT)
     font-size: 20px;
     color: #333;
     text-decoration: none;
+}
+
+/* Prevent page content from hiding behind fixed header/footer */
+body {
+    padding-top: 64px;   /* header space */
+    padding-bottom: 70px; /* bottom navbar space */
+}
