@@ -1,5 +1,5 @@
-import { auth, db,storage } from "./firebase.js";
- 
+import { auth, db, storage } from "./firebase.js";
+
 import {
   collection,
   addDoc,
@@ -11,12 +11,12 @@ import {
   getDoc,
   updateDoc,
   setDoc,
- deleteDoc
+  deleteDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import {
-    ref,
-    uploadBytes,
-    getDownloadURL
+  ref,
+  uploadBytes,
+  getDownloadURL,
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -37,492 +37,265 @@ const params = new URLSearchParams(window.location.search);
 const receiverUid = params.get("uid");
 
 if (!receiverUid) {
-    alert("No user selected.");
-    window.location.href = "chats.html";
+  alert("No user selected.");
+  window.location.href = "chats.html";
 }
 
 let currentUser = null;
 let chatId = null;
+let typingTimer;
+
 onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    location.href = "login.html";
+    return;
+  }
 
-    if (!user) {
-        location.href = "login.html";
-        return;
-    }
+  currentUser = user;
 
-    currentUser = user;
-
-    await setDoc(
+  await setDoc(
     doc(db, "users", currentUser.uid),
     {
-        online: true,
-        lastSeen: serverTimestamp()
+      online: true,
+      lastSeen: serverTimestamp(),
     },
     { merge: true }
-);
+  );
 
-    chatId = createChatId(user.uid, receiverUid);
+  chatId = createChatId(user.uid, receiverUid);
 
-    await loadReceiver();
-
-loadMessages();
+  await loadReceiver();
+  loadMessages();
   listenTyping();
-
 });
 
 async function loadReceiver() {
+  const userRef = doc(db, "users", receiverUid);
 
-    const userRef = doc(db, "users", receiverUid);
+  onSnapshot(userRef, (snapshot) => {
+    if (!snapshot.exists()) return;
 
-    onSnapshot(userRef, (snapshot) => {
+    const data = snapshot.data();
 
-        if (!snapshot.exists()) return;
-
-        const data = snapshot.data();
-
-        chatUserName.textContent =
-            data.name || data.username || "User";
-
-        chatAvatar.src =
-            data.photoURL || "images/default-avatar.png";
-
-        if (data.online) {
-            userStatus.textContent = "Online";
-        } else {
-            userStatus.textContent = "Offline";
-        }
-
-    });
-
+    chatUserName.textContent = data.name || data.username || "User";
+    chatAvatar.src = data.photoURL || "images/default-avatar.png";
+    userStatus.textContent = data.online ? "Online" : "Offline";
+  });
 }
 
 function loadMessages() {
+  const q = query(collection(db, "chats", chatId, "messages"), orderBy("time"));
 
-    const q = query(
-        collection(db, "chats", chatId, "messages"),
-        orderBy("time")
-    );
-
-    onSnapshot(q, (snapshot) => {
-
-        messages.innerHTML += `
-
-<div class="message ${mine ? "sent" : "received"}"
-data-id="${messageDoc.id}">
-
-<div class="bubble">
-
-${
-msg.type === "image"
-?
-`<img src="${msg.imageURL}" class="chat-image">`
-:
-escapeHTML(msg.text || "")
-}
-
-
-<div class="reaction-display"></div>
-
-
-<div class="message-buttons">
-
-<button class="reply-msg"
-data-id="${messageDoc.id}">
-↩ Reply
-</button>
-
-
-${
-mine
-?
-`
-<button class="delete-msg"
-data-id="${messageDoc.id}">
-🗑 Delete
-</button>
-`
-:
-""
-}
-
-
-<button class="react-btn"
-data-id="${messageDoc.id}"
-data-reaction="❤️">
-❤️
-</button>
-
-
-<button class="react-btn"
-data-id="${messageDoc.id}"
-data-reaction="😂">
-😂
-</button>
-
-
-<button class="react-btn"
-data-id="${messageDoc.id}"
-data-reaction="👍">
-👍
-</button>
-
-</div>
-
-
-<div class="time">
-
-${msg.time ? formatTime(msg.time) : ""}
-
-onSnapshot(q, (snapshot) => {
-
+  onSnapshot(q, (snapshot) => {
     messages.innerHTML = "";
 
-
     snapshot.forEach((messageDoc) => {
+      const msg = messageDoc.data();
 
+      if (msg.receiverId === currentUser.uid && !msg.seen) {
+        updateDoc(doc(db, "chats", chatId, "messages", messageDoc.id), {
+          seen: true,
+        });
+      }
 
-        const msg = messageDoc.data();
+      const mine = msg.senderId === currentUser.uid;
 
+      messages.innerHTML += `
+<div class="message ${mine ? "sent" : "received"}" data-id="${messageDoc.id}">
+  <div class="bubble">
+    ${
+      msg.type === "image"
+        ? `<img src="${msg.imageURL}" class="chat-image">`
+        : escapeHTML(msg.text || "")
+    }
 
-        if (
-            msg.receiverId === currentUser.uid &&
-            !msg.seen
-        ) {
+    <div class="message-buttons">
+      <button class="reply-msg" data-id="${messageDoc.id}">↩ Reply</button>
 
-            updateDoc(
-                doc(db,"chats",chatId,"messages",messageDoc.id),
-                {
-                    seen:true
-                }
-            );
+      ${
+        mine
+          ? `<button class="delete-msg" data-id="${messageDoc.id}">🗑 Delete</button>`
+          : ""
+      }
 
-        }
+      <button class="react-btn" data-id="${messageDoc.id}" data-reaction="❤️">❤️</button>
+      <button class="react-btn" data-id="${messageDoc.id}" data-reaction="😂">😂</button>
+      <button class="react-btn" data-id="${messageDoc.id}" data-reaction="👍">👍</button>
+    </div>
 
-
-
-        const mine =
-        msg.senderId === currentUser.uid;
-
-
-
-        messages.innerHTML += `
-
-<div class="message ${mine ? "sent" : "received"}"
-data-id="${messageDoc.id}">
-
-<div class="bubble">
-
-
-${
-msg.type === "image"
-?
-`<img src="${msg.imageURL}" class="chat-image">`
-:
-escapeHTML(msg.text || "")
-}
-
-
-
-<div class="message-buttons">
-
-
-<button class="reply-msg"
-data-id="${messageDoc.id}">
-↩ Reply
-</button>
-
-
-
-${
-mine
-?
-`
-<button class="delete-msg"
-data-id="${messageDoc.id}">
-🗑 Delete
-</button>
-`
-:
-""
-}
-
-
-
-<button class="react-btn"
-data-id="${messageDoc.id}"
-data-reaction="❤️">
-❤️
-</button>
-
-
-<button class="react-btn"
-data-id="${messageDoc.id}"
-data-reaction="😂">
-😂
-</button>
-
-
-<button class="react-btn"
-data-id="${messageDoc.id}"
-data-reaction="👍">
-👍
-</button>
-
-
+    <div class="time">
+      ${msg.time ? formatTime(msg.time) : ""}
+      ${mine ? (msg.seen ? " ✓✓" : " ✓") : ""}
+    </div>
+  </div>
 </div>
-
-
-
-<div class="time">
-
-${msg.time ? formatTime(msg.time) : ""}
-
-
-${
-mine
-?
-(msg.seen ? " ✓✓" : " ✓")
-:
-""
-}
-
-
-</div>
-
-
-</div>
-
-</div>
-
 `;
-
-
-
     });
-
 
     messages.scrollTop = messages.scrollHeight;
-
-
-});
+  });
+}
 
 function listenTyping() {
+  onSnapshot(doc(db, "typing", chatId), (snapshot) => {
+    if (!snapshot.exists()) {
+      typingIndicator.textContent = "";
+      return;
+    }
 
-    onSnapshot(doc(db, "typing", chatId), (snapshot) => {
+    const data = snapshot.data();
 
-        if (!snapshot.exists()) {
-            typingIndicator.textContent = "";
-            return;
-        }
-
-        const data = snapshot.data();
-
-        if (data.uid !== currentUser.uid && data.typing) {
-            typingIndicator.textContent = "Typing...";
-        } else {
-            typingIndicator.textContent = "";
-        }
-
-    });
-
+    if (data.uid !== currentUser.uid && data.typing) {
+      typingIndicator.textContent = "Typing...";
+    } else {
+      typingIndicator.textContent = "";
+    }
+  });
 }
 
 async function sendMessage() {
+  const text = input.value.trim();
+  if (!text) return;
 
-    const text = input.value.trim();
+  await addDoc(collection(db, "chats", chatId, "messages"), {
+    text,
+    senderId: currentUser.uid,
+    receiverId: receiverUid,
+    type: "text",
+    status: "sent",
+    seen: false,
+    time: serverTimestamp(),
+  });
 
-    if (!text) return;
+  input.value = "";
 
-    await addDoc(
-    collection(db, "chats", chatId, "messages"),
+  await setDoc(
+    doc(db, "typing", chatId),
     {
-        text,
-        senderId: currentUser.uid,
-        receiverId: receiverUid,
-        type: "text",
-        status: "sent",
-        seen: false,
-        time: serverTimestamp()
-    }
-);
-
-    input.value = "";
+      uid: currentUser.uid,
+      typing: false,
+    },
+    { merge: true }
+  );
 }
 
 sendBtn.addEventListener("click", sendMessage);
+
 imageBtn.addEventListener("click", () => {
-    imageInput.click();
+  imageInput.click();
 });
+
 imageInput.addEventListener("change", async () => {
+  const file = imageInput.files[0];
+  if (!file) return;
 
-    const file = imageInput.files[0];
+  const imageRef = ref(storage, `chatImages/${chatId}/${Date.now()}_${file.name}`);
+  await uploadBytes(imageRef, file);
+  const imageURL = await getDownloadURL(imageRef);
 
-    if (!file) return;
+  await addDoc(collection(db, "chats", chatId, "messages"), {
+    imageURL,
+    senderId: currentUser.uid,
+    receiverId: receiverUid,
+    type: "image",
+    status: "sent",
+    seen: false,
+    time: serverTimestamp(),
+  });
 
-    const imageRef = ref(
-        storage,
-        `chatImages/${chatId}/${Date.now()}_${file.name}`
-    );
-
-    await uploadBytes(imageRef, file);
-
-    const imageURL = await getDownloadURL(imageRef);
-
-    await addDoc(
-        collection(db, "chats", chatId, "messages"),
-        {
-            imageURL,
-            senderId: currentUser.uid,
-            receiverId: receiverUid,
-            type: "image",
-            status: "sent",
-            seen: false,
-            time: serverTimestamp()
-        }
-    );
-
-    imageInput.value = "";
-
+  imageInput.value = "";
 });
+
 input.addEventListener("keydown", (e) => {
-
-    if (e.key === "Enter") {
-
-        e.preventDefault();
-
-        sendMessage();
-
-    }
-
+  if (e.key === "Enter") {
+    e.preventDefault();
+    sendMessage();
+  }
 });
-let typingTimer;
 
 input.addEventListener("input", async () => {
   if (!chatId || !currentUser) return;
 
-    await setDoc(doc(db, "typing", chatId), {
+  await setDoc(
+    doc(db, "typing", chatId),
+    {
+      uid: currentUser.uid,
+      typing: input.value.trim().length > 0,
+    },
+    { merge: true }
+  );
+
+  clearTimeout(typingTimer);
+
+  typingTimer = setTimeout(async () => {
+    await setDoc(
+      doc(db, "typing", chatId),
+      {
         uid: currentUser.uid,
-        typing: input.value.trim().length > 0
-    });
-
-    clearTimeout(typingTimer);
-
-    typingTimer = setTimeout(async () => {
-
-        await setDoc(doc(db, "typing", chatId), {
-            uid: currentUser.uid,
-            typing: false
-        });
-
-    }, 1500);
-
+        typing: false,
+      },
+      { merge: true }
+    );
+  }, 1500);
 });
 
-document.addEventListener("click", async(e)=>{
+document.addEventListener("click", async (e) => {
+  if (!e.target.classList.contains("delete-msg")) return;
 
+  const id = e.target.dataset.id;
+  const confirmDelete = confirm("Delete this message?");
+  if (!confirmDelete) return;
 
-if(!e.target.classList.contains("delete-msg"))
-return;
-
-
-const id=e.target.dataset.id;
-
-
-const confirmDelete =
-confirm("Delete this message?");
-
-
-if(!confirmDelete) return;
-
-
-await deleteDoc(
-doc(db,"chats",chatId,"messages",id)
-);
-
-
+  await deleteDoc(doc(db, "chats", chatId, "messages", id));
 });
 
-document.addEventListener("click",async(e)=>{
+document.addEventListener("click", async (e) => {
+  if (!e.target.classList.contains("reply-msg")) return;
 
+  const id = e.target.dataset.id;
+  const messageSnap = await getDoc(doc(db, "chats", chatId, "messages", id));
 
-if(!e.target.classList.contains("reply-msg"))
-return;
-
-
-const id=e.target.dataset.id;
-
-
-const messageSnap =
-await getDoc(
-doc(db,"chats",chatId,"messages",id)
-);
-
-
-if(messageSnap.exists()){
-
-
-const data=messageSnap.data();
-
-
-input.value =
-"Reply: " + (data.text || "");
-
-
-input.focus();
-
-
-}
-
-
+  if (messageSnap.exists()) {
+    const data = messageSnap.data();
+    input.value = "Reply: " + (data.text || "");
+    input.focus();
+  }
 });
-document.addEventListener("click",async(e)=>{
 
+document.addEventListener("click", async (e) => {
+  if (!e.target.classList.contains("react-btn")) return;
 
-if(!e.target.classList.contains("react-btn"))
-return;
+  const id = e.target.dataset.id;
+  const reaction = e.target.dataset.reaction;
 
-
-const id=e.target.dataset.id;
-
-const reaction =
-e.target.dataset.reaction;
-
-
-
-await setDoc(
-
-doc(
-db,
-"chats",
-chatId,
-"messages",
-id,
-"reactions",
-currentUser.uid
-),
-
-{
-reaction:reaction,
-userId:currentUser.uid
-}
-
-);
-
-
+  await setDoc(
+    doc(db, "chats", chatId, "messages", id, "reactions", currentUser.uid),
+    {
+      reaction,
+      userId: currentUser.uid,
+    },
+    { merge: true }
+  );
 });
 
 window.addEventListener("beforeunload", async () => {
+  if (!currentUser) return;
 
-    if (!currentUser) return;
-
-    await setDoc(
-    doc(db, "users", currentUser.uid),
+  await setDoc(
+    doc(db, "typing", chatId),
     {
-        online: false,
-        lastSeen: serverTimestamp()
+      uid: currentUser.uid,
+      typing: false,
     },
     { merge: true }
-);
+  );
 
+  await setDoc(
+    doc(db, "users", currentUser.uid),
+    {
+      online: false,
+      lastSeen: serverTimestamp(),
+    },
+    { merge: true }
+  );
 });
-
