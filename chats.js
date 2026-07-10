@@ -1,187 +1,255 @@
 import { auth, db } from "./firebase.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import {
-  collection,
-  getDocs,
-  query,
-  orderBy,
-  limit
 
+import {
+    collection,
+    getDocs,
+    query,
+    orderBy,
+    limit,
+    onSnapshot,
+    doc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
 
 const chatList = document.getElementById("chatList");
 
-const renderLoading = () => {
-  chatList.innerHTML = `
-    <div style="padding:20px;text-align:center;">Loading chats...</div>
-  `;
-};
 
-const renderEmpty = () => {
-  chatList.innerHTML = `
-    <div style="padding:20px;text-align:center;color:#666;">No conversations yet. Start connecting with people!</div>
-  `;
-};
-
-const formatTime = (ts) => {
-  if (!ts) return "";
-  try {
-    const d = ts.toDate ? ts.toDate() : new Date(ts);
-    return d.toLocaleString();
-  } catch (e) {
-    return "";
-  }
-};
-
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    location.href = "login.html";
-    return;
-  }
-
-  renderLoading();
-
-  try {
-    // Fetch all users (except current). For each user we fetch the latest message in the chat subcollection.
-    const usersSnapshot = await getDocs(collection(db, "users"));
-
-    const conversations = [];
-
-    const fetchLastFor = async (otherDoc) => {
-      if (otherDoc.id === user.uid) return null;
-
-      const other = otherDoc.data();
-      const otherId = otherDoc.id;
-
-      const chatId = [user.uid, otherId].sort().join("_");
-      const messagesRef = collection(db, "chats", chatId, "messages");
-      const lastQuery = query(messagesRef, orderBy("time", "desc"), limit(1));
-
-      const lastSnap = await getDocs(lastQuery);
-      let last = null;
-      if (!lastSnap.empty) {
-        const lastDoc = lastSnap.docs[0];
-        last = {
-          id: lastDoc.id,
-          ...lastDoc.data()
-        };
-      }
-
-      return {
-        userId: otherId,
-        username: other.username || other.email || "Unknown",
-        avatar: other.photoURL || "",
-        lastMessage: last,
-        lastTime: last && last.time ? (last.time.toDate ? last.time.toDate().getTime() : new Date(last.time).getTime()) : 0
-      };
-    };
-
-    // Launch parallel fetches (but not too many at once). We'll collect promises and await them all.
-    const promises = [];
-    usersSnapshot.forEach((doc) => {
-      promises.push(fetchLastFor(doc));
-    });
-
-    const results = await Promise.all(promises);
-
-    // Filter out nulls and sort by lastTime desc
-    const convs = results.filter(Boolean).sort((a, b) => b.lastTime - a.lastTime);
-
-    if (convs.length === 0) {
-      renderEmpty();
-      return;
-    }
-
-    // Render list
-    chatList.innerHTML = "";
-
-    convs.forEach((c) => {
-      const item = document.createElement("div");
-      item.className = "chat-item";
-      item.style.cursor = "pointer";
-      item.style.display = "flex";
-      item.style.alignItems = "center";
-      item.style.padding = "10px";
-      item.style.borderBottom = "1px solid #eee";
-
-      item.addEventListener("click", () => {
-        // navigate to chat page with uid param
-        window.location.href = `chat.html?uid=${c.userId}`;
-      });
-
-      const avatar = document.createElement("div");
-      avatar.className = "chat-avatar";
-      avatar.style.width = "48px";
-      avatar.style.height = "48px";
-      avatar.style.borderRadius = "50%";
-      avatar.style.backgroundColor = "#ccc";
-      avatar.style.display = "flex";
-      avatar.style.alignItems = "center";
-      avatar.style.justifyContent = "center";
-      avatar.style.marginRight = "12px";
-      avatar.style.overflow = "hidden";
-
-      if (c.avatar) {
-        const img = document.createElement("img");
-        img.src = c.avatar;
-        img.alt = c.username;
-        img.style.width = "100%";
-        img.style.height = "100%";
-        img.style.objectFit = "cover";
-        avatar.appendChild(img);
-      } else {
-        avatar.textContent = (c.username || "?").charAt(0).toUpperCase();
-        avatar.style.color = "white";
-        avatar.style.fontWeight = "600";
-        avatar.style.fontSize = "18px";
-      }
-
-      const body = document.createElement("div");
-      body.style.flex = "1";
-
-      const top = document.createElement("div");
-      top.style.display = "flex";
-      top.style.justifyContent = "space-between";
-      top.style.alignItems = "center";
-
-      const name = document.createElement("div");
-      name.textContent = c.username;
-      name.style.fontWeight = "600";
-
-      const time = document.createElement("div");
-      time.style.fontSize = "12px";
-      time.style.color = "#888";
-      time.textContent = c.lastMessage ? formatTime(c.lastMessage.time) : "";
-
-      top.appendChild(name);
-      top.appendChild(time);
-
-      const bottom = document.createElement("div");
-      bottom.style.display = "flex";
-      bottom.style.justifyContent = "space-between";
-      bottom.style.alignItems = "center";
-
-      const preview = document.createElement("div");
-      preview.style.color = "#555";
-      preview.style.fontSize = "14px";
-      preview.style.marginTop = "4px";
-      preview.textContent = c.lastMessage ? (c.lastMessage.text ? c.lastMessage.text : "(attachment)") : "Say hi!";
-
-      bottom.appendChild(preview);
-
-      body.appendChild(top);
-      body.appendChild(bottom);
-
-      item.appendChild(avatar);
-      item.appendChild(body);
-
-      chatList.appendChild(item);
-    });
-
-  } catch (error) {
-    console.error("Failed to load chats:", error);
+function loading(){
     chatList.innerHTML = `
-      <div style="padding:20px;color:red;text-align:center;">Failed to load chats.</div>
+    <div class="empty-state">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <p>Loading conversations...</p>
+    </div>
     `;
-  }
+}
+
+
+function empty(){
+    chatList.innerHTML = `
+    <div class="empty-state">
+        <i class="fa-solid fa-comments"></i>
+        <p>No conversations yet</p>
+        <small>Start chatting with someone</small>
+    </div>
+    `;
+}
+
+
+function timeFormat(timestamp){
+
+    if(!timestamp) return "";
+
+    const date = timestamp.toDate();
+
+    return date.toLocaleString([],{
+        hour:"2-digit",
+        minute:"2-digit"
+    });
+}
+
+
+
+onAuthStateChanged(auth, async(user)=>{
+
+
+if(!user){
+    location.href="login.html";
+    return;
+}
+
+
+loading();
+
+
+
+const usersSnap = await getDocs(
+    collection(db,"users")
+);
+
+
+let conversations=[];
+
+
+
+for(const userDoc of usersSnap.docs){
+
+
+    if(userDoc.id === user.uid) continue;
+
+
+    const otherUser=userDoc.data();
+
+
+    const chatId=[user.uid,userDoc.id]
+    .sort()
+    .join("_");
+
+
+
+    const messagesQuery=query(
+        collection(db,"chats",chatId,"messages"),
+        orderBy("time","desc"),
+        limit(1)
+    );
+
+
+    const messagesSnap=await getDocs(messagesQuery);
+
+
+
+    if(messagesSnap.empty) continue;
+
+
+
+    const lastMessage=
+    messagesSnap.docs[0].data();
+
+
+
+    conversations.push({
+
+        uid:userDoc.id,
+
+        name:
+        otherUser.name ||
+        otherUser.username ||
+        "User",
+
+        photo:
+        otherUser.photoURL ||
+        "images/default-avatar.png",
+
+        online:
+        otherUser.online || false,
+
+
+        message:
+        lastMessage.text ||
+        "📷 Image",
+
+
+        time:
+        lastMessage.time,
+
+
+        unread:
+        lastMessage.receiverId===user.uid &&
+        lastMessage.seen===false
+
+    });
+
+
+
+}
+
+
+
+
+if(conversations.length===0){
+
+    empty();
+    return;
+
+}
+
+
+
+conversations.sort((a,b)=>{
+
+return b.time?.seconds-a.time?.seconds;
+
+});
+
+
+
+chatList.innerHTML="";
+
+
+
+conversations.forEach(chat=>{
+
+
+const div=document.createElement("div");
+
+
+div.className="chat-item";
+
+
+
+div.innerHTML=`
+
+<img class="avatar"
+src="${chat.photo}">
+
+
+<div class="chat-main">
+
+
+<div class="chat-top">
+
+<p class="chat-name">
+${chat.name}
+</p>
+
+
+<p class="chat-time">
+${timeFormat(chat.time)}
+</p>
+
+
+</div>
+
+
+
+<p class="chat-message">
+
+${chat.message}
+
+</p>
+
+
+
+</div>
+
+
+<div>
+
+${chat.online ?
+'<i class="fa-solid fa-circle" style="color:green;font-size:10px"></i>'
+:
+''
+}
+
+
+${chat.unread ?
+'<span class="badge">1</span>'
+:
+''}
+
+
+</div>
+
+`;
+
+
+
+div.onclick=()=>{
+
+location.href=
+`chat.html?uid=${chat.uid}`;
+
+};
+
+
+
+chatList.appendChild(div);
+
+
+
+});
+
+
+
 });
