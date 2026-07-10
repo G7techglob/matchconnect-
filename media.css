@@ -1,0 +1,39 @@
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#fff;
+}
+
+.header{
+display:flex;
+align-items:center;
+padding:15px;
+border-bottom:1px solid #ddd;
+}
+
+.header h2{
+flex:1;
+text-align:center;
+margin:0;
+}
+
+#backBtn{
+background:none;
+border:none;
+font-size:20px;
+cursor:pointer;
+}
+
+.media-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:2px;
+}
+
+.media-grid img,
+.media-grid video{
+width:100%;
+height:130px;
+object-fit:cover;
+background:#eee;
+}
