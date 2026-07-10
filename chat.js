@@ -25,6 +25,8 @@ import { createChatId, formatTime, escapeHTML } from "./utils.js";
 const messages = document.getElementById("messages");
 const input = document.getElementById("messageInput");
 const sendBtn = document.getElementById("sendBtn");
+const imageBtn = document.getElementById("imageBtn");
+const imageInput = document.getElementById("imageInput");
 const chatUserName = document.getElementById("chatUserName");
 const chatAvatar = document.getElementById("chatAvatar");
 const userStatus = document.getElementById("userStatus");
