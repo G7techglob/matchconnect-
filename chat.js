@@ -127,7 +127,11 @@ function loadMessages() {
             messages.innerHTML += `
                 <div class="message ${mine ? "sent" : "received"}">
                     <div class="bubble">
-                        ${escapeHTML(msg.text || "")}
+                        ${
+    msg.type === "image"
+    ? `<img src="${msg.imageURL}" class="chat-image">`
+    : escapeHTML(msg.text || "")
+                        }
                         <div class="time">
 
     ${msg.time ? formatTime(msg.time) : ""}
