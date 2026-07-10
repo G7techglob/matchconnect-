@@ -4,23 +4,28 @@ font-family:Arial,sans-serif;
 background:#fff;
 }
 
-.header{
+.media-header{
 display:flex;
 align-items:center;
 padding:15px;
 border-bottom:1px solid #ddd;
+background:#fff;
+position:sticky;
+top:0;
+z-index:100;
 }
 
-.header h2{
+.media-header h2{
 flex:1;
 text-align:center;
 margin:0;
+font-size:20px;
 }
 
 #backBtn{
 background:none;
 border:none;
-font-size:20px;
+font-size:22px;
 cursor:pointer;
 }
 
@@ -28,12 +33,20 @@ cursor:pointer;
 display:grid;
 grid-template-columns:repeat(3,1fr);
 gap:2px;
+padding:2px;
 }
 
-.media-grid img,
-.media-grid video{
+.media-item{
+position:relative;
 width:100%;
-height:130px;
-object-fit:cover;
+aspect-ratio:1/1;
+overflow:hidden;
 background:#eee;
+}
+
+.media-item img,
+.media-item video{
+width:100%;
+height:100%;
+object-fit:cover;
 }
