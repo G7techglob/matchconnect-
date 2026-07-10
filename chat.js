@@ -10,6 +10,7 @@ import {
   doc,
   getDoc,
   updateDoc
+  setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -22,6 +23,7 @@ const sendBtn = document.getElementById("sendBtn");
 const chatUserName = document.getElementById("chatUserName");
 const chatAvatar = document.getElementById("chatAvatar");
 const userStatus = document.getElementById("userStatus");
+const typingIndicator = document.getElementById("typingIndicator");
 
 const params = new URLSearchParams(window.location.search);
 const receiverUid = params.get("uid");
@@ -48,6 +50,7 @@ onAuthStateChanged(auth, async (user) => {
     await loadReceiver();
 
 loadMessages();
+  listenTyping();
 
 });
 
@@ -113,6 +116,27 @@ function loadMessages() {
 
 }
 
+function listenTyping() {
+
+    onSnapshot(doc(db, "typing", chatId), (snapshot) => {
+
+        if (!snapshot.exists()) {
+            typingIndicator.textContent = "";
+            return;
+        }
+
+        const data = snapshot.data();
+
+        if (data.uid !== currentUser.uid && data.typing) {
+            typingIndicator.textContent = "Typing...";
+        } else {
+            typingIndicator.textContent = "";
+        }
+
+    });
+
+}
+
 async function sendMessage() {
 
     const text = input.value.trim();
@@ -144,6 +168,27 @@ input.addEventListener("keydown", (e) => {
         sendMessage();
 
     }
+
+});
+let typingTimer;
+
+input.addEventListener("input", async () => {
+
+    await setDoc(doc(db, "typing", chatId), {
+        uid: currentUser.uid,
+        typing: input.value.trim().length > 0
+    });
+
+    clearTimeout(typingTimer);
+
+    typingTimer = setTimeout(async () => {
+
+        await setDoc(doc(db, "typing", chatId), {
+            uid: currentUser.uid,
+            typing: false
+        });
+
+    }, 1500);
 
 });
 
