@@ -195,7 +195,9 @@ async function sendMessage() {
 }
 
 sendBtn.addEventListener("click", sendMessage);
-
+imageBtn.addEventListener("click", () => {
+    imageInput.click();
+});
 input.addEventListener("keydown", (e) => {
 
     if (e.key === "Enter") {
