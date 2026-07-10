@@ -33,9 +33,13 @@ const typingIndicator = document.getElementById("typingIndicator");
 const params = new URLSearchParams(window.location.search);
 const receiverUid = params.get("uid");
 
+if (!receiverUid) {
+    alert("No user selected.");
+    window.location.href = "chats.html";
+}
+
 let currentUser = null;
 let chatId = null;
-
 onAuthStateChanged(auth, async (user) => {
 
     if (!user) {
@@ -45,10 +49,14 @@ onAuthStateChanged(auth, async (user) => {
 
     currentUser = user;
 
-    await updateDoc(doc(db, "users", currentUser.uid), {
+    await setDoc(
+    doc(db, "users", currentUser.uid),
+    {
         online: true,
         lastSeen: serverTimestamp()
-    });
+    },
+    { merge: true }
+);
 
     chatId = createChatId(user.uid, receiverUid);
 
@@ -224,10 +232,14 @@ window.addEventListener("beforeunload", async () => {
 
     if (!currentUser) return;
 
-    await updateDoc(doc(db, "users", currentUser.uid), {
+    await setDoc(
+    doc(db, "users", currentUser.uid),
+    {
         online: false,
         lastSeen: serverTimestamp()
-    });
+    },
+    { merge: true }
+);
 
 });
 
