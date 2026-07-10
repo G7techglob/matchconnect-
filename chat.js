@@ -173,6 +173,110 @@ data-reaction="👍">
 
 ${msg.time ? formatTime(msg.time) : ""}
 
+onSnapshot(q, (snapshot) => {
+
+    messages.innerHTML = "";
+
+
+    snapshot.forEach((messageDoc) => {
+
+
+        const msg = messageDoc.data();
+
+
+        if (
+            msg.receiverId === currentUser.uid &&
+            !msg.seen
+        ) {
+
+            updateDoc(
+                doc(db,"chats",chatId,"messages",messageDoc.id),
+                {
+                    seen:true
+                }
+            );
+
+        }
+
+
+
+        const mine =
+        msg.senderId === currentUser.uid;
+
+
+
+        messages.innerHTML += `
+
+<div class="message ${mine ? "sent" : "received"}"
+data-id="${messageDoc.id}">
+
+<div class="bubble">
+
+
+${
+msg.type === "image"
+?
+`<img src="${msg.imageURL}" class="chat-image">`
+:
+escapeHTML(msg.text || "")
+}
+
+
+
+<div class="message-buttons">
+
+
+<button class="reply-msg"
+data-id="${messageDoc.id}">
+↩ Reply
+</button>
+
+
+
+${
+mine
+?
+`
+<button class="delete-msg"
+data-id="${messageDoc.id}">
+🗑 Delete
+</button>
+`
+:
+""
+}
+
+
+
+<button class="react-btn"
+data-id="${messageDoc.id}"
+data-reaction="❤️">
+❤️
+</button>
+
+
+<button class="react-btn"
+data-id="${messageDoc.id}"
+data-reaction="😂">
+😂
+</button>
+
+
+<button class="react-btn"
+data-id="${messageDoc.id}"
+data-reaction="👍">
+👍
+</button>
+
+
+</div>
+
+
+
+<div class="time">
+
+${msg.time ? formatTime(msg.time) : ""}
+
 
 ${
 mine
@@ -181,6 +285,7 @@ mine
 :
 ""
 }
+
 
 </div>
 
@@ -192,13 +297,14 @@ mine
 `;
 
 
-        });
-
-        messages.scrollTop = messages.scrollHeight;
 
     });
 
-}
+
+    messages.scrollTop = messages.scrollHeight;
+
+
+});
 
 function listenTyping() {
 
