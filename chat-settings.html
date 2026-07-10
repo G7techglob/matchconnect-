@@ -1,59 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Settings - MatchConnect</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat Settings</title>
 
-    <link rel="stylesheet" href="css/chat-settings.css">
-
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="chat-settings.css">
 </head>
 <body>
 
-<div class="settings-container">
+<header>
+    <button onclick="history.back()">←</button>
+    <h2>Chat Settings</h2>
+</header>
 
-    <header class="settings-header">
+<div class="settings">
 
-        <button id="backBtn" class="icon-btn">
-            <span class="material-icons">arrow_back</span>
-        </button>
+<div class="item">
+<label>Read Receipts</label>
+<input type="checkbox" id="readReceipts">
+</div>
 
-        <h2>Chat Settings</h2>
+<div class="item">
+<label>Typing Indicator</label>
+<input type="checkbox" id="typingIndicator">
+</div>
 
-        <div style="width:40px;"></div>
+<div class="item">
+<label>Online Status</label>
+<input type="checkbox" id="onlineStatus">
+</div>
 
-    </header>
+<div class="item">
+<label>Message Preview</label>
+<input type="checkbox" id="messagePreview">
+</div>
 
-    <div class="settings-group">
+<div class="item">
+<label>Auto Download Media</label>
+<input type="checkbox" id="autoDownload">
+</div>
 
-        <h4>Messaging</h4>
-
-        <div class="setting-item">
-            <span class="material-icons">done_all</span>
-            <span>Read Receipts</span>
-        </div>
-
-        <div class="setting-item">
-            <span class="material-icons">edit</span>
-            <span>Typing Indicator</span>
-        </div>
-
-        <div class="setting-item">
-            <span class="material-icons">circle</span>
-            <span>Online Status</span>
-        </div>
-
-        <div class="setting-item">
-            <span class="material-icons">download</span>
-            <span>Auto-download Media</span>
-        </div>
-
-    </div>
+<button id="saveBtn">Save Settings</button>
 
 </div>
 
-<script type="module" src="js/chat-settings.js"></script>
+<script type="module" src="chat-settings.js"></script>
 
 </body>
 </html>
