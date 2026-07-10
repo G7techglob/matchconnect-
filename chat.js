@@ -96,17 +96,16 @@ function loadMessages() {
 
         messages.innerHTML = "";
 
-        snapshot.forEach((doc) => {
+        snapshot.forEach((messageDoc) => {
 
-            const msg = doc.data();
+    const msg = messageDoc.data();
           if (
     msg.receiverId === currentUser.uid &&
     !msg.seen
 ) {
 
     updateDoc(
-        doc(db, "chats", chatId, "messages", doc.id),
-        {
+        doc(db, "chats", chatId, "messages", messageDoc.id), {
             seen: true
         }
     );
