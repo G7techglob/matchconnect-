@@ -140,17 +140,6 @@ if ("serviceWorker" in navigator) {
       .then(() => console.log("Service Worker Registered"));
   });
 }
-
-self.addEventListener("install", e => {
-  self.skipWaiting();
-});
-
-self.addEventListener("fetch", e => {
-  e.respondWith(fetch(e.request));
-});
-
-
-
 let currentAd = 0;
 
 function loadAd() {
