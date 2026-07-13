@@ -1,16 +1,19 @@
 import { auth } from "./firebase.js";
-import { signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { signOut,
+       onAuthStateChanged
+       } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 // CHECK LOGIN STATUS
-
 onAuthStateChanged(auth, (user) => {
 
   if (!user) {
-
     window.location.href = "login.html";
-
+    return;
   }
 
+  // Dashboard code starts below
+
 });
+
 const profilesContainer = document.getElementById("profiles");
 
 
