@@ -121,3 +121,11 @@ if (communityGuidelines) {
         window.location.href = "./community.html";
     });
 }
+
+const privacyPolicy = document.getElementById("privacyPolicy");
+
+if (privacyPolicy) {
+    privacyPolicy.addEventListener("click", () => {
+        window.location.href = "./privacy.html";
+    });
+}
