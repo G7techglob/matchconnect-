@@ -119,4 +119,4 @@ export async function loadNotifications(container) {
     }
   });
 });
-      }
+  
