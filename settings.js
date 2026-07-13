@@ -180,3 +180,11 @@ if (deleteAccount) {
     });
 
 }
+
+const contactSupport = document.getElementById("contactSupport");
+
+if (contactSupport) {
+    contactSupport.addEventListener("click", () => {
+        window.location.href = "./contact.html";
+    });
+}
