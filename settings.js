@@ -114,3 +114,10 @@ if (chatSettings) {
         window.location.href = "./chat-settings.html";
     });
 }
+const communityGuidelines = document.getElementById("communityGuidelines");
+
+if (communityGuidelines) {
+    communityGuidelines.addEventListener("click", () => {
+        window.location.href = "./community.html";
+    });
+}
