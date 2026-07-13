@@ -6,7 +6,8 @@ import {
   getDocs,
   doc,
   getDoc,
-  orderBy
+  orderBy,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import { app, auth } from "./firebase.js";
@@ -48,69 +49,56 @@ export async function loadNotifications(container) {
           where("userId", "==", user.uid),
           orderBy("createdAt", "desc")
         );
+        onSnapshot(q, async (snapshot) => {
 
-        const snapshot = await getDocs(q);
+  container.innerHTML = "";
 
-        if (snapshot.empty) {
-          container.textContent = "No notifications yet";
-          unsubscribe();
-          resolve();
-          return;
-        }
+  if (snapshot.empty) {
+    container.textContent = "No notifications yet";
+    return;
+  }
 
-        const senderIds = [...new Set(snapshot.docs.map((d) => d.data()?.senderId).filter(Boolean))];
+  const senderIds = [
+    ...new Set(
+      snapshot.docs
+        .map(doc => doc.data().senderId)
+        .filter(Boolean)
+    )
+  ];
 
-        const senderEntries = await Promise.all(
-          senderIds.map(async (senderId) => {
-            try {
-              const senderSnap = await getDoc(doc(db, "users", senderId));
-              const name = senderSnap.exists() ? senderSnap.data()?.name || "Someone" : "Someone";
-              return [senderId, name];
-            } catch {
-              return [senderId, "Someone"];
-            }
-          })
-        );
+  const senderCache = new Map();
 
-        const senderCache = new Map(senderEntries);
+  for (const senderId of senderIds) {
+    try {
+      const senderSnap = await getDoc(doc(db, "users", senderId));
 
-        const fragment = document.createDocumentFragment();
+      senderCache.set(
+        senderId,
+        senderSnap.exists()
+          ? (senderSnap.data().name || "Someone")
+          : "Someone"
+      );
+    } catch {
+      senderCache.set(senderId, "Someone");
+    }
+  }
 
-        for (const notifDoc of snapshot.docs) {
-          const notif = notifDoc.data();
-          const senderName = senderCache.get(notif?.senderId) || "Someone";
+  snapshot.forEach((notificationDoc) => {
 
-          const wrapper = document.createElement("div");
-          wrapper.className = "notification-item";
+    const notification = notificationDoc.data();
 
-          const p = document.createElement("p");
-          const strong = document.createElement("strong");
-          strong.textContent = senderName;
+    const wrapper = document.createElement("div");
+    wrapper.className = "notification-item";
 
-          p.appendChild(strong);
-          p.append(buildNotificationText(notif?.type));
+    wrapper.innerHTML = `
+      <p>
+        <strong>${senderCache.get(notification.senderId) || "Someone"}</strong>
+        ${buildNotificationText(notification.type)}
+      </p>
+    `;
 
-          wrapper.appendChild(p);
-          fragment.appendChild(wrapper);
-        }
+    container.appendChild(wrapper);
 
-        container.appendChild(fragment);
-
-        unsubscribe();
-        resolve();
-      } catch (error) {
-        console.error("Error loading notifications:", error);
-
-        if (String(error?.message || "").includes("index")) {
-          container.textContent =
-            "Notifications need a Firestore index (userId + createdAt). Check console for the direct index link.";
-        } else {
-          container.textContent = "Failed to load notifications.";
-        }
-
-        unsubscribe();
-        resolve();
-      }
-    });
   });
-}
+
+});
