@@ -129,3 +129,11 @@ if (privacyPolicy) {
         window.location.href = "./privacy.html";
     });
 }
+
+const termsOfService = document.getElementById("termsOfService");
+
+if (termsOfService) {
+    termsOfService.addEventListener("click", () => {
+        window.location.href = "./terms.html";
+    });
+}
