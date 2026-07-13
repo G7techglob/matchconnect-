@@ -356,10 +356,11 @@ if (reportUserBtn) {
     if (!reason) return;
 
     await addDoc(collection(db, "reports"), {
-      userId: user.uid,
+      reporterId: user.uid,
+      reportedUserId: uid,
       reason,
       createdAt: serverTimestamp()
-    });
+});
 
     showNotification("Report submitted");
   });
