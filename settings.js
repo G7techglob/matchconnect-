@@ -1,6 +1,6 @@
 console.log("Settings page loaded");
 
-import { auth, db } from "../firebase.js";
+import { auth, db } from "./firebase.js";
 
 import {
     onAuthStateChanged,
