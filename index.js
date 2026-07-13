@@ -132,7 +132,9 @@ if (settingsBtn) {
 
 /* INITIAL LOAD */
 
-loadProfiles();
+if (typeof loadProfiles === "function") {
+    loadProfiles();
+}
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
