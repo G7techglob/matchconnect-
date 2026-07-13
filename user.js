@@ -347,21 +347,43 @@ if (blockUserBtn) {
   });
 }
 
-// REPORT USER (simple version)
+// REPORT USER
 if (reportUserBtn) {
+
   reportUserBtn.addEventListener("click", async () => {
+
     const user = auth.currentUser;
 
-    const reason = prompt("Why are you reporting this user?");
+    if (!user) {
+      alert("Please login first");
+      return;
+    }
+
+    const reason = prompt(
+      "Why are you reporting this user?"
+    );
+
     if (!reason) return;
 
-    await addDoc(collection(db, "reports"), {
-      reporterId: user.uid,
-      reportedUserId: uid,
-      reason,
-      createdAt: serverTimestamp()
-});
+    try {
 
-    showNotification("Report submitted");
+      await addDoc(collection(db, "reports"), {
+        reporterId: user.uid,
+        reportedUserId: uid,
+        reason: reason,
+        createdAt: serverTimestamp()
+      });
+
+      alert("Report submitted successfully.");
+
+    } catch(error) {
+
+      console.error("Report error:", error);
+
+      alert("Failed to submit report.");
+
+    }
+
   });
-}
+
+  }
