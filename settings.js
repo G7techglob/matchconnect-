@@ -161,15 +161,19 @@ if (deleteAccount) {
 
         try {
 
-            alert("Delete Account button is working!");
+    await deleteDoc(doc(db, "users", user.uid));
 
-        } catch (error) {
+    alert("Your profile data has been deleted.");
 
-            console.error(error);
+    window.location.href = "register.html";
 
-            alert(
-                "Unable to delete account. Please log out and log in again, then try again."
-            );
+} catch (error) {
+
+    console.error(error);
+
+    alert(
+        "Unable to delete account. Please log out and log in again, then try again."
+    );
 
         }
 
