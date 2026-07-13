@@ -199,3 +199,20 @@ body {
 .profile-menu .danger {
   color: red;
 }
+
+.menu-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent !important;
+  color: #333 !important;
+  border: none;
+  padding: 5px;
+  margin: 0;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.menu-btn:hover {
+  background: transparent !important;
+}
