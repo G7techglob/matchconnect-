@@ -102,3 +102,21 @@ export async function loadNotifications(container) {
   });
 
 });
+
+              resolve();
+
+    } catch (error) {
+      console.error("Error loading notifications:", error);
+
+      if (String(error?.message || "").includes("index")) {
+        container.textContent =
+          "Notifications need a Firestore index (userId + createdAt). Check console for the direct index link.";
+      } else {
+        container.textContent = "Failed to load notifications.";
+      }
+
+      resolve();
+    }
+  });
+});
+      }
