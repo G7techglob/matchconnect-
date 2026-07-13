@@ -4,12 +4,14 @@ import { auth, db } from "./firebase.js";
 
 import {
     onAuthStateChanged,
-    signOut
+    signOut,
+    deleteUser
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 import {
     doc,
-    getDoc
+    getDoc,
+    deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 
@@ -136,4 +138,49 @@ if (termsOfService) {
     termsOfService.addEventListener("click", () => {
         window.location.href = "./terms.html";
     });
+}
+
+const deleteAccount = document.getElementById("deleteAccount");
+
+if (deleteAccount) {
+
+    deleteAccount.addEventListener("click", async () => {
+
+        const confirmDelete = confirm(
+            "Are you sure you want to permanently delete your account?"
+        );
+
+        if (!confirmDelete) return;
+
+        const user = auth.currentUser;
+
+        if (!user) {
+            alert("No user is logged in.");
+            return;
+        }
+
+        try {
+
+            // Delete Firestore user data
+            await deleteDoc(doc(db, "users", user.uid));
+
+            // Delete Firebase Authentication account
+            await deleteUser(user);
+
+            alert("Your account has been deleted.");
+
+            window.location.href = "register.html";
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Unable to delete account. Please log out and log in again, then try again."
+            );
+
+        }
+
+    });
+
 }
