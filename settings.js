@@ -161,15 +161,7 @@ if (deleteAccount) {
 
         try {
 
-            // Delete Firestore user data
-            await deleteDoc(doc(db, "users", user.uid));
-
-            // Delete Firebase Authentication account
-            await deleteUser(user);
-
-            alert("Your account has been deleted.");
-
-            window.location.href = "register.html";
+            alert("Delete Account button is working!");
 
         } catch (error) {
 
