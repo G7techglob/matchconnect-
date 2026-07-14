@@ -4,34 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Notifications</title>
+  <link rel="stylesheet" href="notifications.css">
 </head>
 <body>
 
   <h2>Notifications</h2>
 
   <div id="notificationsContainer">Loading...</div>
-  <noscript>Please enable JavaScript to view notifications.</noscript>
-
-  <script type="module">
-    const container = document.getElementById("notificationsContainer");
-
-    async function loadNotifications() {
-      try {
-        const module = await import("./notifications.js");
-
-        if (module && typeof module.loadNotifications === "function") {
-          await module.loadNotifications(container);
-        } else {
-          container.textContent = "Notifications loaded, but no renderer was found.";
-        }
-      } catch (err) {
-        console.error("Failed to load notifications.js:", err);
-        container.textContent = "Error loading notifications. Check console for details.";
-      }
-    }
-
-    loadNotifications();
-  </script>
+  
+  <script type="module" src="notifications.js"></script>
 
 </body>
 </html>
