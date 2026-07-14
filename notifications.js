@@ -9,6 +9,10 @@ import {
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
 import { app, auth } from "./firebase.js";
 
 const db = getFirestore(app);
@@ -32,7 +36,7 @@ export async function loadNotifications(container) {
   container.textContent = "Loading...";
 
   return new Promise((resolve) => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
         if (!user) {
           container.textContent = "Please sign in to view notifications.";
@@ -118,4 +122,7 @@ export async function loadNotifications(container) {
     }
   });
 });
-  
+
+  const container = document.getElementById("notificationsContainer");
+
+loadNotifications(container);
