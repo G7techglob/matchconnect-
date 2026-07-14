@@ -9,10 +9,7 @@ import {
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-import {
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { app, auth } from "./firebase.js";
 
 const db = getFirestore(app);
@@ -30,99 +27,101 @@ function buildNotificationText(type) {
   }
 }
 
-export async function loadNotifications(container) {
-  if (!container) return;
+export function loadNotifications(container) {
+  if (!container) return () => {};
 
   container.textContent = "Loading...";
 
-  return new Promise((resolve) => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      try {
-        if (!user) {
-          container.textContent = "Please sign in to view notifications.";
-          unsubscribe();
-          resolve();
-          return;
-        }
+  let unsubscribeSnapshot = null;
 
-        container.textContent = "";
-
-        const q = query(
-          collection(db, "notifications"),
-          where("userId", "==", user.uid),
-          orderBy("createdAt", "desc")
-        );
-        onSnapshot(q, async (snapshot) => {
-
-  container.innerHTML = "";
-
-  if (snapshot.empty) {
-    container.textContent = "No notifications yet";
-    return;
-  }
-
-  const senderIds = [
-    ...new Set(
-      snapshot.docs
-        .map(doc => doc.data().senderId)
-        .filter(Boolean)
-    )
-  ];
-
-  const senderCache = new Map();
-
-  for (const senderId of senderIds) {
-    try {
-      const senderSnap = await getDoc(doc(db, "users", senderId));
-
-      senderCache.set(
-        senderId,
-        senderSnap.exists()
-          ? (senderSnap.data().name || "Someone")
-          : "Someone"
-      );
-    } catch {
-      senderCache.set(senderId, "Someone");
+  const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+    if (unsubscribeSnapshot) {
+      unsubscribeSnapshot();
+      unsubscribeSnapshot = null;
     }
-  }
 
-  snapshot.forEach((notificationDoc) => {
-
-    const notification = notificationDoc.data();
-
-    const wrapper = document.createElement("div");
-    wrapper.className = "notification-item";
-
-    wrapper.innerHTML = `
-      <p>
-        <strong>${senderCache.get(notification.senderId) || "Someone"}</strong>
-        ${buildNotificationText(notification.type)}
-      </p>
-    `;
-
-    container.appendChild(wrapper);
-
-  });
-
-});
-
-              resolve();
-
-    } catch (error) {
-      console.error("Error loading notifications:", error);
-
-      if (String(error?.message || "").includes("index")) {
-        container.textContent =
-          "Notifications need a Firestore index (userId + createdAt). Check console for the direct index link.";
-      } else {
-        container.textContent = "Failed to load notifications.";
+    try {
+      if (!user) {
+        container.textContent = "Please sign in to view notifications.";
+        return;
       }
 
-      resolve();
+      const q = query(
+        collection(db, "notifications"),
+        where("userId", "==", user.uid),
+        orderBy("createdAt", "desc")
+      );
+
+      unsubscribeSnapshot = onSnapshot(
+        q,
+        async (snapshot) => {
+          container.innerHTML = "";
+
+          if (snapshot.empty) {
+            container.textContent = "No notifications yet";
+            return;
+          }
+
+          const senderIds = [
+            ...new Set(
+              snapshot.docs.map((d) => d.data().senderId).filter(Boolean)
+            )
+          ];
+
+          const senderCache = new Map();
+
+          await Promise.all(
+            senderIds.map(async (senderId) => {
+              try {
+                const senderSnap = await getDoc(doc(db, "users", senderId));
+                senderCache.set(
+                  senderId,
+                  senderSnap.exists() ? senderSnap.data().name || "Someone" : "Someone"
+                );
+              } catch {
+                senderCache.set(senderId, "Someone");
+              }
+            })
+          );
+
+          snapshot.forEach((notificationDoc) => {
+            const notification = notificationDoc.data();
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "notification-item";
+            wrapper.innerHTML = `
+              <p>
+                <strong>${senderCache.get(notification.senderId) || "Someone"}</strong>
+                ${buildNotificationText(notification.type)}
+              </p>
+            `;
+
+            container.appendChild(wrapper);
+          });
+        },
+        (error) => {
+          console.error("Error in notifications snapshot:", error);
+          if (String(error?.message || "").includes("index")) {
+            container.textContent =
+              "Notifications need a Firestore index (userId + createdAt). Check console for the direct index link.";
+          } else {
+            container.textContent = "Failed to load notifications.";
+          }
+        }
+      );
+    } catch (error) {
+      console.error("Error loading notifications:", error);
+      container.textContent = "Failed to load notifications.";
     }
   });
-});
 
-  const container = document.getElementById("notificationsContainer");
+  return () => {
+    if (unsubscribeSnapshot) unsubscribeSnapshot();
+    unsubscribeAuth();
+  };
+}
 
-loadNotifications(container);
+const container = document.getElementById("notificationsContainer");
+const cleanupNotifications = loadNotifications(container);
+
+window.addEventListener("beforeunload", cleanupNotifications);
