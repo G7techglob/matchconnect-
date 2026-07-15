@@ -732,14 +732,6 @@ onAuthStateChanged(auth, (user)=>{
 
 if(!user) return;
 
-  const photosTab =
-document.getElementById("photosTab");
-
-
-const reelsTab =
-document.getElementById("reelsTab");
-
-
 if(photosTab){
 
 photosTab.onclick = ()=>{
