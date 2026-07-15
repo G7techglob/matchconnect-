@@ -732,8 +732,7 @@ onAuthStateChanged(auth, (user)=>{
 
 if(!user) return;
 
-
-const photosTab =
+  const photosTab =
 document.getElementById("photosTab");
 
 
@@ -741,16 +740,12 @@ const reelsTab =
 document.getElementById("reelsTab");
 
 
-const postsTab =
-document.getElementById("postsTab");
-
-
-
 if(photosTab){
 
 photosTab.onclick = ()=>{
 
-loadPhotos(user.uid);
+window.location.href =
+`photos.html?uid=${user.uid}`;
 
 };
 
@@ -762,12 +757,24 @@ if(reelsTab){
 
 reelsTab.onclick = ()=>{
 
-loadReels(user.uid);
+window.location.href =
+`reels.html?uid=${user.uid}`;
 
 };
 
 }
 
+
+const photosTab =
+document.getElementById("photosTab");
+
+
+const reelsTab =
+document.getElementById("reelsTab");
+
+
+const postsTab =
+document.getElementById("postsTab");
 
 
 if(postsTab){
