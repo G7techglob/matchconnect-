@@ -116,6 +116,14 @@ if (chatSettings) {
         window.location.href = "./chat-settings.html";
     });
 }
+
+const privacySettings = document.querySelector(".settings-group:nth-of-type(2) .setting-item");
+
+if (privacySettings) {
+    privacySettings.addEventListener("click", () => {
+        window.location.href = "./privacy-settings.html";
+    });
+}
 const communityGuidelines = document.getElementById("communityGuidelines");
 
 if (communityGuidelines) {
