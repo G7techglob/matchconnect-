@@ -98,3 +98,24 @@ body {
         gap: clamp(26px, 6vw, 68px);
     }
 }
+
+/* FIX CONTENT OVERLAP */
+body {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+}
+
+/* Tablet/Desktop */
+@media (min-width: 768px) {
+    #bottomNavbar {
+        max-width: 900px;
+        margin: 0 auto;
+        border: 1px solid #ececec;
+        border-bottom: none;
+        border-top-left-radius: 14px;
+        border-top-right-radius: 14px;
+    }
+
+    .nav-center {
+        gap: clamp(26px, 6vw, 68px);
+    }
+}
