@@ -295,3 +295,15 @@ if(darkModeToggle){
     });
 
 }
+
+const switchAccount = document.getElementById("switchAccount");
+
+if(switchAccount){
+
+    switchAccount.addEventListener("click",()=>{
+
+        window.location.href="./switch-account.html";
+
+    });
+
+}
