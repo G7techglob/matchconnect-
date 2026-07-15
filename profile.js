@@ -673,3 +673,114 @@ async function loadPhotos(uid){
   });
 
 }
+
+async function loadReels(uid){
+
+  const container =
+  document.getElementById("mediaContainer");
+
+
+  if(!container) return;
+
+
+  container.innerHTML = "";
+
+
+  const reelsSnap =
+  await getDocs(
+    collection(
+      db,
+      "users",
+      uid,
+      "reels"
+    )
+  );
+
+
+  if(reelsSnap.empty){
+
+    container.innerHTML =
+    "No reels yet";
+
+    return;
+
+  }
+
+
+  reelsSnap.forEach((reelDoc)=>{
+
+    const reel =
+    reelDoc.data();
+
+
+    container.innerHTML += `
+
+      <video 
+      src="${reel.videoURL}"
+      class="profile-media"
+      controls>
+      </video>
+
+    `;
+
+
+  });
+
+}
+
+onAuthStateChanged(auth, (user)=>{
+
+if(!user) return;
+
+
+const photosTab =
+document.getElementById("photosTab");
+
+
+const reelsTab =
+document.getElementById("reelsTab");
+
+
+const postsTab =
+document.getElementById("postsTab");
+
+
+
+if(photosTab){
+
+photosTab.onclick = ()=>{
+
+loadPhotos(user.uid);
+
+};
+
+}
+
+
+
+if(reelsTab){
+
+reelsTab.onclick = ()=>{
+
+loadReels(user.uid);
+
+};
+
+}
+
+
+
+if(postsTab){
+
+postsTab.onclick = ()=>{
+
+document.getElementById("myPosts").style.display="block";
+
+document.getElementById("mediaContainer").innerHTML="";
+
+};
+
+}
+
+
+});
