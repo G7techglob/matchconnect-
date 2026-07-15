@@ -145,6 +145,33 @@ onAuthStateChanged(auth, async (user) => {
         location.href = `media.html?uid=${user.uid}`;
       };
     }
+
+const photosTab = document.getElementById("photosTab");
+const reelsTab = document.getElementById("reelsTab");
+const postsTab = document.getElementById("postsTab");
+
+if (photosTab) {
+  photosTab.onclick = () => {
+    window.location.href = `photos.html?uid=${user.uid}`;
+  };
+}
+
+if (reelsTab) {
+  reelsTab.onclick = () => {
+    window.location.href = `reels.html?uid=${user.uid}`;
+  };
+}
+
+if (postsTab) {
+  postsTab.onclick = () => {
+    const postsEl = document.getElementById("myPosts");
+    const mediaContainer = document.getElementById("mediaContainer");
+
+    if (postsEl) postsEl.style.display = "block";
+    if (mediaContainer) mediaContainer.innerHTML = "";
+  };
+}
+    
   } catch (error) {
     console.error("Error loading profile:", error);
     showNotification("Error loading profile: " + error.message, true);
@@ -660,32 +687,3 @@ async function loadReels(uid) {
   });
 }
 
-onAuthStateChanged(auth, (user) => {
-  if (!user) return;
-
-  const photosTab = document.getElementById("photosTab");
-  const reelsTab = document.getElementById("reelsTab");
-  const postsTab = document.getElementById("postsTab");
-
-  if (photosTab) {
-    photosTab.onclick = () => {
-      window.location.href = `photos.html?uid=${user.uid}`;
-    };
-  }
-
-  if (reelsTab) {
-    reelsTab.onclick = () => {
-      window.location.href = `reels.html?uid=${user.uid}`;
-    };
-  }
-
-  if (postsTab) {
-    postsTab.onclick = () => {
-      const postsEl = document.getElementById("myPosts");
-      const mediaContainer = document.getElementById("mediaContainer");
-
-      if (postsEl) postsEl.style.display = "block";
-      if (mediaContainer) mediaContainer.innerHTML = "";
-    };
-  }
-});
