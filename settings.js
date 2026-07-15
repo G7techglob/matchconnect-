@@ -223,3 +223,15 @@ if (blockedUsers) {
     });
 
 }
+
+const notificationSettings = document.querySelectorAll(".settings-group")[3].querySelector(".setting-item");
+
+if (notificationSettings) {
+
+    notificationSettings.addEventListener("click", () => {
+
+        window.location.href = "./notification-settings.html";
+
+    });
+
+}
