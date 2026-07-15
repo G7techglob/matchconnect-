@@ -287,6 +287,35 @@ if (messageBtn && uid) {
   });
 }
 
+// Photos button
+const userPhotosTab = document.getElementById("userPhotosTab");
+
+if (userPhotosTab && uid) {
+  userPhotosTab.addEventListener("click", () => {
+    window.location.href = `media.html?uid=${uid}&type=photos`;
+  });
+}
+
+// Reels button
+const userReelsTab = document.getElementById("userReelsTab");
+
+if (userReelsTab && uid) {
+  userReelsTab.addEventListener("click", () => {
+    window.location.href = `media.html?uid=${uid}&type=reels`;
+  });
+}
+
+// Posts button
+const userPostsTab = document.getElementById("userPostsTab");
+
+if (userPostsTab) {
+  userPostsTab.addEventListener("click", () => {
+    document.getElementById("userPosts").scrollIntoView({
+      behavior: "smooth"
+    });
+  });
+}
+
 document.addEventListener("click", (e) => {
   if (!e.target.classList.contains("share-btn")) return;
   const profileLink = window.location.href;
