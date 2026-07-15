@@ -63,11 +63,13 @@ if (
 
 } else {
 
-  followersSnapshot.forEach(
+  const followerPromises =
+  followersSnapshot.docs.map(
     async (followerDoc) => {
 
       const followerId =
         followerDoc.id;
+
 
       const userDoc =
         await getDoc(
@@ -78,33 +80,42 @@ if (
           )
         );
 
-      if (
-        userDoc.exists()
-      ) {
+
+      if(userDoc.exists()){
 
         const userData =
           userDoc.data();
 
+
         const div =
-          document.createElement(
-            "div"
-          );
+          document.createElement("div");
+
 
         div.innerHTML = `
-          <p>
+
+          <div class="user-card">
+
+            <img 
+              src="${userData.photoURL || "images/default-avatar.png"}"
+              width="50"
+              height="50"
+            >
+
             <a href="user.html?uid=${followerId}">
               ${userData.name || "User"}
             </a>
-          </p>
+
+          </div>
+
         `;
 
-        container.appendChild(
-          div
-        );
+
+        container.appendChild(div);
 
       }
 
     }
   );
 
-}
+
+await Promise.all(followerPromises);
