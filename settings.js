@@ -211,3 +211,15 @@ if (changePassword) {
     });
 
 }
+
+const blockedUsers = document.querySelectorAll(".settings-group")[1].querySelectorAll(".setting-item")[1];
+
+if (blockedUsers) {
+
+    blockedUsers.addEventListener("click", () => {
+
+        window.location.href = "./blocked-users.html";
+
+    });
+
+}
