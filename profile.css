@@ -271,4 +271,63 @@ hr {
   color: red;
 }
 
+/* =========================
+   PROFILE MEDIA TABS
+========================= */
 
+.profile-tabs {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+
+.profile-tabs button {
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #333;
+}
+
+
+.profile-tabs button:hover {
+  color: #ff4d6d;
+}
+
+
+/* Media grid */
+
+#mediaContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-top: 15px;
+}
+
+
+.profile-media {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+
+/* User media card */
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+
+.user-card img {
+  border-radius: 50%;
+  object-fit: cover;
+}
