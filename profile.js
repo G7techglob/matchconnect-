@@ -18,7 +18,9 @@ import {
   serverTimestamp,
   increment,
   deleteDoc,
-  setDoc
+  setDoc,
+  query,
+  orderBy
   
 }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
@@ -621,4 +623,53 @@ if (reportUserBtn) {
     showNotification("Report submitted");
   });
 }
+async function loadPhotos(uid){
 
+  const container =
+  document.getElementById("mediaContainer");
+
+  if(!container) return;
+
+
+  container.innerHTML = "";
+
+
+  const photosSnap =
+  await getDocs(
+    collection(
+      db,
+      "users",
+      uid,
+      "photos"
+    )
+  );
+
+
+  if(photosSnap.empty){
+
+    container.innerHTML =
+    "No photos yet";
+
+    return;
+
+  }
+
+
+  photosSnap.forEach((photoDoc)=>{
+
+    const photo =
+    photoDoc.data();
+
+
+    container.innerHTML += `
+
+      <img 
+      src="${photo.imageURL}"
+      class="profile-media"
+      >
+
+    `;
+
+  });
+
+}
