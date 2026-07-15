@@ -61,51 +61,63 @@ if (
 
   container.innerHTML =
     "Not following anyone yet";
-
 } else {
 
-  followingSnapshot.forEach(
-    async (followingDoc) => {
+  const followingPromises =
+    followingSnapshot.docs.map(
+      async (followingDoc) => {
 
-      const followingId =
-        followingDoc.id;
+        const followingId =
+          followingDoc.id;
 
-      const userDoc =
-        await getDoc(
-          doc(
-            db,
-            "users",
-            followingId
-          )
-        );
 
-      if (
-        userDoc.exists()
-      ) {
-
-        const userData =
-          userDoc.data();
-
-        const div =
-          document.createElement(
-            "div"
+        const userDoc =
+          await getDoc(
+            doc(
+              db,
+              "users",
+              followingId
+            )
           );
 
-        div.innerHTML = `
-          <p>
-            <a href="user.html?uid=${followingId}">
-              ${userData.name || "User"}
-            </a>
-          </p>
-        `;
 
-        container.appendChild(
-          div
-        );
+        if(userDoc.exists()){
+
+          const userData =
+            userDoc.data();
+
+
+          const div =
+            document.createElement("div");
+
+
+          div.innerHTML = `
+
+            <div class="user-card">
+
+              <img 
+                src="${userData.photoURL || "images/default-avatar.png"}"
+                width="50"
+                height="50"
+              >
+
+              <a href="user.html?uid=${followingId}">
+                ${userData.name || "User"}
+              </a>
+
+            </div>
+
+          `;
+
+
+          container.appendChild(div);
+
+        }
 
       }
+    );
 
-    }
-  );
 
-    }
+  await Promise.all(followingPromises);
+
+            }
