@@ -204,3 +204,55 @@ input:checked + .slider:before{
 }
 
       }
+
+/* DARK MODE */
+
+body.dark-mode{
+    background:#121212;
+    color:white;
+}
+
+
+body.dark-mode .settings-container{
+    background:#121212;
+}
+
+
+body.dark-mode .settings-header,
+body.dark-mode .user-card,
+body.dark-mode .settings-group,
+body.dark-mode .setting-item{
+
+    background:#1e1e1e;
+    color:white;
+
+}
+
+
+body.dark-mode h4{
+
+    color:#aaa;
+
+}
+
+
+body.dark-mode .setting-item span{
+
+    color:white;
+
+}
+
+
+body.dark-mode .arrow{
+
+    color:#aaa;
+
+}
+
+
+body.dark-mode .logout-btn{
+
+    background:#333;
+    color:white;
+
+}
