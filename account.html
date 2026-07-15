@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Information</title>
+
+    <link rel="stylesheet" href="account.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+
+    <header class="header">
+
+        <button id="backBtn" class="icon-btn">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <h2>Account Information</h2>
+
+        <div style="width:40px;"></div>
+
+    </header>
+
+    <div class="profile">
+
+        <img id="profilePhoto"
+             src="assets/images/default-profile.png">
+
+        <h3 id="displayName">Loading...</h3>
+
+        <p id="email">Loading...</p>
+
+    </div>
+
+    <div class="card">
+
+        <label>Full Name</label>
+        <input type="text" id="name" readonly>
+
+        <label>Email</label>
+        <input type="email" id="emailInput" readonly>
+
+        <label>Bio</label>
+        <textarea id="bio" rows="4" readonly></textarea>
+
+        <label>Account Created</label>
+        <input type="text" id="createdAt" readonly>
+
+    </div>
+
+</div>
+
+<script type="module" src="account.js"></script>
+
+</body>
+                                               </html>
