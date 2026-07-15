@@ -188,3 +188,7 @@ if (contactSupport) {
         window.location.href = "./contact.html";
     });
 }
+
+document.getElementById("accountInfo").onclick = () => {
+    window.location.href = "account.html";
+};
