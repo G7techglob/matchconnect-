@@ -1,11 +1,6 @@
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 
-import {
-  getAuth,
-  onAuthStateChanged 
-}
-from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 import {
   getFirestore,
@@ -20,10 +15,9 @@ import {
   deleteDoc,
   setDoc,
   query,
-  orderBy
-  
-}
-from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  orderBy,
+  where
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 // TODO: Move this to environment variables for security
 // Never commit API keys to version control
@@ -47,9 +41,9 @@ const db = getFirestore(app);
  * @param {string} text - Raw text to sanitize
  * @returns {string} - Escaped text safe for innerHTML
  */
-function sanitizeText(text) {
+function sanitizeText(text = "") {
   const div = document.createElement("div");
-  div.textContent = text;
+  div.textContent = String(text);
   return div.innerHTML;
 }
 
@@ -77,6 +71,21 @@ function showNotification(message, isError = false) {
   setTimeout(() => notif.remove(), 3000);
 }
 
+function safeImageUrl(url, fallback = "images/default-avatar.png") {
+  if (!url || typeof url !== "string") return fallback;
+
+  const trimmed = url.trim();
+  if (!trimmed) return fallback;
+
+  try {
+    const parsed = new URL(trimmed, window.location.origin);
+    const allowedProtocols = ["http:", "https:"];
+    return allowedProtocols.includes(parsed.protocol) ? parsed.href : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 // ==================== INITIALIZE PROFILE ====================
 
 onAuthStateChanged(auth, async (user) => {
@@ -96,46 +105,21 @@ onAuthStateChanged(auth, async (user) => {
 
     const data = userSnap.data();
 
-const followersSnap = await getDocs(
-  collection(db, "users", user.uid, "followers")
-);
+    const followersSnap = await getDocs(collection(db, "users", user.uid, "followers"));
+    const followingSnap = await getDocs(collection(db, "users", user.uid, "following"));
 
-const followingSnap = await getDocs(
-  collection(db, "users", user.uid, "following")
-);
+    const followersCount = document.getElementById("followersCount");
+    const followingCount = document.getElementById("followingCount");
 
-const followersCount = document.getElementById("followersCount");
-const followingCount = document.getElementById("followingCount");
+    if (followersCount) followersCount.textContent = String(followersSnap.size);
+    if (followingCount) followingCount.textContent = String(followingSnap.size);
 
-if (followersCount) {
-  followersCount.textContent = followersSnap.size;
-}
+    const followersLink = document.getElementById("followersLink");
+    const followingLink = document.getElementById("followingLink");
 
-if (followingCount) {
-  followingCount.textContent = followingSnap.size;
-}
+    if (followersLink) followersLink.href = `followers.html?uid=${user.uid}`;
+    if (followingLink) followingLink.href = `following.html?uid=${user.uid}`;
 
-    const followersLink =
-  document.getElementById(
-    "followersLink"
-  );
-
-const followingLink =
-  document.getElementById(
-    "followingLink"
-  );
-
-if (followersLink) {
-  followersLink.href =
-    `followers.html?uid=${user.uid}`;
-}
-
-if (followingLink) {
-  followingLink.href =
-    `following.html?uid=${user.uid}`;
-}
-    
-    
     // Use textContent instead of innerHTML to prevent XSS
     const profileName = document.getElementById("profileName");
     const profileEmail = document.getElementById("profileEmail");
@@ -146,21 +130,21 @@ if (followingLink) {
     const photoURLInput = document.getElementById("photoURLInput");
 
     if (profileName) profileName.textContent = data.name || "No Name";
-    if (profileEmail) profileEmail.textContent = data.email || user.email;
+    if (profileEmail) profileEmail.textContent = data.email || user.email || "No Email";
     if (profileBio) profileBio.textContent = data.bio || "No bio yet";
-    if (profilePhoto) profilePhoto.src = data.photoURL || "images/default-avatar.png";
+    if (profilePhoto) profilePhoto.src = safeImageUrl(data.photoURL);
     if (editName) editName.value = data.name || "";
     if (editBio) editBio.value = data.bio || "";
     if (photoURLInput) photoURLInput.value = data.photoURL || "";
 
     await loadMyPosts();
-    const viewMedia = document.getElementById("viewMedia");
 
-if (viewMedia) {
-  viewMedia.onclick = () => {
-    location.href = `media.html?uid=${user.uid}`;
-  };
-}
+    const viewMedia = document.getElementById("viewMedia");
+    if (viewMedia) {
+      viewMedia.onclick = () => {
+        location.href = `media.html?uid=${user.uid}`;
+      };
+    }
   } catch (error) {
     console.error("Error loading profile:", error);
     showNotification("Error loading profile: " + error.message, true);
@@ -214,13 +198,13 @@ if (profilePostBtn) {
 
     try {
       const userSnap = await getDoc(doc(db, "users", user.uid));
-      const profileData = userSnap.data();
+      const profileData = userSnap.data() || {};
 
       await addDoc(collection(db, "posts"), {
         content,
         userId: user.uid,
-        username: profileData.name || user.email,
-        photoURL: profileData.photoURL || "images/default-avatar.png",
+        username: profileData.name || user.email || "User",
+        photoURL: safeImageUrl(profileData.photoURL),
         likes: 0,
         comments: 0,
         createdAt: serverTimestamp()
@@ -245,52 +229,27 @@ async function loadMyPosts() {
 
   myPosts.innerHTML = "";
 
+  const currentUser = auth.currentUser;
+  if (!currentUser) return;
+
   try {
-    const postsSnapshot = await getDocs(collection(db, "posts"));
-
-    let totalPosts = 0;
-    
-    // Use Promise.all to wait for all posts to load
-    
-const postPromises = postsSnapshot.docs.map(postDoc => {
-
-  const post = postDoc.data();
-
-  if (
-    post.userId === auth.currentUser.uid
-  ) {
-    totalPosts++;
-  }
-
-  return renderPost(postDoc);
-
-});
-
-await Promise.all(postPromises);
-
-const postCount =
-  document.getElementById(
-    "postCount"
-  );
-
-if (postCount) {
-  postCount.textContent =
-    totalPosts;
-}
-
-    } catch (error) {
-    console.error(
-      "Error loading posts:",
-      error
+    const postsQuery = query(
+      collection(db, "posts"),
+      where("userId", "==", currentUser.uid),
+      orderBy("createdAt", "desc")
     );
 
-    showNotification(
-      "Error loading posts: " +
-      error.message,
-      true
-    );
-  }
+    const postsSnapshot = await getDocs(postsQuery);
 
+    const postPromises = postsSnapshot.docs.map((postDoc) => renderPost(postDoc));
+    await Promise.all(postPromises);
+
+    const postCount = document.getElementById("postCount");
+    if (postCount) postCount.textContent = String(postsSnapshot.size);
+  } catch (error) {
+    console.error("Error loading posts:", error);
+    showNotification("Error loading posts: " + error.message, true);
+  }
 }
 
 /**
@@ -302,9 +261,7 @@ async function renderPost(postDoc) {
 
   const post = postDoc.data();
 
-  if (
-  post.userId !== auth.currentUser.uid
-) return;
+  if (post.userId !== auth.currentUser?.uid) return;
 
   // Create post container
   const div = document.createElement("div");
@@ -313,8 +270,8 @@ async function renderPost(postDoc) {
 
   // Sanitize user content
   const sanitizedUsername = sanitizeText(post.username || "User");
-  const sanitizedContent = sanitizeText(post.content);
-  const photoURL = post.photoURL || "images/default-avatar.png";
+  const sanitizedContent = sanitizeText(post.content || "");
+  const photoURL = safeImageUrl(post.photoURL);
 
   div.innerHTML = `
     <div class="post-header">
@@ -327,18 +284,15 @@ async function renderPost(postDoc) {
       >
       <strong>${sanitizedUsername}</strong>
 
-<br>
+      <br>
 
-<small>
-  ${
-    post.createdAt
-      ? new Date(
-          post.createdAt.seconds * 1000
-        ).toLocaleString()
-      : ""
-  }
-</small>
-      
+      <small>
+        ${
+          post.createdAt?.seconds
+            ? new Date(post.createdAt.seconds * 1000).toLocaleString()
+            : ""
+        }
+      </small>
     </div>
     <p class="post-content">${sanitizedContent}</p>
     <div class="post-actions">
@@ -383,19 +337,17 @@ async function loadComments(postId, postElement) {
     const commentsContainer = postElement.querySelector(`#comments-${postId}`);
     if (!commentsContainer) return;
 
-    const commentsSnapshot = await getDocs(
-      collection(db, "posts", postId, "comments")
-    );
+    const commentsSnapshot = await getDocs(collection(db, "posts", postId, "comments"));
 
     commentsSnapshot.forEach((commentDoc) => {
       const comment = commentDoc.data();
       const p = document.createElement("p");
       p.className = "comment";
-      
+
       // Sanitize comment content
-      const sanitizedUsername = sanitizeText(comment.username);
-      const sanitizedText = sanitizeText(comment.text);
-      
+      const sanitizedUsername = sanitizeText(comment.username || "User");
+      const sanitizedText = sanitizeText(comment.text || "");
+
       p.innerHTML = `<strong>${sanitizedUsername}</strong>: ${sanitizedText}`;
       commentsContainer.appendChild(p);
     });
@@ -412,6 +364,7 @@ document.addEventListener("click", async (e) => {
   if (!target) return;
 
   const postId = target.dataset.id;
+  if (!postId) return;
 
   // Delete post
   if (target.classList.contains("delete-btn")) {
@@ -479,12 +432,12 @@ async function handleSendComment(postId) {
 
   try {
     const userSnap = await getDoc(doc(db, "users", user.uid));
-    const profileData = userSnap.data();
+    const profileData = userSnap.data() || {};
 
     await addDoc(collection(db, "posts", postId, "comments"), {
       text,
       userId: user.uid,
-      username: profileData.name || user.email,
+      username: profileData.name || user.email || "User",
       createdAt: serverTimestamp()
     });
 
@@ -540,17 +493,13 @@ async function handleLikePost(postId) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-
   const settingsBtn = document.getElementById("settingsBtn");
-
-  console.log("Settings button:", settingsBtn);
 
   if (settingsBtn) {
     settingsBtn.addEventListener("click", () => {
       window.location.href = "settings.html";
     });
   }
-
 });
 
 const menuBtn = document.getElementById("menuBtn");
@@ -568,6 +517,7 @@ if (menuBtn && profileMenu) {
 document.addEventListener("click", (e) => {
   if (
     profileMenu &&
+    menuBtn &&
     !profileMenu.contains(e.target) &&
     !menuBtn.contains(e.target)
   ) {
@@ -583,10 +533,20 @@ const shareProfileBtn = document.getElementById("shareProfile");
 if (shareProfileBtn) {
   shareProfileBtn.addEventListener("click", async () => {
     const user = auth.currentUser;
+    if (!user) {
+      showNotification("Please login", true);
+      return;
+    }
+
     const link = `${window.location.origin}/profile.html?uid=${user.uid}`;
 
-    await navigator.clipboard.writeText(link);
-    showNotification("Profile link copied!");
+    try {
+      await navigator.clipboard.writeText(link);
+      showNotification("Profile link copied!");
+    } catch (error) {
+      console.error("Clipboard write failed:", error);
+      showNotification("Unable to copy link", true);
+    }
   });
 }
 
@@ -594,15 +554,24 @@ if (shareProfileBtn) {
 if (blockUserBtn) {
   blockUserBtn.addEventListener("click", async () => {
     const user = auth.currentUser;
+    if (!user) {
+      showNotification("Please login", true);
+      return;
+    }
 
     const confirmBlock = confirm("Block this user?");
     if (!confirmBlock) return;
 
-    await setDoc(doc(db, "blockedUsers", user.uid), {
-      createdAt: serverTimestamp()
-    });
+    try {
+      await setDoc(doc(db, "blockedUsers", user.uid), {
+        createdAt: serverTimestamp()
+      });
 
-    showNotification("User blocked");
+      showNotification("User blocked");
+    } catch (error) {
+      console.error("Error blocking user:", error);
+      showNotification("Error blocking user: " + error.message, true);
+    }
   });
 }
 
@@ -610,176 +579,113 @@ if (blockUserBtn) {
 if (reportUserBtn) {
   reportUserBtn.addEventListener("click", async () => {
     const user = auth.currentUser;
+    if (!user) {
+      showNotification("Please login", true);
+      return;
+    }
 
     const reason = prompt("Why are you reporting this user?");
     if (!reason) return;
 
-    await addDoc(collection(db, "reports"), {
-      userId: user.uid,
-      reason,
-      createdAt: serverTimestamp()
-    });
+    try {
+      await addDoc(collection(db, "reports"), {
+        userId: user.uid,
+        reason: reason.trim(),
+        createdAt: serverTimestamp()
+      });
 
-    showNotification("Report submitted");
+      showNotification("Report submitted");
+    } catch (error) {
+      console.error("Error reporting user:", error);
+      showNotification("Error reporting user: " + error.message, true);
+    }
   });
 }
-async function loadPhotos(uid){
 
-  const container =
-  document.getElementById("mediaContainer");
-
-  if(!container) return;
-
+async function loadPhotos(uid) {
+  const container = document.getElementById("mediaContainer");
+  if (!container) return;
 
   container.innerHTML = "";
 
+  const photosSnap = await getDocs(collection(db, "users", uid, "photos"));
 
-  const photosSnap =
-  await getDocs(
-    collection(
-      db,
-      "users",
-      uid,
-      "photos"
-    )
-  );
-
-
-  if(photosSnap.empty){
-
-    container.innerHTML =
-    "No photos yet";
-
+  if (photosSnap.empty) {
+    container.innerHTML = "No photos yet";
     return;
-
   }
 
+  photosSnap.forEach((photoDoc) => {
+    const photo = photoDoc.data();
+    const imgUrl = safeImageUrl(photo.imageURL, "");
 
-  photosSnap.forEach((photoDoc)=>{
-
-    const photo =
-    photoDoc.data();
-
+    if (!imgUrl) return;
 
     container.innerHTML += `
-
-      <img 
-      src="${photo.imageURL}"
-      class="profile-media"
+      <img
+        src="${imgUrl}"
+        class="profile-media"
+        alt="User photo"
       >
-
     `;
-
   });
-
 }
 
-async function loadReels(uid){
-
-  const container =
-  document.getElementById("mediaContainer");
-
-
-  if(!container) return;
-
+async function loadReels(uid) {
+  const container = document.getElementById("mediaContainer");
+  if (!container) return;
 
   container.innerHTML = "";
 
+  const reelsSnap = await getDocs(collection(db, "users", uid, "reels"));
 
-  const reelsSnap =
-  await getDocs(
-    collection(
-      db,
-      "users",
-      uid,
-      "reels"
-    )
-  );
-
-
-  if(reelsSnap.empty){
-
-    container.innerHTML =
-    "No reels yet";
-
+  if (reelsSnap.empty) {
+    container.innerHTML = "No reels yet";
     return;
-
   }
 
+  reelsSnap.forEach((reelDoc) => {
+    const reel = reelDoc.data();
+    const reelUrl = safeImageUrl(reel.videoURL, "");
 
-  reelsSnap.forEach((reelDoc)=>{
-
-    const reel =
-    reelDoc.data();
-
+    if (!reelUrl) return;
 
     container.innerHTML += `
-
-      <video 
-      src="${reel.videoURL}"
-      class="profile-media"
-      controls>
+      <video
+        src="${reelUrl}"
+        class="profile-media"
+        controls>
       </video>
-
     `;
-
-
   });
-
 }
 
-onAuthStateChanged(auth, (user)=>{
+onAuthStateChanged(auth, (user) => {
+  if (!user) return;
 
-if(!user) return;
+  const photosTab = document.getElementById("photosTab");
+  const reelsTab = document.getElementById("reelsTab");
+  const postsTab = document.getElementById("postsTab");
 
-if(photosTab){
+  if (photosTab) {
+    photosTab.onclick = () => {
+      window.location.href = `photos.html?uid=${user.uid}`;
+    };
+  }
 
-photosTab.onclick = ()=>{
+  if (reelsTab) {
+    reelsTab.onclick = () => {
+      window.location.href = `reels.html?uid=${user.uid}`;
+    };
+  }
 
-window.location.href =
-`photos.html?uid=${user.uid}`;
+  if (postsTab) {
+    postsTab.onclick = () => {
+      const postsEl = document.getElementById("myPosts");
+      const mediaContainer = document.getElementById("mediaContainer");
 
-};
-
-}
-
-
-
-if(reelsTab){
-
-reelsTab.onclick = ()=>{
-
-window.location.href =
-`reels.html?uid=${user.uid}`;
-
-};
-
-}
-
-
-const photosTab =
-document.getElementById("photosTab");
-
-
-const reelsTab =
-document.getElementById("reelsTab");
-
-
-const postsTab =
-document.getElementById("postsTab");
-
-
-if(postsTab){
-
-postsTab.onclick = ()=>{
-
-document.getElementById("myPosts").style.display="block";
-
-document.getElementById("mediaContainer").innerHTML="";
-
-};
-
-}
-
-
+      if (postsEl) postsEl.style.display = "block";
+      if (mediaContainer) mediaContainer.innerHTML = "";
+    };
+  }
 });
