@@ -200,3 +200,14 @@ if (contactSupport) {
 document.getElementById("accountInfo").onclick = () => {
     window.location.href = "account.html";
 };
+const changePassword = document.getElementById("changePassword");
+
+if (changePassword) {
+
+    changePassword.addEventListener("click", () => {
+
+        window.location.href = "./change-password.html";
+
+    });
+
+}
