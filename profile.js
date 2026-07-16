@@ -137,7 +137,9 @@ onAuthStateChanged(auth, async (user) => {
     if (editBio) editBio.value = data.bio || "";
     if (photoURLInput) photoURLInput.value = data.photoURL || "";
 
-    await loadMyPosts();
+    console.log("Loading my posts...");
+await loadMyPosts();
+console.log("Finished loading my posts.");
 
     const viewMedia = document.getElementById("viewMedia");
     if (viewMedia) {
@@ -267,6 +269,7 @@ async function loadMyPosts() {
     );
 
     const postsSnapshot = await getDocs(postsQuery);
+    console.log("Number of posts:", postsSnapshot.size);
 
     const postPromises = postsSnapshot.docs.map((postDoc) => renderPost(postDoc));
     await Promise.all(postPromises);
