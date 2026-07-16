@@ -5,13 +5,13 @@ body {
   background-color: #f5f5f5;
 }
 
-.profile-container {
+.profile-box {
   max-width: 600px;
   margin: 0 auto;
   background: white;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
 }
 
 h2 {
@@ -74,7 +74,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
-#userPosts {
+#myPosts {
   margin-top: 30px;
   padding-top: 20px;
   border-top: 2px solid #e0e0e0;
