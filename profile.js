@@ -18,7 +18,7 @@ import {
   orderBy,
   where
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
+alert("profile.js loaded");
 // TODO: Move this to environment variables for security
 // Never commit API keys to version control
 const firebaseConfig = {
