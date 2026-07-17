@@ -132,8 +132,6 @@ border:2px solid transparent;
 }
 
 
-.nav-item.active #navProfileImage{
-
-border-color:#000;
-
-        }
+.nav-icon.active #navProfileImage{
+    border-color:#000;
+}
