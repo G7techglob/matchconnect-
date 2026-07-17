@@ -1,4 +1,4 @@
-alert("navbar.js is running");
+
 
 import { auth, db } from "./firebase.js";
 
@@ -11,6 +11,7 @@ import {
   getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
+alert("navbar.js is running");
 
 document.addEventListener("DOMContentLoaded", async () => {
 
