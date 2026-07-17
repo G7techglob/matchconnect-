@@ -135,3 +135,20 @@ border:2px solid transparent;
 .nav-icon.active #navProfileImage{
     border-color:#000;
 }
+
+#bottomNavbar,
+#bottomNavbar * {
+    box-sizing: border-box;
+}
+
+#bottomNavbar {
+    display: flex !important;
+}
+
+#bottomNavbar a {
+    text-decoration: none;
+}
+
+#bottomNavbar img {
+    max-width: none;
+}
