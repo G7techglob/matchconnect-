@@ -32,6 +32,7 @@ const params =
 
 const uid =
   params.get("uid");
+alert("UID = " + uid);
 
 const container =
   document.getElementById(
