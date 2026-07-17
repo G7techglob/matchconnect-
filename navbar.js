@@ -1,3 +1,5 @@
+alert("navbar.js is running");
+
 import { auth, db } from "./firebase.js";
 
 import {
