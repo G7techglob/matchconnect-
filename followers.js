@@ -30,9 +30,14 @@ const params =
     window.location.search
   );
 
-const uid =
-  params.get("uid");
-alert("UID = " + uid);
+const uid = params.get("uid");
+
+if (!uid) {
+  alert("No UID received");
+  throw new Error("UID is missing");
+}
+
+alert("UID received: " + uid);
 
 const container =
   document.getElementById(
