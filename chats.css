@@ -169,20 +169,7 @@ body{
     color:#777;
 }
 
-/* =========================
-   NAVBAR
-========================= */
 
-#navbar-container{
-    position:fixed;
-    left:0;
-    right:0;
-    bottom:0;
-    height:70px;
-    background:#fff;
-    box-shadow:0 -2px 8px rgba(0,0,0,.08);
-    z-index:1000;
-}
 
 /* =========================
    SCREEN READER
@@ -196,3 +183,4 @@ body{
     clip:rect(0,0,0,0);
     white-space:nowrap;
         }
+
