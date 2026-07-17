@@ -119,3 +119,21 @@ body {
         gap: clamp(26px, 6vw, 68px);
     }
 }
+
+#navProfileImage{
+
+width:32px;
+height:32px;
+border-radius:50%;
+object-fit:cover;
+
+border:2px solid transparent;
+
+}
+
+
+.nav-item.active #navProfileImage{
+
+border-color:#000;
+
+        }
