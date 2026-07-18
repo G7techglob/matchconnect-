@@ -159,3 +159,45 @@ border:2px solid transparent;
 #bottomNavbar img {
     max-width: none;
 }
+
+.header-container{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    height:65px;
+    padding:0 20px;
+}
+
+.header-container a,
+#menuBtn{
+    color:#444;
+    text-decoration:none;
+    font-size:24px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    transition:.2s;
+    }
+
+.header-container a:hover,
+#menuBtn:hover{
+    color:#ff4d6d;
+}
+
+.nav-icon.left,
+.nav-icon.right{
+    font-size:20px;
+    color:#333;
+    text-decoration:none;
+}
+
+.nav-center{
+    display:flex;
+    gap:60px;
+}
+
+.nav-icon{
+    font-size:20px;
+    color:#333;
+    text-decoration:none;
+}
