@@ -102,8 +102,6 @@ onAuthStateChanged(auth, async (user) => {
       showNotification("User profile not found", true);
       return;
     }
-
-    alert("Step 1: User is logged in");
     const data = userSnap.data();
 
     const followersSnap = await getDocs(collection(db, "users", user.uid, "followers"));
