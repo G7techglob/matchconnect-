@@ -3,36 +3,32 @@
 ========================= */
 
 body{
+    margin:0;
+    padding:20px;
     font-family:Arial, Helvetica, sans-serif;
     background:#f5f5f5;
     color:#222;
-    padding-bottom:80px;
 }
 
 
-/* HEADER */
+/* TITLE */
 
-.following-header{
-    height:60px;
+h3{
     background:white;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-bottom:1px solid #ddd;
-    position:sticky;
-    top:0;
-    z-index:10;
-}
-
-.following-header h2{
-    font-size:20px;
-}
-
-
-/* LIST */
-
-.following-container{
     padding:15px;
+    margin:0 0 15px;
+    border-radius:12px;
+    text-align:center;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+
+/* FOLLOWING LIST */
+
+#followingList{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
 }
 
 
@@ -43,13 +39,12 @@ body{
     display:flex;
     align-items:center;
     padding:12px;
-    margin-bottom:10px;
     border-radius:12px;
     box-shadow:0 2px 6px rgba(0,0,0,0.08);
 }
 
 
-/* IMAGE */
+/* PROFILE IMAGE */
 
 .following-card img{
     width:55px;
@@ -60,24 +55,31 @@ body{
 }
 
 
-/* INFO */
+/* USER DETAILS */
 
 .following-info{
     flex:1;
 }
 
+
 .following-info h3{
+    background:none;
+    box-shadow:none;
+    padding:0;
+    margin:0 0 5px;
+    text-align:left;
     font-size:16px;
-    margin-bottom:5px;
 }
 
+
 .following-info p{
+    margin:0;
     color:#777;
     font-size:13px;
 }
 
 
-/* BUTTON */
+/* UNFOLLOW BUTTON */
 
 .following-btn{
     border:none;
@@ -94,8 +96,10 @@ body{
 }
 
 
+/* EMPTY STATE */
+
 .empty-following{
     text-align:center;
-    margin-top:40px;
     color:#777;
+    margin-top:40px;
 }
