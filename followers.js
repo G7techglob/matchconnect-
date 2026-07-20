@@ -30,46 +30,53 @@ if (!uid) {
 const container = document.getElementById("followersList");
 const totalEl = document.getElementById("followersTotal");
 
-if (!container || !totalEl) {
-  throw new Error("Required DOM elements not found");
-}
-
 container.innerHTML = "";
 
-const followersSnapshot = await getDocs(
-  collection(db, "users", uid, "followers")
-);
+try {
+  const followersSnapshot = await getDocs(
+    collection(db, "users", uid, "followers")
+  );
 
-totalEl.textContent = followersSnapshot.size;
+  totalEl.textContent = followersSnapshot.size;
 
-if (followersSnapshot.empty) {
-  container.innerHTML = "No followers yet";
-} else {
-  const followerPromises = followersSnapshot.docs.map(async (followerDoc) => {
-    const followerId = followerDoc.id;
+  if (followersSnapshot.empty) {
+    container.innerHTML = "<p>No followers yet.</p>";
+  } else {
+    for (const followerDoc of followersSnapshot.docs) {
+      try {
+        const followerId = followerDoc.data().userId || followerDoc.id;
 
-    const userDoc = await getDoc(doc(db, "users", followerId));
+        const userSnap = await getDoc(doc(db, "users", followerId));
 
-    if (userDoc.exists()) {
-      const userData = userDoc.data();
+        if (!userSnap.exists()) {
+          console.log("User not found:", followerId);
+          continue;
+        }
 
-      const div = document.createElement("div");
-      div.innerHTML = `
-        <div class="user-card">
+        const user = userSnap.data();
+
+        const card = document.createElement("div");
+        card.className = "user-card";
+
+        card.innerHTML = `
           <img
-            src="${userData.photoURL || "images/default-avatar.png"}"
+            src="${user.photoURL || "images/default-avatar.png"}"
             width="50"
             height="50"
           >
           <a href="user.html?uid=${followerId}">
-            ${userData.name || "User"}
+            ${user.name || "User"}
           </a>
-        </div>
-      `;
+        `;
 
-      container.appendChild(div);
+        container.appendChild(card);
+
+      } catch (err) {
+        console.error("Error loading follower:", err);
+      }
     }
-  });
-
-  await Promise.all(followerPromises);
-}
+  }
+} catch (err) {
+  console.error(err);
+  container.innerHTML = "<p>Failed to load followers.</p>";
+          }
