@@ -53,6 +53,28 @@ function setupFeed() {
     snapshot.forEach(async (postDoc) => {
 
       const post = postDoc.data();
+      let profileName = post.username || "User";
+let profilePhoto = post.photoURL || "images/default-avatar.png";
+
+if(post.userId){
+
+  const userSnap = await getDoc(
+    doc(db, "users", post.userId)
+  );
+
+  if(userSnap.exists()){
+
+    const userData = userSnap.data();
+
+    profileName =
+      userData.name || profileName;
+
+    profilePhoto =
+      userData.photoURL || profilePhoto;
+
+  }
+
+}
 
       const div = document.createElement("div");
       div.className = "post";
@@ -60,18 +82,17 @@ function setupFeed() {
       div.innerHTML = `
 
 <div class="post-header">
-
-  <img
-  src="${post.photoURL || 'images/default-avatar.png'}"
-  class="post-avatar view-profile"
-  data-uid="${post.userId}"
+<img
+src="${profilePhoto}"
+class="post-avatar view-profile"
+data-uid="${post.userId}"
 >
 
   <span
   class="post-user view-profile"
   data-uid="${post.userId}"
 >
-  ${post.username || "User"}
+  ${profileName}
 </span>
 
 </div>
