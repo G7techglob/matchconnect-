@@ -76,7 +76,9 @@ try {
       }
     }
   }
-} catch (err) {
-  console.error(err);
-  container.innerHTML = "<p>Failed to load followers.</p>";
-          }
+} 
+catch (err) {
+  console.error("Followers error:", err);
+  alert(err.message);
+  container.innerHTML = `<p>${err.message}</p>`;
+}
