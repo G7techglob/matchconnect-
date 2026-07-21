@@ -258,7 +258,13 @@ async function loadMyPosts() {
   myPosts.innerHTML = "";
 
   const currentUser = auth.currentUser;
-  if (!currentUser) return;
+
+if (!currentUser) {
+  console.log("No logged in user found");
+  return;
+}
+
+console.log("Current user ID:", currentUser.uid);
 
   try {
     const postsSnapshot = await getDocs(collection(db, "posts"));
