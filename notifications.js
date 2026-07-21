@@ -75,9 +75,17 @@ export function loadNotifications(container) {
               try {
                 const senderSnap = await getDoc(doc(db, "users", senderId));
                 senderCache.set(
-                  senderId,
-                  senderSnap.exists() ? senderSnap.data().name || "Someone" : "Someone"
-                );
+  senderId,
+  senderSnap.exists()
+    ? {
+        name: senderSnap.data().name || "Someone",
+        photoURL: senderSnap.data().photoURL || "default-avatar.png"
+      }
+    : {
+        name: "Someone",
+        photoURL: "default-avatar.png"
+      }
+);
               } catch {
                 senderCache.set(senderId, "Someone");
               }
@@ -87,13 +95,28 @@ export function loadNotifications(container) {
           snapshot.forEach((notificationDoc) => {
             const notification = notificationDoc.data();
 
-            const wrapper = document.createElement("div");
+            const sender =
+  senderCache.get(notification.senderId) || {
+    name: "Someone",
+    photoURL: "default-avatar.png"
+  };
+
+const wrapper = document.createElement("div");
 
 wrapper.className = "notification-card";
 
 wrapper.innerHTML = `
+  <div class="notification-avatar">
+    <img
+      src="${sender.photoURL}"
+      alt="${sender.name}"
+      class="sender-photo">
+  </div>
+
   <div class="notification-content">
-    <h4>${senderCache.get(notification.senderId) || "Someone"}</h4>
+    <h4 class="sender-name">
+      ${sender.name}
+    </h4>
 
     <p>${buildNotificationText(notification.type)}</p>
 
@@ -102,6 +125,23 @@ wrapper.innerHTML = `
     </span>
   </div>
 `;
+            const senderPhoto = wrapper.querySelector(".sender-photo");
+const senderName = wrapper.querySelector(".sender-name");
+
+senderPhoto.addEventListener("click", (e) => {
+  e.stopPropagation();
+  window.location.href = `profile.html?uid=${notification.senderId}`;
+});
+
+senderName.addEventListener("click", (e) => {
+  e.stopPropagation();
+  window.location.href = `profile.html?uid=${notification.senderId}`;
+});
+            wrapper.style.cursor = "pointer";
+
+wrapper.addEventListener("click", () => {
+  window.location.href = `profile.html?uid=${notification.senderId}`;
+});
 
             container.appendChild(wrapper);
           });
