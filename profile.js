@@ -261,20 +261,25 @@ async function loadMyPosts() {
   if (!currentUser) return;
 
   try {
-    const postsQuery = query(
-      collection(db, "posts"),
-      where("userId", "==", currentUser.uid),
-      orderBy("createdAt", "desc")
-    );
-
-    const postsSnapshot = await getDocs(postsQuery);
+    const postsSnapshot = await getDocs(collection(db, "posts"));
     console.log("Number of posts:", postsSnapshot.size);
 
-    const postPromises = postsSnapshot.docs.map((postDoc) => renderPost(postDoc));
-    await Promise.all(postPromises);
+    let count = 0;
 
-    const postCount = document.getElementById("postCount");
-    if (postCount) postCount.textContent = String(postsSnapshot.size);
+for (const postDoc of postsSnapshot.docs) {
+  const post = postDoc.data();
+
+  if (post.userId === currentUser.uid) {
+    count++;
+    await renderPost(postDoc);
+  }
+}
+
+const postCount = document.getElementById("postCount");
+
+if (postCount) {
+  postCount.textContent = count;
+}
   } catch (error) {
     console.error("Error loading posts:", error);
     showNotification("Error loading posts: " + error.message, true);
