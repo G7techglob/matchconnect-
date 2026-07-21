@@ -130,17 +130,44 @@ const senderName = wrapper.querySelector(".sender-name");
 
 senderPhoto.addEventListener("click", (e) => {
   e.stopPropagation();
-  window.location.href = `profile.html?uid=${notification.senderId}`;
+
+  if (notification.type === "follow") {
+    window.location.href = `user.html?uid=${notification.senderId}`;
+  } else {
+    window.location.href = `post.html?id=${notification.postId}`;
+  }
 });
 
 senderName.addEventListener("click", (e) => {
   e.stopPropagation();
-  window.location.href = `profile.html?uid=${notification.senderId}`;
+
+  if (notification.type === "follow") {
+    window.location.href = `user.html?uid=${notification.senderId}`;
+  } else {
+    window.location.href = `post.html?id=${notification.postId}`;
+  }
 });
             wrapper.style.cursor = "pointer";
 
 wrapper.addEventListener("click", () => {
-  window.location.href = `profile.html?uid=${notification.senderId}`;
+
+  if (notification.type === "follow") {
+
+    window.location.href =
+      `user.html?uid=${notification.senderId}`;
+
+  } else if (notification.type === "like") {
+
+    window.location.href =
+      `post.html?id=${notification.postId}`;
+
+  } else if (notification.type === "comment") {
+
+    window.location.href =
+      `post.html?id=${notification.postId}#comments`;
+
+  }
+
 });
 
             container.appendChild(wrapper);
