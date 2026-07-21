@@ -88,13 +88,20 @@ export function loadNotifications(container) {
             const notification = notificationDoc.data();
 
             const wrapper = document.createElement("div");
-            wrapper.className = "notification-item";
-            wrapper.innerHTML = `
-              <p>
-                <strong>${senderCache.get(notification.senderId) || "Someone"}</strong>
-                ${buildNotificationText(notification.type)}
-              </p>
-            `;
+
+wrapper.className = "notification-card";
+
+wrapper.innerHTML = `
+  <div class="notification-content">
+    <h4>${senderCache.get(notification.senderId) || "Someone"}</h4>
+
+    <p>${buildNotificationText(notification.type)}</p>
+
+    <span class="notification-time">
+      Just now
+    </span>
+  </div>
+`;
 
             container.appendChild(wrapper);
           });
