@@ -32,6 +32,10 @@ const params =
 
 const postId =
   params.get("id");
+console.log("Post ID from URL:", postId);
+
+document.getElementById("postContainer").innerHTML =
+  `<h2>Post ID: ${postId}</h2>`;
 
 document.getElementById(
   "postContainer"
