@@ -9,7 +9,7 @@ import {
     getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-document.addEventListener("DOMContentLoaded", async () => {
+async function loadNavbar() {
 
     const container = document.getElementById("navbar-container");
 
@@ -61,3 +61,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 });
+
+loadNavbar();
