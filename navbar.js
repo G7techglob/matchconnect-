@@ -1,3 +1,14 @@
+import { auth, db } from "./firebase.js";
+
+import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+import {
+    doc,
+    getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
 document.addEventListener("DOMContentLoaded", async () => {
 
     const container = document.getElementById("navbar-container");
@@ -16,11 +27,33 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        const html = await response.text();
-
-        container.innerHTML = html;
+        container.innerHTML = await response.text();
 
         console.log("Navbar loaded successfully");
+
+        // Load the user's profile picture
+        onAuthStateChanged(auth, async (user) => {
+
+            if (!user) return;
+
+            const profileImg = document.getElementById("navProfileImage");
+
+            if (!profileImg) return;
+
+            const userSnap = await getDoc(doc(db, "users", user.uid));
+
+            if (userSnap.exists()) {
+
+                const data = userSnap.data();
+
+                profileImg.src =
+                    data.photoURL && data.photoURL.trim() !== ""
+                        ? data.photoURL
+                        : "default-avatar.png";
+
+            }
+
+        });
 
     } catch (err) {
 
