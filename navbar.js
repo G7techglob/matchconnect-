@@ -47,10 +47,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const data = userSnap.data();
 
                 profileImg.src =
-                    data.photoURL && data.photoURL.trim() !== ""
-                        ? data.photoURL
-                        : "default-avatar.png";
-
+    data.photoURL && data.photoURL.trim() !== ""
+        ? data.photoURL
+        : "images/default-avatar.png";
             }
 
         });
