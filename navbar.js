@@ -1,3 +1,5 @@
+console.log("navbar.js started");
+
 import { auth, db } from "./firebase.js";
 
 import {
