@@ -60,6 +60,6 @@ async function loadNavbar() {
 
     }
 
-});
+}
 
 loadNavbar();
