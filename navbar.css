@@ -107,20 +107,20 @@ body {
     padding-bottom: calc(76px + env(safe-area-inset-bottom));
 }
 
-#navProfileImage{
-
-width:32px;
-height:32px;
-border-radius:50%;
-object-fit:cover;
-
-border:2px solid transparent;
-
+#navProfileImage {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    border: 2px solid transparent;
+    transition: 0.2s ease;
 }
 
-
-.nav-icon.active #navProfileImage{
-    border-color:#000;
+.nav-icon.active #navProfileImage,
+.nav-icon:hover #navProfileImage {
+    border-color: #ff4d6d;
+    transform: scale(1.05);
 }
 
 #bottomNavbar,
