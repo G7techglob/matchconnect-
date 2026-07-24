@@ -1,3 +1,4 @@
+/*
 import { auth, db } from "./firebase.js";
 
 import {
@@ -8,7 +9,7 @@ import {
     doc,
     getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
+*/
 document.addEventListener("DOMContentLoaded", async () => {
 
     const container = document.getElementById("navbar-container");
