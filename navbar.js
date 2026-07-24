@@ -23,6 +23,7 @@ async function loadNavbar() {
     try {
 
         const response = await fetch("navbar.html");
+console.log("Fetch status:", response.status);
 
         if (!response.ok) {
             console.log("Navbar fetch failed:", response.status);
