@@ -35,7 +35,7 @@ console.log("Fetch status:", response.status);
         console.log("Navbar loaded successfully");
 
         // Load the user's profile picture
-        onAuthStateChanged(auth, async (user) => {
+       /* onAuthStateChanged(auth, async (user) => {
 
             if (!user) return;
 
@@ -55,7 +55,7 @@ console.log("Fetch status:", response.status);
         : "images/default-avatar.png";
             }
 
-        });
+        });*/
 
     } catch (err) {
 
