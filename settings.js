@@ -307,3 +307,7 @@ if(switchAccount){
     });
 
 }
+
+document.getElementById("accountInfo")?.addEventListener("click", () => {
+    window.location.href = "profile.html";
+});
