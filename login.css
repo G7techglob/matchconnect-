@@ -42,3 +42,10 @@ a{
     color:#ff4d6d;
     text-decoration:none;
 }
+
+#forgotPassword {
+    display: block;
+    margin-top: 15px;
+    text-align: center;
+    text-decoration: none;
+}
