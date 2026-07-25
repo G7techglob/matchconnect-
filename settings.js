@@ -197,9 +197,7 @@ if (contactSupport) {
     });
 }
 
-document.getElementById("accountInfo").onclick = () => {
-    window.location.href = "account.html";
-};
+
 const changePassword = document.getElementById("changePassword");
 
 if (changePassword) {
@@ -308,9 +306,6 @@ if(switchAccount){
 
 }
 
-document.getElementById("accountInfo")?.addEventListener("click", () => {
-    window.location.href = "profile.html";
-});
 
 const userCard = document.getElementById("userCard");
 
