@@ -58,6 +58,7 @@ a{
 .password-box input {
     width: 100%;
     padding-right: 45px;
+    box-sizing: border-box;
 }
 
 #togglePassword {
