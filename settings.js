@@ -339,7 +339,7 @@ if(appVersion){
 }
 
 // -----------------------------
-// TWO STEP VERIFICATION
+// TWO STEP VERIFICATION PAGE
 // -----------------------------
 
 const twoFactor = document.getElementById("twoFactor");
@@ -347,61 +347,9 @@ const twoFactor = document.getElementById("twoFactor");
 
 if(twoFactor){
 
-    twoFactor.addEventListener("click", async()=>{
+    twoFactor.addEventListener("click",()=>{
 
-
-        const user = auth.currentUser;
-
-
-        if(!user){
-
-            alert("Please login first.");
-
-            return;
-
-        }
-
-
-        await user.reload();
-
-
-        if(!user.emailVerified){
-
-            alert(
-                "Please verify your email before enabling Two-Step Verification."
-            );
-
-            return;
-
-        }
-
-
-
-        try{
-
-
-            await updateDoc(
-                doc(db,"users",user.uid),
-                {
-                    twoFactorEnabled:true
-                }
-            );
-
-
-            alert(
-                "Two-Step Verification has been enabled."
-            );
-
-
-        }
-        catch(error){
-
-            console.error(error);
-
-            alert(error.message);
-
-        }
-
+        window.location.href = "two-factor.html";
 
     });
 
