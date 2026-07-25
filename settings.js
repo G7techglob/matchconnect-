@@ -311,3 +311,11 @@ if(switchAccount){
 document.getElementById("accountInfo")?.addEventListener("click", () => {
     window.location.href = "profile.html";
 });
+
+const userCard = document.getElementById("userCard");
+
+if (userCard) {
+    userCard.addEventListener("click", () => {
+        window.location.href = "profile.html";
+    });
+}
