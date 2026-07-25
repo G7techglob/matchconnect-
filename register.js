@@ -1,5 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword,
+  sendEmailVerification
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 // Firebase config (YOUR REAL DATA)
@@ -44,8 +48,14 @@ document.getElementById("registerBtn").addEventListener("click", async () => {
 
     console.log("User profile saved successfully");
 
-    alert("Account created successfully!");
-    window.location.href = "login.html";
+// Send verification email
+await sendEmailVerification(user);
+
+alert("Account created successfully! A verification email has been sent. Please check your inbox and verify your email before logging in.");
+
+await auth.signOut();
+
+window.location.href = "login.html";
 
   } catch (error) {
     alert(error.message);
