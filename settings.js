@@ -322,3 +322,17 @@ if (aboutApp) {
         window.location.href = "about.html";
     });
 }
+
+// Open MatchConnect Version page
+
+const appVersion = document.getElementById("appVersion");
+
+if(appVersion){
+
+    appVersion.addEventListener("click", () => {
+
+        window.location.href = "version.html";
+
+    });
+
+}
