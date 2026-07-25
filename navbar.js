@@ -1,4 +1,4 @@
-import { auth } from "./firebase.js";
+
 document.addEventListener("DOMContentLoaded", async () => {
 
     const container = document.getElementById("navbar-container");
