@@ -72,3 +72,26 @@ forgotPassword.addEventListener("click", async (e) => {
     }
 
 });
+
+const togglePassword = document.getElementById("togglePassword");
+
+const loginPassword = document.getElementById("loginPassword");
+
+
+togglePassword.addEventListener("click", () => {
+
+    if (loginPassword.type === "password") {
+
+        loginPassword.type = "text";
+
+        togglePassword.textContent = "visibility_off";
+
+    } else {
+
+        loginPassword.type = "password";
+
+        togglePassword.textContent = "visibility";
+
+    }
+
+});
