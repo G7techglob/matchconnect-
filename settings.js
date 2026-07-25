@@ -11,7 +11,8 @@ import {
 import {
     doc,
     getDoc,
-    deleteDoc
+    deleteDoc,
+    updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 
@@ -332,6 +333,75 @@ if(appVersion){
     appVersion.addEventListener("click", () => {
 
         window.location.href = "version.html";
+
+    });
+
+}
+
+// -----------------------------
+// TWO STEP VERIFICATION
+// -----------------------------
+
+const twoFactor = document.getElementById("twoFactor");
+
+
+if(twoFactor){
+
+    twoFactor.addEventListener("click", async()=>{
+
+
+        const user = auth.currentUser;
+
+
+        if(!user){
+
+            alert("Please login first.");
+
+            return;
+
+        }
+
+
+        await user.reload();
+
+
+        if(!user.emailVerified){
+
+            alert(
+                "Please verify your email before enabling Two-Step Verification."
+            );
+
+            return;
+
+        }
+
+
+
+        try{
+
+
+            await updateDoc(
+                doc(db,"users",user.uid),
+                {
+                    twoFactorEnabled:true
+                }
+            );
+
+
+            alert(
+                "Two-Step Verification has been enabled."
+            );
+
+
+        }
+        catch(error){
+
+            console.error(error);
+
+            alert(error.message);
+
+        }
+
 
     });
 
