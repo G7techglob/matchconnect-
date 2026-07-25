@@ -13,22 +13,25 @@ import {
 
 // Back button
 
-const backBtn = document.getElementById("backBtn");
-
-backBtn.addEventListener("click",()=>{
+document.getElementById("backBtn")
+.addEventListener("click",()=>{
 
     history.back();
 
 });
 
 
-// Button
 
-const enableTwoFactor =
+const enableBtn =
 document.getElementById("enableTwoFactor");
 
+const disableBtn =
+document.getElementById("disableTwoFactor");
 
-// Check user
+const status =
+document.getElementById("twoFactorStatus");
+
+
 
 onAuthStateChanged(auth, async(user)=>{
 
@@ -36,42 +39,88 @@ onAuthStateChanged(auth, async(user)=>{
     if(!user){
 
         window.location.href="login.html";
-
         return;
 
     }
 
 
-    enableTwoFactor.addEventListener("click", async()=>{
+    const userRef =
+    doc(db,"users",user.uid);
 
 
-        try{
+    const userSnap =
+    await getDoc(userRef);
 
 
-            await updateDoc(
-                doc(db,"users",user.uid),
-                {
-                    twoFactorEnabled:true
-                }
-            );
+
+    if(userSnap.exists()){
 
 
-            alert(
-                "Two-Step Verification enabled successfully."
-            );
+        const data =
+        userSnap.data();
+
+
+
+        if(data.twoFactorEnabled){
+
+
+            status.textContent =
+            "🟢 Two-Step Verification is ON";
+
+
+        }else{
+
+
+            status.textContent =
+            "🔴 Two-Step Verification is OFF";
 
 
         }
-        catch(error){
 
-            console.error(error);
 
-            alert(error.message);
+    }
 
-        }
 
+
+
+    enableBtn.addEventListener("click", async()=>{
+
+
+        await updateDoc(userRef,{
+
+            twoFactorEnabled:true
+
+        });
+
+
+        status.textContent =
+        "🟢 Two-Step Verification is ON";
+
+
+        alert("Two-Step Verification enabled.");
 
     });
+
+
+
+    disableBtn.addEventListener("click", async()=>{
+
+
+        await updateDoc(userRef,{
+
+            twoFactorEnabled:false
+
+        });
+
+
+        status.textContent =
+        "🔴 Two-Step Verification is OFF";
+
+
+        alert("Two-Step Verification disabled.");
+
+    });
+
 
 
 });
