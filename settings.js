@@ -314,3 +314,11 @@ if (userCard) {
         window.location.href = "profile.html";
     });
 }
+
+const aboutApp = document.getElementById("aboutApp");
+
+if (aboutApp) {
+    aboutApp.addEventListener("click", () => {
+        window.location.href = "about.html";
+    });
+}
