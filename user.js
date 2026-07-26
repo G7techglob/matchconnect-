@@ -15,6 +15,17 @@ import {
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
+const menuBtn = document.getElementById("menuBtn");
+const profileMenu = document.getElementById("profileMenu");
+
+// OPEN / CLOSE MENU
+if (menuBtn && profileMenu) {
+  menuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    profileMenu.classList.toggle("show");
+  });
+}
+
 const params = new URLSearchParams(window.location.search);
 
 const uid = params.get("uid");
@@ -327,16 +338,7 @@ document.addEventListener("click", (e) => {
   window.open(whatsappUrl, "_blank");
 });
 
-const menuBtn = document.getElementById("menuBtn");
-const profileMenu = document.getElementById("profileMenu");
 
-// OPEN / CLOSE MENU
-if (menuBtn && profileMenu) {
-  menuBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    profileMenu.classList.toggle("show");
-  });
-}
 
 // CLOSE WHEN CLICKING OUTSIDE
 document.addEventListener("click", (e) => {
