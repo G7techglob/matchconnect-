@@ -18,23 +18,46 @@ import {
 const menuBtn = document.getElementById("menuBtn");
 const profileMenu = document.getElementById("profileMenu");
 
-// OPEN / CLOSE MENU
-if (menuBtn && profileMenu) {
-  menuBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    profileMenu.classList.toggle("show");
-  });
-}
+// INSTANT PROFILE MENU
 
-// CLOSE WHEN CLICKING OUTSIDE
-document.addEventListener("click", (e) => {
-  if (
-    profileMenu &&
-    !profileMenu.contains(e.target) &&
-    !menuBtn.contains(e.target)
-  ) {
-    profileMenu.classList.remove("show");
+document.addEventListener("DOMContentLoaded", () => {
+
+  const menuBtn = document.getElementById("menuBtn");
+  const profileMenu = document.getElementById("profileMenu");
+
+
+  if(!menuBtn || !profileMenu){
+    console.log("Menu elements not found");
+    return;
   }
+
+
+  menuBtn.addEventListener("click", (e)=>{
+
+    e.stopPropagation();
+
+    profileMenu.classList.toggle("show");
+
+  });
+
+
+
+  document.addEventListener("click",(e)=>{
+
+
+    if(
+      !profileMenu.contains(e.target) &&
+      !menuBtn.contains(e.target)
+    ){
+
+      profileMenu.classList.remove("show");
+
+    }
+
+
+  });
+
+
 });
 
 const params = new URLSearchParams(window.location.search);
