@@ -364,79 +364,142 @@ if (shareProfileBtn) {
   });
 }
 
-// BLOCK USER
+// BLOCK / UNBLOCK USER
 
 if (blockUserBtn) {
 
-  blockUserBtn.addEventListener("click", async () => {
 
-    const user = auth.currentUser;
-
-    if (!user) {
-      alert("Please login first");
-      return;
-    }
+  const currentUser = auth.currentUser;
 
 
-    if (user.uid === uid) {
-      alert("You cannot block yourself.");
-      return;
-    }
+  if(currentUser && currentUser.uid !== uid){
 
 
-    const confirmBlock =
-    confirm("Block this user?");
+    // CHECK IF ALREADY BLOCKED
 
+    const checkBlock = async()=>{
 
-    if (!confirmBlock) return;
-
-
-    try {
 
       const existingBlock = await getDocs(
         query(
           collection(db,"blockedUsers"),
-          where("blockerId","==",user.uid),
+          where("blockerId","==",currentUser.uid),
           where("blockedUserId","==",uid)
         )
       );
 
 
-      if (!existingBlock.empty) {
+      if(!existingBlock.empty){
 
-        alert("User is already blocked.");
-        return;
+        blockUserBtn.innerHTML = `
+        <i class="fa-solid fa-user-check"></i>
+        Unblock User
+        `;
+
+      }else{
+
+        blockUserBtn.innerHTML = `
+        <i class="fa-solid fa-ban"></i>
+        Block User
+        `;
 
       }
+
+
+    };
+
+
+    await checkBlock();
+
+
+
+    blockUserBtn.addEventListener("click", async()=>{
+
+
+      const existingBlock = await getDocs(
+        query(
+          collection(db,"blockedUsers"),
+          where("blockerId","==",currentUser.uid),
+          where("blockedUserId","==",uid)
+        )
+      );
+
+
+
+      // IF ALREADY BLOCKED → UNBLOCK
+
+      if(!existingBlock.empty){
+
+
+        const blockDoc =
+        existingBlock.docs[0];
+
+
+        await deleteDoc(
+          doc(
+            db,
+            "blockedUsers",
+            blockDoc.id
+          )
+        );
+
+
+        blockUserBtn.innerHTML = `
+        <i class="fa-solid fa-ban"></i>
+        Block User
+        `;
+
+
+        alert("User unblocked");
+
+
+        return;
+
+
+      }
+
+
+
+      // OTHERWISE BLOCK USER
+
+
+      const confirmBlock =
+      confirm("Block this user?");
+
+
+      if(!confirmBlock) return;
+
 
 
       await addDoc(
         collection(db,"blockedUsers"),
         {
-          blockerId: user.uid,
+          blockerId: currentUser.uid,
+
           blockedUserId: uid,
+
           createdAt: serverTimestamp()
         }
       );
 
 
-      alert("User blocked successfully.");
+
+      blockUserBtn.innerHTML = `
+      <i class="fa-solid fa-user-check"></i>
+      Unblock User
+      `;
 
 
-    } catch(error) {
+      alert("User blocked successfully");
 
-      console.error(
-        "Block error:",
-        error
-      );
 
-      alert("Unable to block user.");
+    });
 
-    }
 
-  });
+  }
 
-}
+
+          }
 
 // REPORT USER
 if (reportUserBtn) {
