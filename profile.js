@@ -590,30 +590,115 @@ if (shareProfileBtn) {
   });
 }
 
-// BLOCK USER (simple version for now)
+// BLOCK / UNBLOCK USER
+
 if (blockUserBtn) {
-  blockUserBtn.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    if (!user) {
-      showNotification("Please login", true);
-      return;
-    }
 
-    const confirmBlock = confirm("Block this user?");
-    if (!confirmBlock) return;
+  const user = auth.currentUser;
 
-    try {
-      await setDoc(doc(db, "blockedUsers", user.uid), {
-        createdAt: serverTimestamp()
-      });
+
+  if(user){
+
+    const checkBlockStatus = async()=>{
+
+      const blockRef = doc(
+        db,
+        "blockedUsers",
+        user.uid + "_" + uid
+      );
+
+
+      const blockSnap = await getDoc(blockRef);
+
+
+      if(blockSnap.exists()){
+
+        blockUserBtn.innerHTML =
+        "Unblock User";
+
+      }else{
+
+        blockUserBtn.innerHTML =
+        "Block User";
+
+      }
+
+    };
+
+
+    await checkBlockStatus();
+
+
+
+    blockUserBtn.addEventListener("click", async()=>{
+
+
+      const blockRef = doc(
+        db,
+        "blockedUsers",
+        user.uid + "_" + uid
+      );
+
+
+      const blockSnap = await getDoc(blockRef);
+
+
+
+      // UNBLOCK
+
+      if(blockSnap.exists()){
+
+
+        await deleteDoc(blockRef);
+
+
+        blockUserBtn.innerHTML =
+        "Block User";
+
+
+        showNotification("User unblocked");
+
+        return;
+
+      }
+
+
+
+      // BLOCK
+
+      const confirmBlock =
+      confirm("Block this user?");
+
+
+      if(!confirmBlock) return;
+
+
+
+      await setDoc(
+        blockRef,
+        {
+          blockerId:user.uid,
+
+          blockedUserId:uid,
+
+          createdAt:serverTimestamp()
+        }
+      );
+
+
+      blockUserBtn.innerHTML =
+      "Unblock User";
+
 
       showNotification("User blocked");
-    } catch (error) {
-      console.error("Error blocking user:", error);
-      showNotification("Error blocking user: " + error.message, true);
-    }
-  });
-}
+
+
+    });
+
+
+  }
+
+        }
 
 // REPORT USER (simple version)
 if (reportUserBtn) {
