@@ -326,3 +326,50 @@ document.addEventListener("click", (e) => {
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(profileLink)}`;
   window.open(whatsappUrl, "_blank");
 });
+
+// Load user menu
+const menuContainer = document.getElementById("userMenuContainer");
+
+if(menuContainer){
+
+  fetch("user-menu.html")
+  .then(response => response.text())
+  .then(html => {
+
+    menuContainer.innerHTML = html;
+
+
+    const menuBtn = document.getElementById("menuBtn");
+    const profileMenu = document.getElementById("profileMenu");
+
+
+    if(menuBtn && profileMenu){
+
+      menuBtn.addEventListener("click",(e)=>{
+
+        e.stopPropagation();
+
+        profileMenu.classList.toggle("show");
+
+      });
+
+
+      document.addEventListener("click",(e)=>{
+
+        if(
+          !profileMenu.contains(e.target) &&
+          !menuBtn.contains(e.target)
+        ){
+
+          profileMenu.classList.remove("show");
+
+        }
+
+      });
+
+    }
+
+
+  });
+
+  }
