@@ -9,7 +9,6 @@ import {
   serverTimestamp,
   doc,
   getDoc,
-  getDocs,
   updateDoc,
   setDoc,
   deleteDoc
@@ -154,7 +153,32 @@ function listenTyping() {
   });
 }
 
+async function checkBlocked(){
+
+  const currentBlock = await getDoc(
+    doc(db, "blockedUsers", currentUser.uid + "_" + receiverUid)
+  );
+
+  const reverseBlock = await getDoc(
+    doc(db, "blockedUsers", receiverUid + "_" + currentUser.uid)
+  );
+
+
+  if(currentBlock.exists() || reverseBlock.exists()){
+
+    alert("You cannot message this user because one of you has blocked the other.");
+
+    return true;
+
+  }
+
+
+  return false;
+
+}
+
 async function sendMessage() {
+  if(await checkBlocked()) return;
   const text = input.value.trim();
   if (!text) return;
 
