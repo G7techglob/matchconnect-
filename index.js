@@ -14,42 +14,6 @@ onAuthStateChanged(auth, (user) => {
 
 });
 
-const profilesContainer = document.getElementById("profiles");
-
-
-/* SEARCH */
-
-const searchInput = document.querySelector(".search-box input");
-
-if (searchInput) {
-
-  searchInput.addEventListener("keyup", () => {
-
-    const value = searchInput.value.toLowerCase();
-
-    const allProfiles =
-      document.querySelectorAll(".profile-item");
-
-    allProfiles.forEach(profile => {
-
-      const text =
-        profile.innerText.toLowerCase();
-
-      if (text.includes(value)) {
-
-        profile.style.display = "block";
-
-      } else {
-
-        profile.style.display = "none";
-
-      }
-
-    });
-
-  });
-
-}
 
 /* MENU */
 
@@ -136,12 +100,7 @@ if (typeof loadProfiles === "function") {
     loadProfiles();
 }
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("service-worker.js")
-      .then(() => console.log("Service Worker Registered"));
-  });
-}
+
 let currentAd = 0;
 
 function loadAd() {
@@ -176,8 +135,7 @@ const ads = [
   }
 ];
 
-const logoutBtn = document.getElementById("logoutBtn");
-
+const logoutBtn = document.getElementById("desktopLogoutBtn");
 if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {
         try {
