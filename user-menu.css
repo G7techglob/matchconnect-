@@ -1,0 +1,90 @@
+.user-menu-container {
+    position: relative;
+}
+
+
+.menu-btn {
+
+    background: none;
+    border: none;
+
+    font-size: 28px;
+
+    cursor: pointer;
+
+    color: #333;
+
+}
+
+
+.profile-menu {
+
+    position: absolute;
+
+    right: 0;
+
+    top: 40px;
+
+
+    width: 180px;
+
+
+    background: white;
+
+    border-radius: 10px;
+
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+
+
+    display: none;
+
+    z-index: 9999;
+
+    overflow: hidden;
+
+}
+
+
+.profile-menu.show {
+
+    display: block;
+
+}
+
+
+.menu-item {
+
+    width: 100%;
+
+    padding: 12px 15px;
+
+
+    border: none;
+
+    background: white;
+
+
+    text-align: left;
+
+
+    cursor: pointer;
+
+
+    font-size: 15px;
+
+
+    display: flex;
+
+    gap: 10px;
+
+    align-items: center;
+
+}
+
+
+.menu-item:hover {
+
+    background: #f2f2f2;
+
+}
