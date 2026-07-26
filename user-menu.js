@@ -1,43 +1,40 @@
-const menuBtn = document.getElementById("menuBtn");
+document.addEventListener("DOMContentLoaded", async () => {
 
-const profileMenu = document.getElementById("profileMenu");
+    const container = document.getElementById("userMenuContainer");
 
+    if (!container) return;
 
+    const response = await fetch("user-menu.html");
+    container.innerHTML = await response.text();
 
-if(menuBtn && profileMenu){
+    const menuBtn = document.getElementById("menuBtn");
+    const profileMenu = document.getElementById("profileMenu");
 
+    if (menuBtn && profileMenu) {
 
-    // Open menu
+        // Open menu
+        menuBtn.addEventListener("click", (e) => {
 
-    menuBtn.addEventListener("click",(e)=>{
+            e.stopPropagation();
 
+            profileMenu.classList.toggle("show");
 
-        e.stopPropagation();
+        });
 
+        // Close when clicking outside
+        document.addEventListener("click", (e) => {
 
-        profileMenu.classList.toggle("show");
+            if (
+                !profileMenu.contains(e.target) &&
+                !menuBtn.contains(e.target)
+            ) {
 
+                profileMenu.classList.remove("show");
 
-    });
+            }
 
+        });
 
+    }
 
-    // Close when clicking outside
-
-    document.addEventListener("click",(e)=>{
-
-
-        if(
-            !profileMenu.contains(e.target) &&
-            !menuBtn.contains(e.target)
-        ){
-
-            profileMenu.classList.remove("show");
-
-        }
-
-
-    });
-
-
-}
+});
