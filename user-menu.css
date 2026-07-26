@@ -57,37 +57,21 @@
 
 
 .menu-item {
-
     width: 100%;
-
     padding: 12px 15px;
-
-
     border: none;
-
-    background: white;
-
-
+    background: #fff;
+    color: #333;
     text-align: left;
-
-
     cursor: pointer;
-
-
     font-size: 15px;
-
-
     display: flex;
-
-    gap: 10px;
-
     align-items: center;
-
+    gap: 10px;
+    border-radius: 0;
+    margin: 0;
 }
-
-
 .menu-item:hover {
-
     background: #f2f2f2;
-
+    color: #333;
 }
