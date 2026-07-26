@@ -8,14 +8,17 @@
 
 .menu-btn {
 
-    background: none;
-    border: none;
+    background: transparent !important;
+    border: none !important;
 
     font-size: 28px;
 
     cursor: pointer;
 
-    color: #333;
+    color: #333 !important;
+
+    padding: 0;
+    margin: 0;
 
 }
 
@@ -26,27 +29,24 @@
 
     right: 0;
 
-    top: 40px;
+    top: 45px;
 
-
-    width: 180px;
-
+    width: 190px;
 
     background: white;
 
     border-radius: 10px;
 
-
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 
     display: none;
 
-    z-index: 9999;
+    z-index: 99999;
 
     overflow: hidden;
 
 }
+
 
 
 .profile-menu.show {
@@ -57,19 +57,33 @@
 
 
 .menu-item {
+
     width: 100%;
+
     padding: 12px 15px;
-    border: none;
-    background: #fff;
-    color: #333;
+
+    border: none !important;
+
+    background: white !important;
+
+    color: #333 !important;
+
     text-align: left;
+
     cursor: pointer;
+
     font-size: 15px;
+
     display: flex;
+
     align-items: center;
+
     gap: 10px;
-    border-radius: 0;
-    margin: 0;
+
+    margin: 0 !important;
+
+    border-radius: 0 !important;
+
 }
 .menu-item:hover {
     background: #f2f2f2;
