@@ -15,172 +15,213 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 
-// Back button
+// BACK BUTTON
 
-const backBtn =
-document.getElementById("backBtn");
-
+const backBtn = document.getElementById("backBtn");
 
 if(backBtn){
 
     backBtn.onclick = () => {
-
         history.back();
-
     };
 
 }
 
 
+// BLOCKED USERS CONTAINER
 
 const blockedList =
 document.getElementById("blockedList");
 
 
+// CHECK LOGIN
 
 onAuthStateChanged(auth, async(user)=>{
 
 
     if(!user){
 
-        window.location.href="login.html";
+        window.location.href = "login.html";
         return;
 
     }
 
 
-
-    const q =
-    query(
-        collection(db,"blockedUsers"),
-        where(
-            "blockerId",
-            "==",
-            user.uid
-        )
-    );
+    try{
 
 
+        // FIND USERS BLOCKED BY CURRENT USER
 
-    const snapshot =
-    await getDocs(q);
-
-
-
-    if(snapshot.empty){
-
-        blockedList.innerHTML = `
-        <p class="empty">
-        No blocked users
-        </p>
-        `;
-
-        return;
-
-    }
-
-
-
-    blockedList.innerHTML = "";
-
-
-
-    snapshot.forEach(async(blockDoc)=>{
-
-
-        const blockData =
-        blockDoc.data();
-
-
-
-        const userRef =
-        doc(
-            db,
-            "users",
-            blockData.blockedUserId
+        const q = query(
+            collection(db,"blockedUsers"),
+            where(
+                "blockerId",
+                "==",
+                user.uid
+            )
         );
 
 
-
-        const userSnap =
-        await getDoc(userRef);
-
-
-
-        if(userSnap.exists()){
-
-
-            const userData =
-            userSnap.data();
+        const snapshot =
+        await getDocs(q);
 
 
 
-            const div =
-            document.createElement("div");
+        // NO BLOCKED USERS
 
+        if(snapshot.empty){
 
-            div.className =
-            "user-item";
+            blockedList.innerHTML = `
 
-
-
-            div.innerHTML = `
-
-            <div class="user-info">
-
-            <img src="${
-            userData.photoURL ||
-            "assets/images/default-profile.png"
-            }">
-
-
-            <span class="username">
-            ${
-            userData.name ||
-            userData.username ||
-            "User"
-            }
-            </span>
-
-
-            </div>
-
-
-            <button class="unblock-btn">
-            Unblock
-            </button>
+            <p class="empty">
+            No blocked users
+            </p>
 
             `;
 
-
-
-            div.querySelector(".unblock-btn")
-            .onclick = async()=>{
-
-
-                await deleteDoc(
-                    doc(
-                    db,
-                    "blockedUsers",
-                    blockDoc.id
-                    )
-                );
-
-
-                div.remove();
-
-
-            };
-
-
-
-            blockedList.appendChild(div);
-
+            return;
 
         }
 
 
-    });
+
+        blockedList.innerHTML = "";
+
+
+
+        // DISPLAY EACH BLOCKED USER
+
+        snapshot.forEach(async(blockDoc)=>{
+
+
+            const blockData =
+            blockDoc.data();
+
+
+
+            const userSnap =
+            await getDoc(
+                doc(
+                    db,
+                    "users",
+                    blockData.blockedUserId
+                )
+            );
+
+
+
+            if(userSnap.exists()){
+
+
+                const userData =
+                userSnap.data();
+
+
+
+                const div =
+                document.createElement("div");
+
+
+                div.className =
+                "user-item";
+
+
+
+                div.innerHTML = `
+
+                <div class="user-info">
+
+
+                <img src="${
+                userData.photoURL ||
+                "images/default-avatar.png"
+                }">
+
+
+                <span class="username">
+
+                ${
+                userData.name ||
+                userData.username ||
+                "User"
+                }
+
+                </span>
+
+
+                </div>
+
+
+
+                <button class="unblock-btn">
+
+                Unblock
+
+                </button>
+
+                `;
+
+
+
+                // UNBLOCK BUTTON
+
+                div.querySelector(".unblock-btn")
+                .onclick = async()=>{
+
+
+                    await deleteDoc(
+
+                        doc(
+                            db,
+                            "blockedUsers",
+                            blockDoc.id
+                        )
+
+                    );
+
+
+                    div.remove();
+
+
+
+                    if(blockedList.children.length === 0){
+
+                        blockedList.innerHTML = `
+
+                        <p class="empty">
+                        No blocked users
+                        </p>
+
+                        `;
+
+                    }
+
+
+                };
+
+
+
+                blockedList.appendChild(div);
+
+
+            }
+
+
+        });
+
+
+
+    }catch(error){
+
+
+        console.error(
+            "Blocked users error:",
+            error
+        );
+
+
+    }
+
 
 
 });
