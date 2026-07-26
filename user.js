@@ -26,6 +26,17 @@ if (menuBtn && profileMenu) {
   });
 }
 
+// CLOSE WHEN CLICKING OUTSIDE
+document.addEventListener("click", (e) => {
+  if (
+    profileMenu &&
+    !profileMenu.contains(e.target) &&
+    !menuBtn.contains(e.target)
+  ) {
+    profileMenu.classList.remove("show");
+  }
+});
+
 const params = new URLSearchParams(window.location.search);
 
 const uid = params.get("uid");
@@ -336,19 +347,6 @@ document.addEventListener("click", (e) => {
   const profileLink = window.location.href;
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(profileLink)}`;
   window.open(whatsappUrl, "_blank");
-});
-
-
-
-// CLOSE WHEN CLICKING OUTSIDE
-document.addEventListener("click", (e) => {
-  if (
-    profileMenu &&
-    !profileMenu.contains(e.target) &&
-    !menuBtn.contains(e.target)
-  ) {
-    profileMenu.classList.remove("show");
-  }
 });
 
 const blockUserBtn = document.getElementById("blockUser");
