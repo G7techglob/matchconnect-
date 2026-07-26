@@ -211,7 +211,15 @@ imageBtn.addEventListener("click", () => {
 });
 
 imageInput.addEventListener("change", async () => {
+
+  if(await checkBlocked()) {
+    imageInput.value = "";
+    return;
+  }
+
+
   const file = imageInput.files[0];
+
   if (!file) return;
 
   const imageRef = ref(storage, `chatImages/${chatId}/${Date.now()}_${file.name}`);
