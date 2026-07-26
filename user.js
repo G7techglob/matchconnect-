@@ -373,3 +373,113 @@ if(menuContainer){
   });
 
   }
+
+// User menu actions
+
+document.addEventListener("click", async (e) => {
+
+  // Share profile
+  if (e.target.closest("#shareProfile")) {
+
+    const profileLink = window.location.href;
+
+    await navigator.clipboard.writeText(profileLink);
+
+    alert("Profile link copied!");
+
+  }
+
+
+  // Report user
+  if (e.target.closest("#reportUser")) {
+
+    const user = auth.currentUser;
+
+    if (!user) {
+      alert("Please login first");
+      return;
+    }
+
+    const reason = prompt("Why are you reporting this user?");
+
+    if (!reason) return;
+
+
+    await addDoc(collection(db, "reports"), {
+
+      reporterId: user.uid,
+
+      reportedUserId: uid,
+
+      reason: reason,
+
+      createdAt: serverTimestamp()
+
+    });
+
+
+    alert("Report submitted successfully");
+
+  }
+
+
+  // Block user
+  if (e.target.closest("#blockUser")) {
+
+    const user = auth.currentUser;
+
+    if (!user) {
+      alert("Please login first");
+      return;
+    }
+
+
+    if(user.uid === uid){
+
+      alert("You cannot block yourself");
+
+      return;
+
+    }
+
+
+    const blockId = user.uid + "_" + uid;
+
+
+    const blockRef = doc(db,"blockedUsers",blockId);
+
+
+    const existing = await getDoc(blockRef);
+
+
+
+    if(existing.exists()){
+
+
+      await deleteDoc(blockRef);
+
+
+      alert("User unblocked");
+
+
+    }else{
+
+
+      await setDoc(blockRef,{
+
+        blockerId:user.uid,
+
+        blockedUserId:uid,
+
+        createdAt:serverTimestamp()
+
+      });
+
+
+      alert("User blocked");
+
+    }
+
+  }
+
+});
