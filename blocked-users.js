@@ -65,6 +65,9 @@ onAuthStateChanged(auth, async(user)=>{
         const snapshot =
         await getDocs(q);
 
+        console.log("Current user:", user.uid);
+console.log("Blocked count:", snapshot.size);
+
 
 
         // NO BLOCKED USERS
