@@ -227,6 +227,10 @@ document.addEventListener("click", async (e) => {
     return;
   }
 
+  if (user.uid === uid) {
+  alert("You cannot block yourself.");
+  return;
+  }
   const postId = e.target.dataset.id;
   const likeRef = doc(db, "posts", postId, "likes", user.uid);
 
@@ -368,9 +372,14 @@ if (blockUserBtn) {
 
     const user = auth.currentUser;
 
-
     if (!user) {
       alert("Please login first");
+      return;
+    }
+
+
+    if (user.uid === uid) {
+      alert("You cannot block yourself.");
       return;
     }
 
@@ -384,14 +393,28 @@ if (blockUserBtn) {
 
     try {
 
+      const existingBlock = await getDocs(
+        query(
+          collection(db,"blockedUsers"),
+          where("blockerId","==",user.uid),
+          where("blockedUserId","==",uid)
+        )
+      );
+
+
+      if (!existingBlock.empty) {
+
+        alert("User is already blocked.");
+        return;
+
+      }
+
 
       await addDoc(
-        collection(db, "blockedUsers"),
+        collection(db,"blockedUsers"),
         {
           blockerId: user.uid,
-
           blockedUserId: uid,
-
           createdAt: serverTimestamp()
         }
       );
@@ -402,20 +425,14 @@ if (blockUserBtn) {
 
     } catch(error) {
 
-
       console.error(
         "Block error:",
         error
       );
 
-
-      alert(
-        "Unable to block user."
-      );
-
+      alert("Unable to block user.");
 
     }
-
 
   });
 
