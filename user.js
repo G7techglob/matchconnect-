@@ -416,19 +416,20 @@ if (blockUserBtn) {
     blockUserBtn.addEventListener("click", async()=>{
 
 
-      const existingBlock = await getDocs(
-        query(
-          collection(db,"blockedUsers"),
-          where("blockerId","==",currentUser.uid),
-          where("blockedUserId","==",uid)
-        )
-      );
+      const existingBlock = await getDoc(
+  doc(
+    db,
+    "blockedUsers",
+    currentUser.uid + "_" + uid
+  )
+);
 
 
 
       // IF ALREADY BLOCKED → UNBLOCK
 
-      if(!existingBlock.empty){
+      if(existingBlock.exists())
+      {
 
 
         const blockDoc =
@@ -436,12 +437,12 @@ if (blockUserBtn) {
 
 
         await deleteDoc(
-          doc(
-            db,
-            "blockedUsers",
-            blockDoc.id
-          )
-        );
+  doc(
+    db,
+    "blockedUsers",
+    currentUser.uid + "_" + uid
+  )
+);
 
 
         blockUserBtn.innerHTML = `
@@ -471,17 +472,20 @@ if (blockUserBtn) {
 
 
 
-      await addDoc(
-        collection(db,"blockedUsers"),
-        {
-          blockerId: currentUser.uid,
+      await setDoc(
+  doc(
+    db,
+    "blockedUsers",
+    currentUser.uid + "_" + uid
+  ),
+  {
+    blockerId: currentUser.uid,
 
-          blockedUserId: uid,
+    blockedUserId: uid,
 
-          createdAt: serverTimestamp()
-        }
-      );
-
+    createdAt: serverTimestamp()
+  }
+);
 
 
       blockUserBtn.innerHTML = `
