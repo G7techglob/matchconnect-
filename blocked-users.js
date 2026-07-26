@@ -5,20 +5,31 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 import {
+    collection,
+    query,
+    where,
+    getDocs,
     doc,
     getDoc,
-    updateDoc,
-    arrayRemove
+    deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 
 // Back button
 
-document.getElementById("backBtn").onclick = () => {
+const backBtn =
+document.getElementById("backBtn");
 
-    history.back();
 
-};
+if(backBtn){
+
+    backBtn.onclick = () => {
+
+        history.back();
+
+    };
+
+}
 
 
 
@@ -39,36 +50,29 @@ onAuthStateChanged(auth, async(user)=>{
 
 
 
-    const userRef =
-    doc(db,"users",user.uid);
+    const q =
+    query(
+        collection(db,"blockedUsers"),
+        where(
+            "blockerId",
+            "==",
+            user.uid
+        )
+    );
 
 
 
-    const snap =
-    await getDoc(userRef);
+    const snapshot =
+    await getDocs(q);
 
 
 
-    if(!snap.exists()) return;
-
-
-
-    const data =
-    snap.data();
-
-
-
-    const blockedUsers =
-    data.blockedUsers || [];
-
-
-
-    if(blockedUsers.length === 0){
+    if(snapshot.empty){
 
         blockedList.innerHTML = `
-            <p class="empty">
-                No blocked users
-            </p>
+        <p class="empty">
+        No blocked users
+        </p>
         `;
 
         return;
@@ -81,24 +85,33 @@ onAuthStateChanged(auth, async(user)=>{
 
 
 
-    blockedUsers.forEach(async(uid)=>{
+    snapshot.forEach(async(blockDoc)=>{
 
 
-        const blockedRef =
-        doc(db,"users",uid);
-
-
-
-        const blockedSnap =
-        await getDoc(blockedRef);
+        const blockData =
+        blockDoc.data();
 
 
 
-        if(blockedSnap.exists()){
+        const userRef =
+        doc(
+            db,
+            "users",
+            blockData.blockedUserId
+        );
 
 
-            const blockedData =
-            blockedSnap.data();
+
+        const userSnap =
+        await getDoc(userRef);
+
+
+
+        if(userSnap.exists()){
+
+
+            const userData =
+            userSnap.data();
 
 
 
@@ -113,33 +126,29 @@ onAuthStateChanged(auth, async(user)=>{
 
             div.innerHTML = `
 
-                <div class="user-info">
+            <div class="user-info">
 
-                    <img src="${
-                        blockedData.photoURL ||
-                        "assets/images/default-profile.png"
-                    }">
-
-
-                    <span class="username">
-
-                        ${
-                            blockedData.name ||
-                            blockedData.username ||
-                            "User"
-                        }
-
-                    </span>
+            <img src="${
+            userData.photoURL ||
+            "assets/images/default-profile.png"
+            }">
 
 
-                </div>
+            <span class="username">
+            ${
+            userData.name ||
+            userData.username ||
+            "User"
+            }
+            </span>
 
 
-                <button class="unblock-btn">
+            </div>
 
-                    Unblock
 
-                </button>
+            <button class="unblock-btn">
+            Unblock
+            </button>
 
             `;
 
@@ -149,12 +158,12 @@ onAuthStateChanged(auth, async(user)=>{
             .onclick = async()=>{
 
 
-                await updateDoc(
-                    userRef,
-                    {
-                        blockedUsers:
-                        arrayRemove(uid)
-                    }
+                await deleteDoc(
+                    doc(
+                    db,
+                    "blockedUsers",
+                    blockDoc.id
+                    )
                 );
 
 
