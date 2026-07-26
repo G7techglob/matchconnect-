@@ -360,20 +360,65 @@ if (shareProfileBtn) {
   });
 }
 
-// BLOCK USER (simple version for now)
+// BLOCK USER
+
 if (blockUserBtn) {
+
   blockUserBtn.addEventListener("click", async () => {
+
     const user = auth.currentUser;
 
-    const confirmBlock = confirm("Block this user?");
+
+    if (!user) {
+      alert("Please login first");
+      return;
+    }
+
+
+    const confirmBlock =
+    confirm("Block this user?");
+
+
     if (!confirmBlock) return;
 
-    await setDoc(doc(db, "blockedUsers", user.uid), {
-      createdAt: serverTimestamp()
-    });
 
-    showNotification("User blocked");
+    try {
+
+
+      await addDoc(
+        collection(db, "blockedUsers"),
+        {
+          blockerId: user.uid,
+
+          blockedUserId: uid,
+
+          createdAt: serverTimestamp()
+        }
+      );
+
+
+      alert("User blocked successfully.");
+
+
+    } catch(error) {
+
+
+      console.error(
+        "Block error:",
+        error
+      );
+
+
+      alert(
+        "Unable to block user."
+      );
+
+
+    }
+
+
   });
+
 }
 
 // REPORT USER
