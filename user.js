@@ -15,51 +15,6 @@ import {
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-const menuBtn = document.getElementById("menuBtn");
-const profileMenu = document.getElementById("profileMenu");
-
-// INSTANT PROFILE MENU
-
-document.addEventListener("DOMContentLoaded", () => {
-
-  const menuBtn = document.getElementById("menuBtn");
-  const profileMenu = document.getElementById("profileMenu");
-
-
-  if(!menuBtn || !profileMenu){
-    console.log("Menu elements not found");
-    return;
-  }
-
-
-  menuBtn.addEventListener("click", (e)=>{
-
-    e.stopPropagation();
-
-    profileMenu.classList.toggle("show");
-
-  });
-
-
-
-  document.addEventListener("click",(e)=>{
-
-
-    if(
-      !profileMenu.contains(e.target) &&
-      !menuBtn.contains(e.target)
-    ){
-
-      profileMenu.classList.remove("show");
-
-    }
-
-
-  });
-
-
-});
-
 const params = new URLSearchParams(window.location.search);
 
 const uid = params.get("uid");
