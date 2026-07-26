@@ -597,59 +597,63 @@ if (blockUserBtn) {
   const user = auth.currentUser;
 
 
-  if(user){
+  if(user && user.uid !== uid){
 
-    const checkBlockStatus = async()=>{
 
-      const blockRef = doc(
-        db,
-        "blockedUsers",
-        user.uid + "_" + uid
+    async function checkBlock(){
+
+      const q = query(
+        collection(db,"blockedUsers"),
+        where("blockerId","==",user.uid),
+        where("blockedUserId","==",uid)
       );
 
 
-      const blockSnap = await getDoc(blockRef);
+      const snapshot = await getDocs(q);
 
 
-      if(blockSnap.exists()){
+      if(!snapshot.empty){
 
         blockUserBtn.innerHTML =
         "Unblock User";
+
+        return snapshot.docs[0].id;
 
       }else{
 
         blockUserBtn.innerHTML =
         "Block User";
 
+        return null;
+
       }
 
-    };
+    }
 
 
-    await checkBlockStatus();
+
+    let blockDocumentId = await checkBlock();
 
 
 
     blockUserBtn.addEventListener("click", async()=>{
 
 
-      const blockRef = doc(
-        db,
-        "blockedUsers",
-        user.uid + "_" + uid
-      );
-
-
-      const blockSnap = await getDoc(blockRef);
-
-
-
       // UNBLOCK
 
-      if(blockSnap.exists()){
+      if(blockDocumentId){
 
 
-        await deleteDoc(blockRef);
+        await deleteDoc(
+          doc(
+            db,
+            "blockedUsers",
+            blockDocumentId
+          )
+        );
+
+
+        blockDocumentId = null;
 
 
         blockUserBtn.innerHTML =
@@ -657,6 +661,7 @@ if (blockUserBtn) {
 
 
         showNotification("User unblocked");
+
 
         return;
 
@@ -674,16 +679,18 @@ if (blockUserBtn) {
 
 
 
-      await setDoc(
-        blockRef,
+      const newBlock =
+      await addDoc(
+        collection(db,"blockedUsers"),
         {
           blockerId:user.uid,
-
           blockedUserId:uid,
-
           createdAt:serverTimestamp()
         }
       );
+
+
+      blockDocumentId = newBlock.id;
 
 
       blockUserBtn.innerHTML =
@@ -698,7 +705,7 @@ if (blockUserBtn) {
 
   }
 
-        }
+}
 
 // REPORT USER (simple version)
 if (reportUserBtn) {
