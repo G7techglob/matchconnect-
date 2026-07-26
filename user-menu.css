@@ -1,7 +1,7 @@
 .user-menu-container {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: -5px;
+    right: -5px;
     z-index: 10000;
 }
 
