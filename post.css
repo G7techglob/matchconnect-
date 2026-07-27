@@ -26,16 +26,18 @@ body {
 }
 
 .post-avatar {
-  width: 50px;
-  height: 50px;
-  min-width: 50px;
-  min-height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-  border: 2px solid #ddd;
-  overflow: hidden;
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    flex-shrink: 0;
+    overflow: hidden;
+    border: 2px solid #ddd;
+    aspect-ratio: 1 / 1;
 }
 
 .post-header div {
@@ -139,8 +141,10 @@ h3 {
   }
 
   .post-header {
-    gap: 10px;
-    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
   }
 
   #postContainer > p {
