@@ -242,7 +242,7 @@ POSTS - NO CARDS
 
 .post{
     background:transparent;
-    width:calc(100% - 24px);
+    width:calc(100% - 8px);
     margin:15px auto;
     padding:15px;
     border-radius:0;
