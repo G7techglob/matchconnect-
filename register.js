@@ -51,11 +51,9 @@ document.getElementById("registerBtn").addEventListener("click", async () => {
 // Send verification email
 await sendEmailVerification(user);
 
-alert("Account created successfully! A verification email has been sent. Please check your inbox and verify your email before logging in.");
+alert("Account created successfully! Please check your Gmail and verify your email.");
 
-await auth.signOut();
-
-window.location.href = "login.html";
+window.location.href = "verify-email.html";
 
   } catch (error) {
     alert(error.message);
