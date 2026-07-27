@@ -354,3 +354,19 @@ if(twoFactor){
     });
 
 }
+
+// -----------------------------
+// EMAIL VERIFICATION PAGE
+// -----------------------------
+
+const emailVerification = document.getElementById("emailVerification");
+
+if (emailVerification) {
+
+    emailVerification.addEventListener("click", () => {
+
+        window.location.href = "verify-email.html";
+
+    });
+
+}
