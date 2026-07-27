@@ -12,7 +12,7 @@ body{
     font-family:Arial, Helvetica, sans-serif;
     background:#f4f4f4;
     color:#222;
-    padding-bottom:110px;
+    padding:20px 20px 110px;
 }
 
 h1, h2, h3, p{
@@ -242,14 +242,8 @@ POSTS - NO CARDS
 
 .post{
     background:transparent;
-    width:calc(100% - 8px);
-    margin:15px auto;
-    padding:15px;
-    border-radius:0;
-    box-shadow:none;
-    border:none;
-    box-sizing:border-box;
-}
+    width:100%;
+    margin:15px 0;
 
 .post img:not(.post-avatar){
     width:100%;
