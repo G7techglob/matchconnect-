@@ -342,7 +342,7 @@ FEATURED PROFILES - SMALL ROUND CIRCLES
     height:70px;
     border-radius:50%;
     object-fit:cover;
-    margin:0 auto 10px;
+    margin-left: -10px;
 }
 
 .profile h3,
