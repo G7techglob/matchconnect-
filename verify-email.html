@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email - MatchConnect</title>
+
+    <link rel="stylesheet" href="verify-email.css">
+</head>
+
+<body>
+
+<div class="verify-container">
+
+    <div class="verify-box">
+
+        <h1>MatchConnect</h1>
+
+        <h2>Verify Your Email</h2>
+
+        <p>
+            We have sent a verification link to your Gmail address.
+            Please check your inbox and click the link to verify your account.
+        </p>
+
+        <button id="resendBtn">
+            Resend Verification Email
+        </button>
+
+        <button onclick="checkVerification()">
+            I Have Verified
+        </button>
+
+        <p id="message"></p>
+
+    </div>
+
+</div>
+
+
+<script type="module" src="verify-email.js"></script>
+
+</body>
+</html>
