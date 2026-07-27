@@ -242,11 +242,13 @@ POSTS - NO CARDS
 
 .post{
     background:transparent;
-    margin:15px 0;
+    width:calc(100% - 24px);
+    margin:15px auto;
     padding:15px;
     border-radius:0;
     box-shadow:none;
     border:none;
+    box-sizing:border-box;
 }
 
 .post img:not(.post-avatar){
