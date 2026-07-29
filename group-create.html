@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Group - MatchConnect</title>
+
+    <link rel="stylesheet" href="group-create.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <button class="back-btn" onclick="history.back()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+
+        <h2>Create Group</h2>
+    </div>
+
+    <!-- Group Photo -->
+    <div class="group-photo-section">
+
+        <label for="groupPhoto">
+
+            <img
+                src="https://via.placeholder.com/120"
+                id="groupPreview"
+                class="group-photo">
+
+            <p>Choose Group Photo</p>
+
+        </label>
+
+        <input
+            type="file"
+            id="groupPhoto"
+            accept="image/*"
+            hidden>
+
+    </div>
+
+    <!-- Group Name -->
+    <div class="input-box">
+
+        <label>Group Name</label>
+
+        <input
+            type="text"
+            id="groupName"
+            placeholder="Enter group name">
+
+    </div>
+
+    <!-- Search -->
+    <div class="input-box">
+
+        <label>Search Friends</label>
+
+        <input
+            type="text"
+            id="searchFriend"
+            placeholder="Search friends">
+
+    </div>
+
+    <!-- Friends -->
+    <div class="friends-section">
+
+        <h3>Select Members</h3>
+
+        <div id="friendsList">
+
+            <!-- Friends will appear here automatically -->
+
+        </div>
+
+    </div>
+
+    <!-- Button -->
+
+    <button id="createGroupBtn">
+
+        Create Group
+
+    </button>
+
+</div>
+
+<script type="module" src="group-create.js"></script>
+
+</body>
+  </html>
