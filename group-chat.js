@@ -92,12 +92,19 @@ sendBtn.addEventListener("click", async () => {
 
     if (text === "") return;
 
+    const userSnap = await getDoc(
+    doc(db, "users", user.uid)
+);
+
+const userData = userSnap.data();
+
+const username = userData.name || "User";
+
     await addDoc(
         collection(db, "groups", groupId, "messages"),
         {
             text: text,
             senderId: user.uid,
-            username: groupName.textContent,
             time: serverTimestamp()
         }
     );
