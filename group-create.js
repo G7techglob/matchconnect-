@@ -20,6 +20,19 @@ const friendsList = document.getElementById("friendsList");
 const openMembersBtn = document.getElementById("openMembersBtn");
 
 const searchFriend = document.getElementById("searchFriend");
+openMembersBtn.addEventListener("click", ()=>{
+
+    if(friendsList.style.display === "block"){
+
+        friendsList.style.display = "none";
+
+    }else{
+
+        friendsList.style.display = "block";
+
+    }
+
+});
 // Preview selected group photo
 groupPhoto.addEventListener("change", (e) => {
     const file = e.target.files[0];
@@ -171,7 +184,6 @@ try {
     console.error("Error creating group:", error);
 
     alert(error.message);
-
 }
 
     searchFriend.addEventListener("input", ()=>{
