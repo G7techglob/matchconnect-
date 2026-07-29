@@ -17,7 +17,9 @@ const groupPreview = document.getElementById("groupPreview");
 const createGroupBtn = document.getElementById("createGroupBtn");
 const groupName = document.getElementById("groupName");
 const friendsList = document.getElementById("friendsList");
+const openMembersBtn = document.getElementById("openMembersBtn");
 
+const searchFriend = document.getElementById("searchFriend");
 // Preview selected group photo
 groupPhoto.addEventListener("change", (e) => {
     const file = e.target.files[0];
@@ -94,10 +96,11 @@ onAuthStateChanged(auth, async (user)=>{
         `;
 
 
-        friendsList.appendChild(item);
+        item.dataset.name =
+(follower.name || "User").toLowerCase();
 
-    }
 
+friendsList.appendChild(item);
 });
 
 // Create group button
@@ -170,3 +173,34 @@ try {
     alert(error.message);
 
 }
+
+    searchFriend.addEventListener("input", ()=>{
+
+    const searchText =
+    searchFriend.value.toLowerCase();
+
+
+    const members =
+    document.querySelectorAll(".friend-item");
+
+
+    members.forEach(member=>{
+
+
+        const name =
+        member.dataset.name;
+
+
+        if(name.includes(searchText)){
+
+            member.style.display = "flex";
+
+        }else{
+
+            member.style.display = "none";
+
+        }
+
+    });
+
+});
