@@ -176,9 +176,7 @@ try {
     alert("Group created successfully");
 
 
-    window.location.href =
-    `group-chat.html?groupId=${groupRef.id}`;
-
+    window.location.href = "groups.html";
 
 } catch(error) {
 
