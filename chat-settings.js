@@ -102,3 +102,15 @@ saveBtn.onclick = async()=>{
     alert("Chat settings saved ✅");
 
 };
+
+const createGroupBtn = document.getElementById("createGroupBtn");
+
+if(createGroupBtn){
+
+    createGroupBtn.addEventListener("click",()=>{
+
+        window.location.href = "group-create.html";
+
+    });
+
+}
