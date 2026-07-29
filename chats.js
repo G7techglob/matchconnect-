@@ -28,13 +28,9 @@ function loading(){
 
 
 function empty(){
-    chatList.innerHTML = `
-    <div class="empty-state">
-        <i class="fa-solid fa-comments"></i>
-        <p>No conversations yet</p>
-        <small>Start chatting with someone</small>
-    </div>
-    `;
+
+    chatList.innerHTML = "";
+
 }
 
 
@@ -261,8 +257,11 @@ document.getElementById("chatSettingsBtn").onclick = ()=>{
 
 };
 
-const groupsList =
-document.getElementById("groupsList");
+const groupsList = document.getElementById("groupsList");
+
+if(!groupsList){
+    console.log("groupsList not found");
+}
 
 
 onAuthStateChanged(auth,(user)=>{
@@ -283,6 +282,7 @@ onAuthStateChanged(auth,(user)=>{
 
     onSnapshot(groupsQuery,(snapshot)=>{
 
+        console.log("Groups found:", snapshot.size);
 
         if(!groupsList) return;
 
