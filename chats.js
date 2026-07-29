@@ -251,12 +251,6 @@ chatList.appendChild(div);
 
 });
 
-document.getElementById("chatSettingsBtn").onclick = ()=>{
-
-    location.href = "chat-settings.html";
-
-};
-
 const groupsList = document.getElementById("groupsList");
 
 if(!groupsList){
@@ -464,3 +458,50 @@ chatSearchInput.addEventListener("input",()=>{
 
 
 }
+
+// =========================
+// CHAT 3 DOT MENU
+// =========================
+
+const chatMenuBtn = document.getElementById("chatMenuBtn");
+const chatMenu = document.getElementById("chatMenu");
+const chatSettingsMenuBtn = document.getElementById("chatSettingsMenuBtn");
+
+
+if(chatMenuBtn && chatMenu){
+
+    chatMenuBtn.onclick = (e)=>{
+
+        e.stopPropagation();
+
+        chatMenu.classList.toggle("show");
+
+    };
+
+}
+
+
+if(chatSettingsMenuBtn){
+
+    chatSettingsMenuBtn.onclick = ()=>{
+
+        window.location.href = "chat-settings.html";
+
+    };
+
+}
+
+
+document.addEventListener("click",(e)=>{
+
+    if(
+        chatMenu &&
+        !chatMenu.contains(e.target) &&
+        !chatMenuBtn.contains(e.target)
+    ){
+
+        chatMenu.classList.remove("show");
+
+    }
+
+});
