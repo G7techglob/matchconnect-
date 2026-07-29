@@ -184,3 +184,26 @@ body{
     white-space:nowrap;
         }
 
+
+/* =========================
+   GROUPS
+========================= */
+
+.groups-section{
+    margin-bottom:20px;
+}
+
+.groups-section h3{
+    font-size:18px;
+    font-weight:bold;
+    color:#444;
+    margin-bottom:10px;
+    padding-left:5px;
+}
+
+#groupsList{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:20px;
+}
