@@ -80,8 +80,43 @@ createGroupBtn.addEventListener("click", async () => {
     }
 
     console.log("Group Name:", name);
-    console.log("Members:", selectedMembers);
+console.log("Members:", selectedMembers);
 
-    alert("Next step: Save the group to Firestore.");
 
-});
+try {
+
+    const groupRef = await addDoc(
+        collection(db, "groups"),
+        {
+
+            name: name,
+
+            createdBy: user.uid,
+
+            members: selectedMembers,
+
+            photoURL: "",
+
+            createdAt: serverTimestamp()
+
+        }
+    );
+
+
+    console.log("Created Group ID:", groupRef.id);
+
+
+    alert("Group created successfully");
+
+
+    window.location.href =
+    `group-chat.html?groupId=${groupRef.id}`;
+
+
+} catch(error) {
+
+    console.error("Error creating group:", error);
+
+    alert(error.message);
+
+}
