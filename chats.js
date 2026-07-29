@@ -358,3 +358,109 @@ onAuthStateChanged(auth,(user)=>{
 
 
 });
+
+// =========================
+// CHAT SEARCH
+// =========================
+
+const searchBtn = document.getElementById("searchBtn");
+const closeSearchBtn = document.getElementById("closeSearchBtn");
+const chatSearchInput = document.getElementById("chatSearchInput");
+const chatTitle = document.querySelector(".chat-header h1");
+
+
+if(searchBtn){
+
+    searchBtn.onclick = ()=>{
+
+        searchBtn.style.display = "none";
+
+        if(chatTitle){
+            chatTitle.style.display = "none";
+        }
+
+        chatSearchInput.style.display = "block";
+
+        closeSearchBtn.style.display = "flex";
+
+        chatSearchInput.focus();
+
+    };
+
+}
+
+
+
+if(closeSearchBtn){
+
+    closeSearchBtn.onclick = ()=>{
+
+        chatSearchInput.style.display = "none";
+
+        closeSearchBtn.style.display = "none";
+
+        searchBtn.style.display = "flex";
+
+
+        if(chatTitle){
+            chatTitle.style.display = "block";
+        }
+
+
+        chatSearchInput.value = "";
+
+
+        document.querySelectorAll(".chat-item")
+        .forEach(item=>{
+
+            item.style.display="flex";
+
+        });
+
+    };
+
+}
+
+
+
+// FILTER CHATS
+
+if(chatSearchInput){
+
+chatSearchInput.addEventListener("input",()=>{
+
+
+    const text =
+    chatSearchInput.value.toLowerCase();
+
+
+
+    document.querySelectorAll(".chat-item")
+    .forEach(item=>{
+
+
+        const name =
+        item.querySelector(".chat-name")
+        ?.textContent
+        .toLowerCase();
+
+
+
+        if(name && name.includes(text)){
+
+            item.style.display="flex";
+
+        }else{
+
+            item.style.display="none";
+
+        }
+
+
+    });
+
+
+});
+
+
+}
