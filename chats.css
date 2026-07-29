@@ -27,9 +27,8 @@ body{
     padding:12px 15px;
     display:flex;
     align-items:center;
-    gap:12px;
-    flex-wrap:wrap;
 }
+
 
 .back-btn,
 #chatSettingsBtn{
@@ -50,32 +49,37 @@ body{
 }
 
 /* =========================
-   SEARCH
+   HEADER ICONS
 ========================= */
 
-.chat-search-wrap{
-    width:100%;
-}
-
-.chat-search{
-    display:flex;
-    align-items:center;
-    background:#f0f2f5;
-    border-radius:30px;
-    padding:10px 15px;
-}
-
-.chat-search i{
-    color:#666;
-    margin-right:10px;
-}
-
-.chat-search input{
+.chat-header h1{
     flex:1;
+    font-size:22px;
+    margin-left:12px;
+}
+
+.header-icon,
+#chatSettingsBtn{
+    width:40px;
+    height:40px;
     border:none;
-    outline:none;
-    background:transparent;
-    font-size:16px;
+    background:#f0f2f5;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    font-size:18px;
+    color:#1877f2;
+    margin-left:8px;
+}
+
+.back-btn{
+    background:none;
+    border:none;
+    font-size:22px;
+    cursor:pointer;
+    color:#1877f2;
 }
 
 /* =========================
