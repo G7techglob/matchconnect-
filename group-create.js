@@ -3,9 +3,15 @@ import { auth, db } from "./firebase.js";
 import {
     collection,
     addDoc,
-    serverTimestamp
+    serverTimestamp,
+    getDocs,
+    doc,
+    getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
+import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 const groupPhoto = document.getElementById("groupPhoto");
 const groupPreview = document.getElementById("groupPreview");
 const createGroupBtn = document.getElementById("createGroupBtn");
@@ -21,32 +27,76 @@ groupPhoto.addEventListener("change", (e) => {
     }
 });
 
-// Temporary sample friends
-const friends = [
-    { uid: "user1", name: "John" },
-    { uid: "user2", name: "Sarah" },
-    { uid: "user3", name: "David" },
-    { uid: "user4", name: "Michael" }
-];
+onAuthStateChanged(auth, async (user)=>{
 
-// Display friends
-friends.forEach(friend => {
+    if(!user){
+        window.location.href="login.html";
+        return;
+    }
 
-    const item = document.createElement("div");
-    item.className = "friend-item";
 
-    item.innerHTML = `
+    const followersRef = collection(
+        db,
+        "users",
+        user.uid,
+        "followers"
+    );
+
+
+    const followersSnap = await getDocs(followersRef);
+
+
+    for(const followerDoc of followersSnap.docs){
+
+
+        const followerId =
+        followerDoc.data().userId || followerDoc.id;
+
+
+        const userSnap = await getDoc(
+            doc(db,"users",followerId)
+        );
+
+
+        if(!userSnap.exists()){
+            continue;
+        }
+
+
+        const follower = userSnap.data();
+
+
+        const item = document.createElement("div");
+
+        item.className = "friend-item";
+
+
+        item.innerHTML = `
+
         <div class="friend-info">
-            <span>${friend.name}</span>
+
+            <img 
+            src="${follower.photoURL || 'images/default-avatar.png'}"
+            class="friend-photo">
+
+            <span>
+            ${follower.name || "User"}
+            </span>
+
         </div>
 
-        <input
-            type="checkbox"
-            value="${friend.uid}"
-            class="memberCheck">
-    `;
 
-    friendsList.appendChild(item);
+        <input
+        type="checkbox"
+        value="${followerId}"
+        class="memberCheck">
+
+        `;
+
+
+        friendsList.appendChild(item);
+
+    }
 
 });
 
