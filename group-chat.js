@@ -101,13 +101,14 @@ const userData = userSnap.data();
 const username = userData.name || "User";
 
     await addDoc(
-        collection(db, "groups", groupId, "messages"),
-        {
-            text: text,
-            senderId: user.uid,
-            time: serverTimestamp()
-        }
-    );
+    collection(db, "groups", groupId, "messages"),
+    {
+        text: text,
+        senderId: user.uid,
+        username: username,
+        time: serverTimestamp()
+    }
+);
 
     messageInput.value = "";
 
