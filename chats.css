@@ -258,3 +258,18 @@ body{
     background:#f0f2f5;
 
 }
+
+#chatSearchInput{
+
+    display:none;
+    flex:1;
+    height:40px;
+    border:none;
+    outline:none;
+    background:#f0f2f5;
+    border-radius:20px;
+    padding:0 15px;
+    font-size:15px;
+    margin-left:10px;
+
+    }
