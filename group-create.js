@@ -114,6 +114,7 @@ onAuthStateChanged(auth, async (user)=>{
 
 
 friendsList.appendChild(item);
+    }
 });
 
 // Create group button
