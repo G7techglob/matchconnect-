@@ -28,7 +28,13 @@
             <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
         </button>
 
-        <h1>Chats</h1>
+        <h1 id="chatTitle">Chats</h1>
+
+<input
+id="chatSearchInput"
+type="text"
+placeholder="Search chats..."
+style="display:none;">
         <span class="header-spacer" aria-hidden="true"></span>
         <button
     id="searchBtn"
@@ -36,6 +42,15 @@
     aria-label="Search chats">
 
     <i class="fa-solid fa-magnifying-glass"></i>
+
+        </button>
+        <button
+id="closeSearchBtn"
+class="header-icon"
+style="display:none;"
+aria-label="Close search">
+
+<i class="fa-solid fa-xmark"></i>
 
         </button>
         <button
