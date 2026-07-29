@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Chat - MatchConnect</title>
+
+    <link rel="stylesheet" href="group-chat.css">
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="chat-header">
+
+        <button class="back-btn" onclick="history.back()">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <div class="group-info">
+
+            <img
+                id="groupPhoto"
+                src="images/default-avatar.png"
+                class="group-photo">
+
+            <div>
+                <h3 id="groupName">Loading...</h3>
+                <p>Group Chat</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Messages -->
+    <div id="messages" class="messages"></div>
+
+    <!-- Message Box -->
+    <div class="message-box">
+
+        <input
+            type="text"
+            id="messageInput"
+            placeholder="Type a message...">
+
+        <button id="sendBtn">
+            <i class="fa-solid fa-paper-plane"></i>
+        </button>
+
+    </div>
+
+    <script type="module" src="group-chat.js"></script>
+
+</body>
+</html>
