@@ -185,7 +185,8 @@ try {
 
     alert(error.message);
 }
-
+    
+});
     searchFriend.addEventListener("input", ()=>{
 
     const searchText =
