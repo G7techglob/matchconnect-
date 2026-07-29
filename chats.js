@@ -7,7 +7,8 @@ import {
     orderBy,
     limit,
     onSnapshot,
-    doc
+    doc,
+    where
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -259,3 +260,101 @@ document.getElementById("chatSettingsBtn").onclick = ()=>{
     location.href = "chat-settings.html";
 
 };
+
+const groupsList =
+document.getElementById("groupsList");
+
+
+onAuthStateChanged(auth,(user)=>{
+
+
+    if(!user) return;
+
+
+    const groupsQuery = query(
+        collection(db,"groups"),
+        where(
+            "members",
+            "array-contains",
+            user.uid
+        )
+    );
+
+
+    onSnapshot(groupsQuery,(snapshot)=>{
+
+
+        if(!groupsList) return;
+
+
+        groupsList.innerHTML="";
+
+
+        if(snapshot.empty){
+
+            groupsList.innerHTML =
+            "<p>No groups yet</p>";
+
+            return;
+
+        }
+
+
+        snapshot.forEach((groupDoc)=>{
+
+
+            const group =
+            groupDoc.data();
+
+
+            const div =
+            document.createElement("div");
+
+
+            div.className="chat-item";
+
+
+            div.innerHTML=`
+
+            <img 
+            class="avatar"
+            src="${group.photoURL || 'images/default-avatar.png'}">
+
+
+            <div class="chat-main">
+
+            <p class="chat-name">
+            ${group.name}
+            </p>
+
+
+            <p class="chat-message">
+            Group chat
+            </p>
+
+
+            </div>
+
+            `;
+
+
+            div.onclick=()=>{
+
+
+                location.href =
+                `group-chat.html?groupId=${groupDoc.id}`;
+
+
+            };
+
+
+            groupsList.appendChild(div);
+
+
+        });
+
+
+    });
+
+
+});
