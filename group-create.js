@@ -1,4 +1,10 @@
-import { auth } from "./firebase.js";
+import { auth, db } from "./firebase.js";
+
+import {
+    collection,
+    addDoc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const groupPhoto = document.getElementById("groupPhoto");
 const groupPreview = document.getElementById("groupPreview");
@@ -46,6 +52,7 @@ friends.forEach(friend => {
 
 // Create group button
 createGroupBtn.addEventListener("click", async () => {
+    
 
     const user = auth.currentUser;
 
