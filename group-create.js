@@ -1,0 +1,80 @@
+import { auth } from "./firebase.js";
+
+const groupPhoto = document.getElementById("groupPhoto");
+const groupPreview = document.getElementById("groupPreview");
+const createGroupBtn = document.getElementById("createGroupBtn");
+const groupName = document.getElementById("groupName");
+const friendsList = document.getElementById("friendsList");
+
+// Preview selected group photo
+groupPhoto.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+        groupPreview.src = URL.createObjectURL(file);
+    }
+});
+
+// Temporary sample friends
+const friends = [
+    { uid: "user1", name: "John" },
+    { uid: "user2", name: "Sarah" },
+    { uid: "user3", name: "David" },
+    { uid: "user4", name: "Michael" }
+];
+
+// Display friends
+friends.forEach(friend => {
+
+    const item = document.createElement("div");
+    item.className = "friend-item";
+
+    item.innerHTML = `
+        <div class="friend-info">
+            <span>${friend.name}</span>
+        </div>
+
+        <input
+            type="checkbox"
+            value="${friend.uid}"
+            class="memberCheck">
+    `;
+
+    friendsList.appendChild(item);
+
+});
+
+// Create group button
+createGroupBtn.addEventListener("click", async () => {
+
+    const user = auth.currentUser;
+
+    if (!user) {
+        alert("Please log in first.");
+        return;
+    }
+
+    const name = groupName.value.trim();
+
+    if (name === "") {
+        alert("Enter a group name.");
+        return;
+    }
+
+    const selectedMembers = [];
+
+    document.querySelectorAll(".memberCheck:checked").forEach(box => {
+        selectedMembers.push(box.value);
+    });
+
+    // Include the creator
+    if (!selectedMembers.includes(user.uid)) {
+        selectedMembers.push(user.uid);
+    }
+
+    console.log("Group Name:", name);
+    console.log("Members:", selectedMembers);
+
+    alert("Next step: Save the group to Firestore.");
+
+});
