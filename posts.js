@@ -541,6 +541,74 @@ document.addEventListener(
   }
 );
 
+document.addEventListener("click", async (e) => {
+
+  if (!e.target.classList.contains("follow-btn")) return;
+
+  const currentUser = auth.currentUser;
+
+  if (!currentUser) {
+    alert("Please login first");
+    return;
+  }
+
+  const targetUid = e.target.dataset.uid;
+
+  if (targetUid === currentUser.uid) return;
+
+  try {
+
+    const followingRef = doc(
+      db,
+      "users",
+      currentUser.uid,
+      "following",
+      targetUid
+    );
+
+    const followerRef = doc(
+      db,
+      "users",
+      targetUid,
+      "followers",
+      currentUser.uid
+    );
+
+    const followingSnap = await getDoc(followingRef);
+
+    if (followingSnap.exists()) {
+
+      // Unfollow
+      await deleteDoc(followingRef);
+      await deleteDoc(followerRef);
+
+      e.target.textContent = "Follow";
+
+    } else {
+
+      // Follow
+      await setDoc(followingRef, {
+        userId: targetUid,
+        createdAt: serverTimestamp()
+      });
+
+      await setDoc(followerRef, {
+        userId: currentUser.uid,
+        createdAt: serverTimestamp()
+      });
+
+      e.target.textContent = "Following";
+
+    }
+
+  } catch (error) {
+
+    console.error("Follow error:", error);
+
+  }
+
+});
+
 // SECURITY
 function escapeHTML(str) {
 
