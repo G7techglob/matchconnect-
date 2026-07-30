@@ -135,9 +135,13 @@ function loadMessages(){
 
 document.querySelectorAll(".message").forEach((msg)=>{
 
+    let pressTimer;
+
+
     const startPress = ()=>{
 
         const id = msg.dataset.id;
+
 
         pressTimer = setTimeout(()=>{
 
@@ -155,13 +159,13 @@ document.querySelectorAll(".message").forEach((msg)=>{
     };
 
 
-    // Mouse
+    // Mouse (computer)
     msg.addEventListener("mousedown", startPress);
     msg.addEventListener("mouseup", cancelPress);
     msg.addEventListener("mouseleave", cancelPress);
 
 
-    // Mobile touch
+    // Touch (phone)
     msg.addEventListener("touchstart", startPress);
     msg.addEventListener("touchend", cancelPress);
     msg.addEventListener("touchmove", cancelPress);
