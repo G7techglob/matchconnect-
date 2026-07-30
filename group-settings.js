@@ -42,6 +42,9 @@ document.getElementById("leaveGroupBtn");
 const changePhotoBtn =
 document.getElementById("changePhotoBtn");
 
+const groupPhotoInput =
+document.getElementById("groupPhotoInput");
+
 // Get group ID from URL
 
 const params =
@@ -307,6 +310,16 @@ if(changeNameBtn){
 
 
         location.reload();
+
+    };
+
+}
+
+if(changePhotoBtn){
+
+    changePhotoBtn.onclick = ()=>{
+
+        groupPhotoInput.click();
 
     };
 
