@@ -374,7 +374,11 @@ if(groupPhotoInput){
         photoURL: photoURL
     }
 );
+            
+alert("Group photo updated ✅");
 
+location.reload();
+            
         }catch(error){
 
             console.log(error);
