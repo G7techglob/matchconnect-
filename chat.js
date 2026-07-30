@@ -44,6 +44,7 @@ if (!receiverUid) {
 let currentUser = null;
 let chatId = null;
 let typingTimer;
+let pressTimer;
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
@@ -131,6 +132,41 @@ function loadMessages() {
 </div>
 `;
     });
+
+    document.querySelectorAll(".message").forEach((msg)=>{
+
+
+    msg.addEventListener("mousedown",()=>{
+
+
+        const id = msg.dataset.id;
+
+
+        pressTimer = setTimeout(()=>{
+
+            showMessageOptions(id);
+
+        },700);
+
+
+    });
+
+
+    msg.addEventListener("mouseup",()=>{
+
+        clearTimeout(pressTimer);
+
+    });
+
+
+    msg.addEventListener("mouseleave",()=>{
+
+        clearTimeout(pressTimer);
+
+    });
+
+
+});
 
     messages.scrollTop = messages.scrollHeight;
   });
@@ -332,3 +368,44 @@ window.addEventListener("beforeunload", async () => {
     { merge: true }
   );
 });
+
+function showMessageOptions(id){
+
+
+    const option = prompt(
+    "Message options:\n\n1. Like ❤️\n2. Forward ↗\n3. Delete 🗑"
+    );
+
+
+    if(option === "1"){
+
+        alert("Message liked ❤️");
+
+    }
+
+
+    if(option === "2"){
+
+        alert("Forward feature coming soon");
+
+    }
+
+
+    if(option === "3"){
+
+
+        const confirmDelete =
+        confirm("Delete this message?");
+
+
+        if(confirmDelete){
+
+            deleteDoc(
+            doc(db,"chats",chatId,"messages",id)
+            );
+
+        }
+
+    }
+
+}
