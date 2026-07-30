@@ -330,9 +330,11 @@ if(changePhotoBtn){
 
 }
 
+
 if(groupPhotoInput){
 
-    groupPhotoInput.onchange = (event)=>{
+    groupPhotoInput.onchange = async (event)=>{
+
 
         const file = event.target.files[0];
 
@@ -342,7 +344,41 @@ if(groupPhotoInput){
         }
 
 
-        console.log("Selected image:", file.name);
+        try{
+
+
+            const imageRef = ref(
+                storage,
+                "groupPhotos/" + groupId
+            );
+
+
+            await uploadBytes(
+                imageRef,
+                file
+            );
+
+
+            const photoURL =
+            await getDownloadURL(imageRef);
+
+
+            console.log(
+                "Uploaded:",
+                photoURL
+            );
+
+
+        }catch(error){
+
+            console.log(error);
+
+            alert(
+            "Photo upload failed"
+            );
+
+        }
+
 
     };
 
