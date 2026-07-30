@@ -113,3 +113,22 @@ const username = userData.name || "User";
     messageInput.value = "";
 
 });
+
+// =========================
+// GROUP MENU BUTTON
+// =========================
+
+const groupMenuBtn =
+document.getElementById("groupMenuBtn");
+
+
+if(groupMenuBtn){
+
+    groupMenuBtn.onclick = ()=>{
+
+        window.location.href =
+        `group-settings.html?groupId=${groupId}`;
+
+    };
+
+}
