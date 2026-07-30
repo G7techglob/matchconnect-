@@ -82,18 +82,32 @@ if(post.userId){
       div.innerHTML = `
 
 <div class="post-header">
+
 <img
 src="${profilePhoto}"
 class="post-avatar view-profile"
 data-uid="${post.userId}"
 >
 
-  <span
-  class="post-user view-profile"
-  data-uid="${post.userId}"
+<span
+class="post-user view-profile"
+data-uid="${post.userId}"
 >
-  ${profileName}
+${profileName}
 </span>
+
+${
+auth.currentUser &&
+auth.currentUser.uid !== post.userId
+? `
+<button
+class="follow-btn"
+data-uid="${post.userId}">
+Follow
+</button>
+`
+: ""
+}
 
 </div>
 
