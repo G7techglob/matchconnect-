@@ -279,14 +279,6 @@ const changeNameBtn =
 document.getElementById("changeNameBtn");
 
 
-const params =
-new URLSearchParams(window.location.search);
-
-
-const groupId =
-params.get("groupId");
-
-
 
 if(changeNameBtn){
 
