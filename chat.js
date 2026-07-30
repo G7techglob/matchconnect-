@@ -133,14 +133,11 @@ function loadMessages(){
 `;
     });
 
-    document.querySelectorAll(".message").forEach((msg)=>{
+document.querySelectorAll(".message").forEach((msg)=>{
 
-
-    msg.addEventListener("mousedown",()=>{
-
+    const startPress = ()=>{
 
         const id = msg.dataset.id;
-
 
         pressTimer = setTimeout(()=>{
 
@@ -148,22 +145,26 @@ function loadMessages(){
 
         },700);
 
-
-    });
-
-
-    msg.addEventListener("mouseup",()=>{
-
-        clearTimeout(pressTimer);
-
-    });
+    };
 
 
-    msg.addEventListener("mouseleave",()=>{
+    const cancelPress = ()=>{
 
         clearTimeout(pressTimer);
 
-    });
+    };
+
+
+    // Mouse
+    msg.addEventListener("mousedown", startPress);
+    msg.addEventListener("mouseup", cancelPress);
+    msg.addEventListener("mouseleave", cancelPress);
+
+
+    // Mobile touch
+    msg.addEventListener("touchstart", startPress);
+    msg.addEventListener("touchend", cancelPress);
+    msg.addEventListener("touchmove", cancelPress);
 
 
 });
