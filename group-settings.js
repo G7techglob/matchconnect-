@@ -368,6 +368,12 @@ if(groupPhotoInput){
                 photoURL
             );
 
+            await updateDoc(
+    doc(db,"groups",groupId),
+    {
+        photoURL: photoURL
+    }
+);
 
         }catch(error){
 
