@@ -329,3 +329,21 @@ if(changePhotoBtn){
     };
 
 }
+
+if(groupPhotoInput){
+
+    groupPhotoInput.onchange = (event)=>{
+
+        const file = event.target.files[0];
+
+
+        if(!file){
+            return;
+        }
+
+
+        console.log("Selected image:", file.name);
+
+    };
+
+}
