@@ -133,6 +133,13 @@ Group member
 
 `;
 
+  div.onclick = ()=>{
+
+    window.location.href =
+    `user.html?uid=${memberId}`;
+
+};
+
 
 
 membersList.appendChild(div);
