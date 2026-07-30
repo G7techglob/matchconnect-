@@ -118,17 +118,30 @@ const username = userData.name || "User";
 // GROUP MENU BUTTON
 // =========================
 
-const groupMenuBtn =
-document.getElementById("groupMenuBtn");
+const groupMenuBtn = document.getElementById("groupMenuBtn");
+
+console.log("Group menu button:", groupMenuBtn);
+console.log("Current group ID:", groupId);
 
 
 if(groupMenuBtn){
 
-    groupMenuBtn.onclick = ()=>{
+    groupMenuBtn.addEventListener("click", ()=>{
+
+        console.log("Group menu clicked");
+
+        if(!groupId){
+
+            alert("No group ID found");
+
+            return;
+
+        }
+
 
         window.location.href =
         `group-settings.html?groupId=${groupId}`;
 
-    };
+    });
 
 }
