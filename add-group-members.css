@@ -1,0 +1,152 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+
+body{
+
+    font-family:Arial,sans-serif;
+
+    background:#f5f5f5;
+
+    color:#222;
+
+}
+
+
+
+/* HEADER */
+
+header{
+
+    height:60px;
+
+    background:#fff;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:0 15px;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+
+}
+
+
+header button{
+
+    border:none;
+
+    background:none;
+
+    font-size:24px;
+
+    color:#1877f2;
+
+}
+
+
+
+header h2{
+
+    font-size:20px;
+
+}
+
+
+
+/* USERS */
+
+#usersList{
+
+    padding:15px;
+
+}
+
+
+
+.user-item{
+
+    background:#fff;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:12px;
+
+    margin-bottom:10px;
+
+    border-radius:14px;
+
+}
+
+
+
+.user-item img{
+
+    width:55px;
+
+    height:55px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+}
+
+
+.user-item h3{
+
+    flex:1;
+
+    font-size:16px;
+
+}
+
+
+
+.user-item input{
+
+    width:20px;
+
+    height:20px;
+
+}
+
+
+
+/* ADD BUTTON */
+
+#addSelectedBtn{
+
+    position:fixed;
+
+    bottom:20px;
+
+    left:15px;
+
+    right:15px;
+
+    height:50px;
+
+    border:none;
+
+    border-radius:25px;
+
+    background:#1877f2;
+
+    color:white;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+}
