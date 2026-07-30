@@ -84,7 +84,7 @@ async function loadReceiver() {
   });
 }
 
-function loadMessages() {
+async function showMessageOptions(id){
   const q = query(collection(db, "chats", chatId, "messages"), orderBy("time"));
 
   onSnapshot(q, (snapshot) => {
