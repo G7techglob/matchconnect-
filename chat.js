@@ -44,7 +44,7 @@ if (!receiverUid) {
 let currentUser = null;
 let chatId = null;
 let typingTimer;
-let pressTimer;
+
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
