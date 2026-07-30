@@ -39,7 +39,8 @@ document.getElementById("reportGroupBtn");
 const leaveGroupBtn =
 document.getElementById("leaveGroupBtn");
 
-
+const changePhotoBtn =
+document.getElementById("changePhotoBtn");
 
 // Get group ID from URL
 
