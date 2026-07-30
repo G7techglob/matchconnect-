@@ -274,3 +274,47 @@ leaveGroupBtn.onclick = async()=>{
 
 
       }
+
+const changeNameBtn =
+document.getElementById("changeNameBtn");
+
+
+const params =
+new URLSearchParams(window.location.search);
+
+
+const groupId =
+params.get("groupId");
+
+
+
+if(changeNameBtn){
+
+    changeNameBtn.onclick = async()=>{
+
+
+        const newName =
+        prompt("Enter new group name");
+
+
+        if(!newName || newName.trim() === ""){
+            return;
+        }
+
+
+        await updateDoc(
+            doc(db,"groups",groupId),
+            {
+                name:newName.trim()
+            }
+        );
+
+
+        alert("Group name updated ✅");
+
+
+        location.reload();
+
+    };
+
+}
