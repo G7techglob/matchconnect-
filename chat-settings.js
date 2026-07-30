@@ -17,6 +17,15 @@ const typingIndicator = document.getElementById("typingIndicator");
 const onlineStatus = document.getElementById("onlineStatus");
 const messagePreview = document.getElementById("messagePreview");
 const autoDownload = document.getElementById("autoDownload");
+const chatNotifications = document.getElementById("chatNotifications");
+const notificationSound = document.getElementById("notificationSound");
+const vibration = document.getElementById("vibration");
+const darkMode = document.getElementById("darkMode");
+
+const archiveChatsBtn = document.getElementById("archiveChatsBtn");
+const blockedUsersBtn = document.getElementById("blockedUsersBtn");
+const storageBtn = document.getElementById("storageBtn");
+const aboutChatsBtn = document.getElementById("aboutChatsBtn");
 const saveBtn = document.getElementById("saveBtn");
 
 
@@ -54,6 +63,10 @@ onAuthStateChanged(auth, async (user)=>{
         onlineStatus.checked = data.onlineStatus ?? true;
         messagePreview.checked = data.messagePreview ?? true;
         autoDownload.checked = data.autoDownload ?? true;
+      chatNotifications.checked = data.chatNotifications ?? true;
+notificationSound.checked = data.notificationSound ?? true;
+vibration.checked = data.vibration ?? true;
+darkMode.checked = data.darkMode ?? false;
 
     }else{
 
@@ -63,6 +76,10 @@ onAuthStateChanged(auth, async (user)=>{
         onlineStatus.checked = true;
         messagePreview.checked = true;
         autoDownload.checked = true;
+      chatNotifications.checked = true;
+notificationSound.checked = true;
+vibration.checked = true;
+darkMode.checked = false;
 
     }
 
@@ -84,19 +101,27 @@ saveBtn.onclick = async()=>{
     );
 
 
-    await setDoc(settingsRef,{
+    await setDoc(settingsRef, {
 
-        readReceipts: readReceipts.checked,
+    readReceipts: readReceipts.checked,
 
-        typingIndicator: typingIndicator.checked,
+    typingIndicator: typingIndicator.checked,
 
-        onlineStatus: onlineStatus.checked,
+    onlineStatus: onlineStatus.checked,
 
-        messagePreview: messagePreview.checked,
+    messagePreview: messagePreview.checked,
 
-        autoDownload: autoDownload.checked
+    autoDownload: autoDownload.checked,
 
-    });
+    chatNotifications: chatNotifications.checked,
+
+    notificationSound: notificationSound.checked,
+
+    vibration: vibration.checked,
+
+    darkMode: darkMode.checked
+
+});
 
 
     alert("Chat settings saved ✅");
@@ -113,4 +138,28 @@ if(createGroupBtn){
 
     });
 
+}
+
+if (blockedUsersBtn) {
+    blockedUsersBtn.onclick = () => {
+        location.href = "blocked-users.html";
+    };
+}
+
+if (archiveChatsBtn) {
+    archiveChatsBtn.onclick = () => {
+        location.href = "archived-chats.html";
+    };
+}
+
+if (storageBtn) {
+    storageBtn.onclick = () => {
+        location.href = "chat-storage.html";
+    };
+}
+
+if (aboutChatsBtn) {
+    aboutChatsBtn.onclick = () => {
+        location.href = "about-chats.html";
+    };
 }
