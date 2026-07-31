@@ -614,11 +614,22 @@ document.addEventListener("click", async (e) => {
       });
 
       await setDoc(followerRef, {
-        userId: currentUser.uid,
-        createdAt: serverTimestamp()
-      });
+  userId: currentUser.uid,
+  createdAt: serverTimestamp()
+});
 
-      e.target.textContent = "Following ";
+await addDoc(
+  collection(db, "notifications"),
+  {
+    userId: targetUid,
+    senderId: currentUser.uid,
+    type: "follow",
+    createdAt: serverTimestamp(),
+    read: false
+  }
+);
+
+e.target.textContent = "Following ";
 
     }
 
