@@ -618,7 +618,7 @@ document.addEventListener("click", async (e) => {
         createdAt: serverTimestamp()
       });
 
-      e.target.textContent = "Following";
+      e.target.textContent = "Following ✓";
 
     }
 
