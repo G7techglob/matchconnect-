@@ -293,3 +293,30 @@ hr {
   border-radius: 50%;
   object-fit: cover;
 }
+
+.following-posts {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+#followingPosts {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.post-container {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.post-header {
+    width: 100%;
+}
+
+.post-content {
+    width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
