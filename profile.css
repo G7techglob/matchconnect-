@@ -320,3 +320,12 @@ hr {
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
+
+.post-content img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px;
+    margin-top: 10px;
+}
