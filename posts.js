@@ -76,6 +76,27 @@ if(post.userId){
 
 }
 
+      let isFollowing = false;
+
+if (
+  auth.currentUser &&
+  auth.currentUser.uid !== post.userId
+) {
+
+  const followingSnap = await getDoc(
+    doc(
+      db,
+      "users",
+      auth.currentUser.uid,
+      "following",
+      post.userId
+    )
+  );
+
+  isFollowing = followingSnap.exists();
+
+}
+
       const div = document.createElement("div");
       div.className = "post";
 
@@ -103,7 +124,7 @@ auth.currentUser.uid !== post.userId
 <button
 class="follow-btn"
 data-uid="${post.userId}">
-Follow
+${isFollowing ? "Following ✓" : "Follow"}
 </button>
 `
 : ""
