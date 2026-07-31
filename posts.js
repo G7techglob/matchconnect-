@@ -124,7 +124,7 @@ auth.currentUser.uid !== post.userId
 <button
 class="follow-btn"
 data-uid="${post.userId}">
-${isFollowing ? "Following ✓" : "Follow"}
+${isFollowing ? "Following " : "Follow"}
 </button>
 `
 : ""
