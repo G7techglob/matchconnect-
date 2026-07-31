@@ -262,6 +262,7 @@ POSTS - NO CARDS
 .post-header{
     display:flex;
     align-items:center;
+   justify-content:space-between;
     gap:12px;
     margin-bottom:12px;
 }
@@ -534,4 +535,21 @@ a[href="#main-content"]:focus{
 .video-post video{
     width:100%;
     border-radius:0;
+}
+
+.follow-btn{
+    margin-left:auto;
+    padding:6px 14px;
+    border:none;
+    border-radius:20px;
+    background:#1877f2;
+    color:#fff;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.2s ease;
+}
+
+.follow-btn:hover{
+    opacity:0.9;
 }
