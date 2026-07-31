@@ -138,8 +138,12 @@ onAuthStateChanged(auth, async (user) => {
 
     console.log("Loading my posts...");
 await loadMyPosts();
-console.log("Finished loading my posts.");
 
+console.log("Loading following posts...");
+await loadFollowingPosts();
+
+console.log("Finished loading posts.");
+    
     const viewMedia = document.getElementById("viewMedia");
     if (viewMedia) {
       viewMedia.onclick = () => {
@@ -291,6 +295,109 @@ if (postCount) {
     showNotification("Error loading posts: " + error.message, true);
   }
 }
+
+async function loadFollowingPosts() {
+
+  const container = document.getElementById("followingPosts");
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const user = auth.currentUser;
+
+  if (!user) return;
+
+
+  try {
+
+    const followingSnap = await getDocs(
+      collection(db, "users", user.uid, "following")
+    );
+
+
+    if (followingSnap.empty) {
+
+      container.innerHTML = "Not following anyone yet";
+
+      return;
+
+    }
+
+
+    let followingIds = [];
+
+
+    followingSnap.forEach((doc)=>{
+
+      followingIds.push(doc.id);
+
+    });
+
+
+
+    const postsSnap = await getDocs(
+      collection(db,"posts")
+    );
+
+
+    postsSnap.forEach((postDoc)=>{
+
+      const post = postDoc.data();
+
+
+      if(followingIds.includes(post.userId)){
+
+
+        const div = document.createElement("div");
+
+        div.className = "post-container";
+
+
+        div.innerHTML = `
+
+        <div class="post-header">
+
+        <img 
+        src="${safeImageUrl(post.photoURL)}"
+        class="post-avatar">
+
+        <strong>
+        ${sanitizeText(post.username || "User")}
+        </strong>
+
+        </div>
+
+
+        <p class="post-content">
+        ${sanitizeText(post.content || "")}
+        </p>
+
+
+        <hr>
+
+        `;
+
+
+        container.appendChild(div);
+
+
+      }
+
+
+    });
+
+
+  } catch(error){
+
+    console.error(
+      "Error loading following posts:",
+      error
+    );
+
+  }
+
+    }
 
 /**
  * Render a single post with comments
