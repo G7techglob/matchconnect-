@@ -84,9 +84,12 @@ button:disabled {
 }
 
 .post-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    width:100%;
+    margin-bottom:10px;
+    flex-wrap:wrap;
 }
 
 .post-avatar {
@@ -311,10 +314,6 @@ hr {
     overflow: hidden;
 }
 
-.post-header {
-    width: 100%;
-}
-
 .post-content {
     width: 100%;
     word-wrap: break-word;
@@ -329,3 +328,16 @@ hr {
     border-radius: 10px;
     margin-top: 10px;
 }
+
+/* Fix images directly inside posts */
+.post-container img.post-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: 600px;
+    object-fit: cover;
+    display: block;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
