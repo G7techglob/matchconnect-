@@ -442,7 +442,16 @@ async function renderPost(postDoc) {
       </small>
     </div>
     <p class="post-content">${sanitizedContent}</p>
-    <div class="post-actions">
+
+${post.imageURL ? `
+<img 
+src="${safeImageUrl(post.imageURL)}"
+class="post-image"
+alt="Post image"
+>
+` : ""}
+
+<div class="post-actions">
       <button class="like-btn" data-id="${postDoc.id}">
         ❤️ <span class="like-count">${post.likes || 0}</span>
       </button>
