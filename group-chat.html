@@ -34,7 +34,15 @@
 </div>
 
 
-<button id="groupMenuBtn">
+<button id="voiceCallBtn" title="Voice Call">
+    <i class="fa-solid fa-phone"></i>
+</button>
+
+<button id="videoCallBtn" title="Video Call">
+    <i class="fa-solid fa-video"></i>
+</button>
+
+<button id="groupMenuBtn" title="Menu">
     <i class="fa-solid fa-ellipsis-vertical"></i>
 </button>
         
@@ -45,18 +53,50 @@
     <div id="messages" class="messages"></div>
 
     <!-- Message Box -->
-    <div class="message-box">
+<div class="message-box">
 
-        <input
-            type="text"
-            id="messageInput"
-            placeholder="Type a message...">
+    <button id="imageBtn" title="Image">
+        <i class="fa-solid fa-image"></i>
+    </button>
 
-        <button id="sendBtn">
-            <i class="fa-solid fa-paper-plane"></i>
-        </button>
+    <button id="cameraBtn" title="Camera">
+        <i class="fa-solid fa-camera"></i>
+    </button>
 
-    </div>
+    <button id="recordBtn" title="Voice">
+        <i class="fa-solid fa-microphone"></i>
+    </button>
+
+    <input
+        type="text"
+        id="messageInput"
+        placeholder="Type a message...">
+
+    <button id="sendBtn">
+        <i class="fa-solid fa-paper-plane"></i>
+    </button>
+
+</div>
+
+<!-- Hidden file inputs -->
+<input
+    type="file"
+    id="imageInput"
+    accept="image/*"
+    hidden>
+
+<input
+    type="file"
+    id="videoInput"
+    accept="video/*"
+    hidden>
+
+<input
+    type="file"
+    id="cameraInput"
+    accept="image/*"
+    capture="environment"
+    hidden>
 
     <script type="module" src="group-chat.js"></script>
 
