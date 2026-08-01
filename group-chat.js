@@ -116,14 +116,17 @@ const userData = userSnap.data();
 
 const username = userData.name || "User";
 
-    await addDoc(
-    collection(db, "groups", groupId, "messages"),
-    {
-        text: text,
-        senderId: user.uid,
-        username: username,
-        time: serverTimestamp()
-    }
+const photoURL = userData.photoURL || "images/default-avatar.png";
+
+await addDoc(
+collection(db, "groups", groupId, "messages"),
+{
+    text: text,
+    senderId: user.uid,
+    username: username,
+    photoURL: photoURL,
+    time: serverTimestamp()
+}
 );
 
     messageInput.value = "";
