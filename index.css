@@ -581,3 +581,18 @@ a[href="#main-content"]:focus{
 .follow-btn:hover{
     opacity:0.7;
 }
+
+.delete-btn,
+.share-btn{
+    border:none !important;
+    background:transparent !important;
+    padding:8px;
+    font-size:18px;
+    color:#262626;
+    cursor:pointer;
+}
+
+.delete-btn:hover,
+.share-btn:hover{
+    opacity:0.6;
+}
