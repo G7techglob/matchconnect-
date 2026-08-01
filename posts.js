@@ -152,15 +152,15 @@ ${isFollowing ? "Following " : "Follow"}
   <button
 class="share-btn"
 data-id="${postDoc.id}">
-  🔄 Share
+  <i class="fa-solid fa-share"></i>
 </button>
 
    ${
     auth.currentUser &&
     auth.currentUser.uid === post.userId
       ? `<button class="delete-btn" data-id="${postDoc.id}">
-           🗑 Delete
-         </button>`
+   <i class="fa-solid fa-trash"></i>
+</button>`
       : ""
    }
    </div>
