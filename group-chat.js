@@ -33,6 +33,34 @@ const videoCallBtn = document.getElementById("videoCallBtn");
 
 const params = new URLSearchParams(window.location.search);
 const groupId = params.get("groupId");
+async function getUserProfile(uid){
+
+    // Return cached profile if we already have it
+    if(profileCache[uid]){
+        return profileCache[uid];
+    }
+
+    // Otherwise fetch it from Firestore
+    const userSnap = await getDoc(doc(db, "users", uid));
+
+    if(userSnap.exists()){
+
+        const userData = userSnap.data();
+
+        profileCache[uid] = {
+            username: userData.name || "User",
+            photoURL: userData.photoURL || "images/default-avatar.png"
+        };
+
+        return profileCache[uid];
+    }
+
+    // Fallback if user document doesn't exist
+    return {
+        username: "User",
+        photoURL: "images/default-avatar.png"
+    };
+}
 
 onAuthStateChanged(auth, async (user) => {
 
@@ -70,9 +98,11 @@ onSnapshot(messagesQuery, (snapshot) => {
 
     messages.innerHTML = "";
 
-    snapshot.forEach((messageDoc) => {
+    snapshot.forEach(async(messageDoc) => {
 
     const message = messageDoc.data();
+
+        const profile = await getUserProfile(message.senderId);
 
     const div = document.createElement("div");
 
@@ -95,12 +125,12 @@ onSnapshot(messagesQuery, (snapshot) => {
         div.innerHTML = `
             <img 
     loading="lazy"
-    src="${message.photoURL || 'images/default-avatar.png'}"
+    src="${profile.photoURL}"
     class="message-avatar"
                 onclick="openProfile('${message.senderId}')">
 
             <div class="message-content">
-                <strong>${message.username}</strong>
+                <strong>${profile.username}</strong>
                 <p>${message.text}</p>
             </div>
         `;
