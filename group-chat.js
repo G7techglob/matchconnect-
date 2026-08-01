@@ -77,9 +77,16 @@ onSnapshot(messagesQuery, (snapshot) => {
         div.className = "message";
 
         div.innerHTML = `
-            <strong>${message.username}</strong>
-            <p>${message.text}</p>
-        `;
+    <img 
+        src="${message.photoURL || 'images/default-avatar.png'}"
+        class="message-avatar"
+        onclick="openProfile('${message.senderId}')">
+
+    <div class="message-content">
+        <strong>${message.username}</strong>
+        <p>${message.text}</p>
+    </div>
+`;
 
         messages.appendChild(div);
 
@@ -194,3 +201,10 @@ voiceCallBtn.addEventListener("click", () => {
 videoCallBtn.addEventListener("click", () => {
     alert("Video calling coming next.");
 });
+
+window.openProfile = function(uid){
+
+    window.location.href =
+    `user.html?uid=${uid}`;
+
+};
