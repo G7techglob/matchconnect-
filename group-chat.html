@@ -53,31 +53,35 @@
     <div id="messages" class="messages"></div>
 
     <!-- Message Box -->
-<div class="message-box">
+<div class="chat-input-area">
 
-    <button id="mediaBtn" title="Photo or Video">
-    <i class="fa-solid fa-image"></i>
-    </button>
+    <div class="message-box">
 
-    <button id="cameraBtn" title="Camera">
-        <i class="fa-solid fa-camera"></i>
-    </button>
+        <button id="mediaBtn">
+            <i class="fa-solid fa-image"></i>
+        </button>
 
-    <button id="recordBtn" title="Voice">
-        <i class="fa-solid fa-microphone"></i>
-    </button>
+        <button id="cameraBtn">
+            <i class="fa-solid fa-camera"></i>
+        </button>
 
-    <input
-        type="text"
-        id="messageInput"
-        placeholder="Type a message...">
+        <button id="recordBtn">
+            <i class="fa-solid fa-microphone"></i>
+        </button>
+
+        <input
+            type="text"
+            id="messageInput"
+            placeholder="Type a message...">
+
+    </div>
+
 
     <button id="sendBtn">
         <i class="fa-solid fa-paper-plane"></i>
     </button>
 
 </div>
-
 <!-- Hidden file inputs -->
 <input
     type="file"
