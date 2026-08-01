@@ -18,7 +18,16 @@ const groupName = document.getElementById("groupName");
 const groupPhoto = document.getElementById("groupPhoto");
 const messages = document.getElementById("messages");
 const messageInput = document.getElementById("messageInput");
-const sendBtn = document.getElementById("sendBtn");
+const sendBtn = document.getElementById("sendBtn");const mediaBtn = document.getElementById("mediaBtn");
+const mediaInput = document.getElementById("mediaInput");
+
+const cameraBtn = document.getElementById("cameraBtn");
+const cameraInput = document.getElementById("cameraInput");
+
+const recordBtn = document.getElementById("recordBtn");
+
+const voiceCallBtn = document.getElementById("voiceCallBtn");
+const videoCallBtn = document.getElementById("videoCallBtn");
 
 const params = new URLSearchParams(window.location.search);
 const groupId = params.get("groupId");
@@ -145,3 +154,43 @@ if(groupMenuBtn){
     });
 
 }
+
+// =========================
+// MEDIA PICKER
+// =========================
+
+mediaBtn.addEventListener("click", () => {
+    mediaInput.click();
+});
+
+// =========================
+// CAMERA
+// =========================
+
+cameraBtn.addEventListener("click", () => {
+    cameraInput.click();
+});
+
+// =========================
+// VOICE RECORD
+// =========================
+
+recordBtn.addEventListener("click", () => {
+    alert("Voice recorder coming next.");
+});
+
+// =========================
+// VOICE CALL
+// =========================
+
+voiceCallBtn.addEventListener("click", () => {
+    alert("Voice calling coming next.");
+});
+
+// =========================
+// VIDEO CALL
+// =========================
+
+videoCallBtn.addEventListener("click", () => {
+    alert("Video calling coming next.");
+});
