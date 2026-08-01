@@ -173,3 +173,42 @@ body{
     border-radius:10px;
     max-width:75%;
 }
+
+.message{
+    display:flex;
+    align-items:flex-start;
+    margin-bottom:10px;
+}
+
+
+.other-message{
+    justify-content:flex-start;
+    gap:8px;
+}
+
+
+.my-message{
+    justify-content:flex-end;
+}
+
+
+.message-content{
+    max-width:70%;
+    padding:8px 12px;
+    border-radius:12px;
+    background:#fff;
+}
+
+
+.my-message .message-content{
+    background:#1877f2;
+    color:white;
+}
+
+
+.message-avatar{
+    width:35px;
+    height:35px;
+    border-radius:50%;
+    object-fit:cover;
+}
