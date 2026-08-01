@@ -70,28 +70,44 @@ onSnapshot(messagesQuery, (snapshot) => {
 
     snapshot.forEach((messageDoc) => {
 
-        const message = messageDoc.data();
+    const message = messageDoc.data();
 
-        const div = document.createElement("div");
+    const div = document.createElement("div");
 
-        div.className = "message";
+
+    if(message.senderId === auth.currentUser.uid){
+
+        div.className = "message my-message";
 
         div.innerHTML = `
-    <img 
-        src="${message.photoURL || 'images/default-avatar.png'}"
-        class="message-avatar"
-        onclick="openProfile('${message.senderId}')">
+            <div class="message-content">
+                <p>${message.text}</p>
+            </div>
+        `;
 
-    <div class="message-content">
-        <strong>${message.username}</strong>
-        <p>${message.text}</p>
-    </div>
-`;
 
-        messages.appendChild(div);
+    } else {
 
-    });
+        div.className = "message other-message";
 
+        div.innerHTML = `
+            <img 
+                src="${message.photoURL || 'images/default-avatar.png'}"
+                class="message-avatar"
+                onclick="openProfile('${message.senderId}')">
+
+            <div class="message-content">
+                <strong>${message.username}</strong>
+                <p>${message.text}</p>
+            </div>
+        `;
+
+    }
+
+
+    messages.appendChild(div);
+
+});
     messages.scrollTop = messages.scrollHeight;
 
 });
