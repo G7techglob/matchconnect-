@@ -92,8 +92,9 @@ onSnapshot(messagesQuery, (snapshot) => {
 
         div.innerHTML = `
             <img 
-                src="${message.photoURL || 'images/default-avatar.png'}"
-                class="message-avatar"
+    loading="lazy"
+    src="${message.photoURL || 'images/default-avatar.png'}"
+    class="message-avatar"
                 onclick="openProfile('${message.senderId}')">
 
             <div class="message-content">
