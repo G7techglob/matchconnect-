@@ -18,7 +18,9 @@ const groupName = document.getElementById("groupName");
 const groupPhoto = document.getElementById("groupPhoto");
 const messages = document.getElementById("messages");
 const messageInput = document.getElementById("messageInput");
-const sendBtn = document.getElementById("sendBtn");const mediaBtn = document.getElementById("mediaBtn");
+const sendBtn = document.getElementById("sendBtn");
+const profileCache = {};
+const mediaBtn = document.getElementById("mediaBtn");
 const mediaInput = document.getElementById("mediaInput");
 
 const cameraBtn = document.getElementById("cameraBtn");
