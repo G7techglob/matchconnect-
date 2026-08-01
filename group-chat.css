@@ -151,3 +151,25 @@ body{
 #groupMenuBtn{
     margin-left:auto;
 }
+
+
+.message{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+}
+
+.message-avatar{
+    width:35px;
+    height:35px;
+    border-radius:50%;
+    object-fit:cover;
+    cursor:pointer;
+}
+
+.message-content{
+    background:#fff;
+    padding:8px 12px;
+    border-radius:10px;
+    max-width:75%;
+}
