@@ -584,11 +584,9 @@ a[href="#main-content"]:focus{
 
 .delete-btn,
 .share-btn{
-    border:none !important;
     background:transparent !important;
-    padding:8px;
-    font-size:18px;
-    color:#262626;
+    border:none !important;
+    box-shadow:none !important;
     cursor:pointer;
 }
 
