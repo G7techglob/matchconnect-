@@ -44,6 +44,7 @@ if (!receiverUid) {
 let currentUser = null;
 let chatId = null;
 let typingTimer;
+let currentUserData = null;
 
 
 onAuthStateChanged(auth, async (user) => {
@@ -53,6 +54,11 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   currentUser = user;
+  const profileSnap = await getDoc(doc(db, "users", user.uid));
+
+if(profileSnap.exists()){
+  currentUserData = profileSnap.data();
+}
 
   await setDoc(
     doc(db, "users", currentUser.uid),
@@ -224,14 +230,18 @@ async function sendMessage() {
   if (!text) return;
 
   await addDoc(collection(db, "chats", chatId, "messages"), {
-    text,
-    senderId: currentUser.uid,
-    receiverId: receiverUid,
-    type: "text",
-    status: "sent",
-    seen: false,
-    time: serverTimestamp(),
-  });
+  text,
+  senderId: currentUser.uid,
+  receiverId: receiverUid,
+
+  username: currentUserData?.name || currentUserData?.username || "User",
+  photoURL: currentUserData?.photoURL || "images/default-avatar.png",
+
+  type: "text",
+  status: "sent",
+  seen: false,
+  time: serverTimestamp(),
+});
 
   input.value = "";
 
@@ -268,14 +278,18 @@ imageInput.addEventListener("change", async () => {
   const imageURL = await getDownloadURL(imageRef);
 
   await addDoc(collection(db, "chats", chatId, "messages"), {
-    imageURL,
-    senderId: currentUser.uid,
-    receiverId: receiverUid,
-    type: "image",
-    status: "sent",
-    seen: false,
-    time: serverTimestamp(),
-  });
+  imageURL,
+  senderId: currentUser.uid,
+  receiverId: receiverUid,
+
+  username: currentUserData?.name || currentUserData?.username || "User",
+  photoURL: currentUserData?.photoURL || "images/default-avatar.png",
+
+  type: "image",
+  status: "sent",
+  seen: false,
+  time: serverTimestamp(),
+});
 
   imageInput.value = "";
 });
