@@ -327,26 +327,27 @@ POSTS - NO CARDS
 
 .comment-section{
     padding:10px 15px 15px;
-    margin-top:5px;
 }
 
 .comment-input{
-    width:82%;
+    width:78%;
     padding:10px 14px;
     border:1px solid #ddd;
     border-radius:20px;
     outline:none;
     font-size:14px;
+    background:#fff;
 }
 
 .send-comment-btn{
-    padding:10px 15px;
+    width:20%;
+    padding:10px 0;
     border:none;
-    background:#ff4d6d;
-    color:white;
-    border-radius:20px;
+    background:transparent;
+    color:#0095f6;
     cursor:pointer;
     font-weight:600;
+    font-size:14px;
 }
 
 .comments-list{
