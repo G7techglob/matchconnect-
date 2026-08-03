@@ -260,7 +260,7 @@ POSTS - NO CARDS
     border-bottom:1px solid #dbdbdb;
     overflow:hidden;
 }
-.post img:not(.post-avatar){
+.post img:not(.post-avatar):not(.comment-avatar){
     width:100%;
     display:block;
     margin:0;
@@ -612,12 +612,13 @@ a[href="#main-content"]:focus{
 }
 
 .comment-avatar{
-    width:40px;
-    height:40px;
+    width:40px !important;
+    height:40px !important;
     border-radius:50%;
     object-fit:cover;
     cursor:pointer;
     flex-shrink:0;
+    display:block;
 }
 
 .comment-body{
