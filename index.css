@@ -647,3 +647,24 @@ a[href="#main-content"]:focus{
     word-break:break-word;
     max-width:100%;
 }
+
+.comment-actions{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-top:6px;
+}
+
+.comment-actions button{
+    background:none;
+    border:none;
+    padding:0;
+    cursor:pointer;
+    font-size:13px;
+    font-weight:600;
+    color:#65676b;
+}
+
+.comment-actions button:hover{
+    color:#0095f6;
+}
