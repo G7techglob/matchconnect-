@@ -96,7 +96,11 @@ async function loadReceiver() {
 function loadMessages(){
   const q = query(collection(db, "chats", chatId, "messages"), orderBy("time"));
 
-  onSnapshot(q, (snapshot) => {
+  const docs = snapshot.docs;
+
+for (let i = 0; i < docs.length; i++) {
+
+const messageDoc = docs[i];
     messages.innerHTML = "";
 
     snapshot.forEach((messageDoc) => {
@@ -109,22 +113,33 @@ function loadMessages(){
       }
 
       const mine = msg.senderId === currentUser.uid;
+      const nextMsg = 
+    i < docs.length - 1 
+    ? docs[i + 1].data()
+    : null;
+
+const showAvatar =
+    !mine &&
+    (
+      !nextMsg ||
+      nextMsg.senderId !== msg.senderId
+    );
 
       messages.innerHTML += `
 <div class="message ${mine ? "sent" : "received"}" data-id="${messageDoc.id}">
 
-  <div class="message-user" onclick="openUserProfile('${msg.senderId}')">
-
-    <img
-      class="message-avatar"
-      src="${msg.photoURL || 'images/default-avatar.png'}"
-      alt="Profile">
-
-    <span class="message-name">
-      ${msg.username || "User"}
-    </span>
-
-  </div>
+  ${
+showAvatar
+?
+`
+<img
+class="message-avatar"
+src="${msg.photoURL || 'images/default-avatar.png'}"
+onclick="openUserProfile('${msg.senderId}')">
+`
+:
+""
+  }
 
   <div class="bubble">
     ${
@@ -154,7 +169,7 @@ function loadMessages(){
   </div>
 </div>
 `;
-    });
+    }
 
 document.querySelectorAll(".message").forEach((msg)=>{
 
