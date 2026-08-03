@@ -215,28 +215,46 @@ commentsSnapshot.forEach((commentDoc) => {
 
   commentDiv.innerHTML = `
 
-    <img
-      src="${comment.photoURL || "images/default-avatar.png"}"
-      class="comment-avatar view-profile"
-      data-uid="${comment.userId}"
-    >
+<img
+src="${comment.photoURL || "images/default-avatar.png"}"
+class="comment-avatar view-profile"
+data-uid="${comment.userId}"
+>
 
-    <div class="comment-body">
+<div class="comment-body">
 
-      <span
-        class="comment-username view-profile"
-        data-uid="${comment.userId}"
-      >
-        ${comment.username}
-      </span>
+<span
+class="comment-username view-profile"
+data-uid="${comment.userId}"
+>
+${comment.username}
+</span>
 
-      <div class="comment-text">
-        ${escapeHTML(comment.text)}
-      </div>
+<div class="comment-text">
+${escapeHTML(comment.text)}
+</div>
 
-    </div>
+<div class="comment-actions">
 
-  `;
+<button
+class="like-comment-btn"
+data-postid="${postDoc.id}"
+data-commentid="${commentDoc.id}">
+❤️ ${comment.likes || 0}
+</button>
+
+<button
+class="reply-comment-btn"
+data-postid="${postDoc.id}"
+data-commentid="${commentDoc.id}">
+💬 Reply
+</button>
+
+</div>
+
+</div>
+
+`;
 
   commentsContainer.appendChild(commentDiv);
 
