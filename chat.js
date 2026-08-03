@@ -112,6 +112,20 @@ function loadMessages(){
 
       messages.innerHTML += `
 <div class="message ${mine ? "sent" : "received"}" data-id="${messageDoc.id}">
+
+  <div class="message-user" onclick="openUserProfile('${msg.senderId}')">
+
+    <img
+      class="message-avatar"
+      src="${msg.photoURL || 'images/default-avatar.png'}"
+      alt="Profile">
+
+    <span class="message-name">
+      ${msg.username || "User"}
+    </span>
+
+  </div>
+
   <div class="bubble">
     ${
       msg.type === "image"
@@ -431,3 +445,7 @@ function showMessageOptions(id){
     }
 
 }
+
+window.openUserProfile = function(uid){
+    window.location.href = `user.html?uid=${uid}`;
+};
