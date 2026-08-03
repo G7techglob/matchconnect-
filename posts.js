@@ -206,22 +206,41 @@ const commentsSnapshot =
     )
   );
 
-commentsSnapshot.forEach(
-  (commentDoc) => {
+commentsSnapshot.forEach((commentDoc) => {
 
-    const comment =
-      commentDoc.data();
+  const comment = commentDoc.data();
 
-    const p =
-      document.createElement("p");
+  const commentDiv = document.createElement("div");
+  commentDiv.className = "comment-item";
 
-    p.innerHTML =
-      `<strong>${comment.username}</strong>: ${comment.text}`;
+  commentDiv.innerHTML = `
 
-    commentsContainer.appendChild(p);
+    <img
+      src="${comment.photoURL || "images/default-avatar.png"}"
+      class="comment-avatar view-profile"
+      data-uid="${comment.userId}"
+    >
 
-  }
-);
+    <div class="comment-body">
+
+      <span
+        class="comment-username view-profile"
+        data-uid="${comment.userId}"
+      >
+        ${comment.username}
+      </span>
+
+      <div class="comment-text">
+        ${escapeHTML(comment.text)}
+      </div>
+
+    </div>
+
+  `;
+
+  commentsContainer.appendChild(commentDiv);
+
+});
       postsContainer.appendChild(div);
 
     });
@@ -452,14 +471,15 @@ const profileData = userProfile.data();
   try {
 
     await addDoc(
-      collection(db, "posts", postId, "comments"),
-      {
-        text,
-        userId: user.uid,
-        username: profileData.name || user.email,
-        createdAt: serverTimestamp()
-      }
-    );
+  collection(db, "posts", postId, "comments"),
+  {
+    text,
+    userId: user.uid,
+    username: profileData.name || user.email,
+    photoURL: profileData.photoURL || "images/default-avatar.png",
+    createdAt: serverTimestamp()
+  }
+);
 
     const postDocSnap =
   await getDoc(
