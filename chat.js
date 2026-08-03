@@ -87,6 +87,9 @@ async function loadReceiver() {
     chatUserName.textContent = data.name || data.username || "User";
     chatAvatar.src = data.photoURL || "images/default-avatar.png";
     userStatus.textContent = data.online ? "Online" : "Offline";
+    document.getElementById("chatProfile").onclick = () => {
+  window.location.href = `user.html?uid=${receiverUid}`;
+};
   });
 }
 
