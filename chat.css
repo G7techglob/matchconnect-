@@ -289,3 +289,10 @@ body {
     border-radius: 10px;
     display: block;
 }
+
+.chat-profile{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+}
