@@ -92,127 +92,175 @@ async function loadReceiver() {
 };
   });
 }
-
 function loadMessages(){
-  const q = query(collection(db, "chats", chatId, "messages"), orderBy("time"));
 
-  const docs = snapshot.docs;
+  const q = query(
+    collection(db, "chats", chatId, "messages"),
+    orderBy("time")
+  );
 
-for (let i = 0; i < docs.length; i++) {
+  onSnapshot(q, (snapshot) => {
 
-const messageDoc = docs[i];
     messages.innerHTML = "";
 
-    snapshot.forEach((messageDoc) => {
+    const docs = snapshot.docs;
+
+    for(let i = 0; i < docs.length; i++){
+
+      const messageDoc = docs[i];
       const msg = messageDoc.data();
 
-      if (msg.receiverId === currentUser.uid && !msg.seen) {
-        updateDoc(doc(db, "chats", chatId, "messages", messageDoc.id), {
-          seen: true,
-        });
+
+      if(msg.receiverId === currentUser.uid && !msg.seen){
+
+        updateDoc(
+          doc(db,"chats",chatId,"messages",messageDoc.id),
+          {
+            seen:true
+          }
+        );
+
       }
 
-      const mine = msg.senderId === currentUser.uid;
-      const nextMsg = 
-    i < docs.length - 1 
-    ? docs[i + 1].data()
-    : null;
 
-const showAvatar =
-    !mine &&
-    (
-      !nextMsg ||
-      nextMsg.senderId !== msg.senderId
-    );
+      const mine = msg.senderId === currentUser.uid;
+
+
+      const nextMsg =
+        i < docs.length - 1
+        ? docs[i + 1].data()
+        : null;
+
+
+      const showAvatar =
+        !mine &&
+        (
+          !nextMsg ||
+          nextMsg.senderId !== msg.senderId
+        );
+
 
       messages.innerHTML += `
+
 <div class="message ${mine ? "sent" : "received"}" data-id="${messageDoc.id}">
 
-  ${
+
+${
 showAvatar
 ?
 `
 <img
 class="message-avatar"
-src="${msg.photoURL || 'images/default-avatar.png'}"
+src="${msg.photoURL || "images/default-avatar.png"}"
 onclick="openUserProfile('${msg.senderId}')">
 `
 :
 ""
-  }
+}
 
-  <div class="bubble">
-    ${
-      msg.type === "image"
-        ? `<img src="${msg.imageURL}" class="chat-image">`
-        : escapeHTML(msg.text || "")
-    }
 
-    <div class="message-buttons">
-      <button class="reply-msg" data-id="${messageDoc.id}">↩ Reply</button>
+<div class="bubble">
 
-      ${
-        mine
-          ? `<button class="delete-msg" data-id="${messageDoc.id}">🗑 Delete</button>`
-          : ""
-      }
+${
+msg.type === "image"
+?
+`<img src="${msg.imageURL}" class="chat-image">`
+:
+escapeHTML(msg.text || "")
+}
 
-      <button class="react-btn" data-id="${messageDoc.id}" data-reaction="❤️">❤️</button>
-      <button class="react-btn" data-id="${messageDoc.id}" data-reaction="😂">😂</button>
-      <button class="react-btn" data-id="${messageDoc.id}" data-reaction="👍">👍</button>
-    </div>
 
-    <div class="time">
-      ${msg.time ? formatTime(msg.time) : ""}
-      ${mine ? (msg.seen ? " ✓✓" : " ✓") : ""}
-    </div>
-  </div>
+<div class="message-buttons">
+
+<button class="reply-msg" data-id="${messageDoc.id}">
+↩ Reply
+</button>
+
+
+${
+mine
+?
+`
+<button class="delete-msg" data-id="${messageDoc.id}">
+🗑 Delete
+</button>
+`
+:
+""
+}
+
+
+<button class="react-btn" data-id="${messageDoc.id}" data-reaction="❤️">❤️</button>
+
+<button class="react-btn" data-id="${messageDoc.id}" data-reaction="😂">😂</button>
+
+<button class="react-btn" data-id="${messageDoc.id}" data-reaction="👍">👍</button>
+
+
 </div>
+
+
+<div class="time">
+
+${msg.time ? formatTime(msg.time) : ""}
+
+${mine ? (msg.seen ? " ✓✓" : " ✓") : ""}
+
+</div>
+
+
+</div>
+
+</div>
+
 `;
+
     }
 
-document.querySelectorAll(".message").forEach((msg)=>{
 
-    let pressTimer;
+    document.querySelectorAll(".message").forEach((msg)=>{
+
+      let pressTimer;
 
 
-    const startPress = ()=>{
+      const startPress = ()=>{
 
         const id = msg.dataset.id;
 
-
         pressTimer = setTimeout(()=>{
 
-            showMessageOptions(id);
+          showMessageOptions(id);
 
         },700);
 
-    };
+      };
 
 
-    const cancelPress = ()=>{
+      const cancelPress = ()=>{
 
         clearTimeout(pressTimer);
 
-    };
+      };
 
 
-    // Mouse (computer)
-    msg.addEventListener("mousedown", startPress);
-    msg.addEventListener("mouseup", cancelPress);
-    msg.addEventListener("mouseleave", cancelPress);
+      msg.addEventListener("mousedown",startPress);
+      msg.addEventListener("mouseup",cancelPress);
+      msg.addEventListener("mouseleave",cancelPress);
 
 
-    // Touch (phone)
-    msg.addEventListener("touchstart", startPress);
-    msg.addEventListener("touchend", cancelPress);
-    msg.addEventListener("touchmove", cancelPress);
+      msg.addEventListener("touchstart",startPress);
+      msg.addEventListener("touchend",cancelPress);
+      msg.addEventListener("touchmove",cancelPress);
 
 
-});
+    });
+
 
     messages.scrollTop = messages.scrollHeight;
+
+
   });
+
 }
 
 function listenTyping() {
