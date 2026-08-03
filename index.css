@@ -593,4 +593,57 @@ a[href="#main-content"]:focus{
 .delete-btn:hover,
 .share-btn:hover{
     opacity:0.6;
+
+}
+
+/* =========================
+   COMMENTS
+========================= */
+
+.comments-list{
+    margin-top:12px;
+}
+
+.comment-item{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    margin-bottom:14px;
+}
+
+.comment-avatar{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    object-fit:cover;
+    cursor:pointer;
+    flex-shrink:0;
+}
+
+.comment-body{
+    flex:1;
+}
+
+.comment-username{
+    display:inline-block;
+    font-size:14px;
+    font-weight:600;
+    color:#262626;
+    cursor:pointer;
+    margin-bottom:4px;
+}
+
+.comment-username:hover{
+    text-decoration:underline;
+}
+
+.comment-text{
+    display:inline-block;
+    background:#f1f2f6;
+    padding:10px 14px;
+    border-radius:18px;
+    font-size:14px;
+    line-height:1.4;
+    word-break:break-word;
+    max-width:100%;
 }
