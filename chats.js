@@ -67,7 +67,52 @@ const usersSnap = await getDocs(
 
 
 let conversations=[];
+    
+    
+// =========================
+// LOAD GROUPS
+// =========================
 
+const groupsSnap = await getDocs(
+    query(
+        collection(db, "groups"),
+        where("members", "array-contains", user.uid)
+    )
+);
+
+for (const groupDoc of groupsSnap.docs) {
+
+    const group = groupDoc.data();
+
+    // Get the latest message in the group
+    const lastMessageQuery = query(
+        collection(db, "groups", groupDoc.id, "messages"),
+        orderBy("time", "desc"),
+        limit(1)
+    );
+
+    const lastMessageSnap = await getDocs(lastMessageQuery);
+
+    let message = "Group created";
+    let time = null;
+
+    if (!lastMessageSnap.empty) {
+        const last = lastMessageSnap.docs[0].data();
+        message = last.text || "📷 Image";
+        time = last.time;
+    }
+
+    conversations.push({
+        isGroup: true,
+        groupId: groupDoc.id,
+        name: group.name,
+        photo: group.photoURL || "images/default-avatar.png",
+        online: false,
+        message,
+        time,
+        unread: false
+    });
+}
 
 
 for(const userDoc of usersSnap.docs){
@@ -155,7 +200,10 @@ if(conversations.length===0){
 
 conversations.sort((a,b)=>{
 
-return b.time?.seconds-a.time?.seconds;
+    const timeA = a.time?.seconds || 0;
+    const timeB = b.time?.seconds || 0;
+
+    return timeB - timeA;
 
 });
 
@@ -213,7 +261,7 @@ ${chat.message}
 
 <div>
 
-${chat.online ?
+${!chat.isGroup && chat.online ?
 '<i class="fa-solid fa-circle" style="color:green;font-size:10px"></i>'
 :
 ''
@@ -234,8 +282,17 @@ ${chat.unread ?
 
 div.onclick=()=>{
 
-location.href=
-`chat.html?uid=${chat.uid}`;
+    if(chat.isGroup){
+
+        location.href =
+        `group-chat.html?groupId=${chat.groupId}`;
+
+    }else{
+
+        location.href =
+        `chat.html?uid=${chat.uid}`;
+
+    }
 
 };
 
@@ -247,108 +304,6 @@ chatList.appendChild(div);
 
 });
 
-
-
-});
-
-const groupsList = document.getElementById("groupsList");
-
-if(!groupsList){
-    console.log("groupsList not found");
-}
-
-
-onAuthStateChanged(auth,(user)=>{
-
-
-    if(!user) return;
-
-
-    const groupsQuery = query(
-        collection(db,"groups"),
-        where(
-            "members",
-            "array-contains",
-            user.uid
-        )
-    );
-
-
-    onSnapshot(groupsQuery,(snapshot)=>{
-
-        console.log("Groups found:", snapshot.size);
-
-        if(!groupsList) return;
-
-
-        groupsList.innerHTML="";
-
-
-        if(snapshot.empty){
-
-            groupsList.innerHTML =
-            "<p>No groups yet</p>";
-
-            return;
-
-        }
-
-
-        snapshot.forEach((groupDoc)=>{
-
-
-            const group =
-            groupDoc.data();
-
-
-            const div =
-            document.createElement("div");
-
-
-            div.className="chat-item";
-
-
-            div.innerHTML=`
-
-            <img 
-            class="avatar"
-            src="${group.photoURL || 'images/default-avatar.png'}">
-
-
-            <div class="chat-main">
-
-            <p class="chat-name">
-            ${group.name}
-            </p>
-
-
-            <p class="chat-message">
-            Group chat
-            </p>
-
-
-            </div>
-
-            `;
-
-
-            div.onclick=()=>{
-
-
-                location.href =
-                `group-chat.html?groupId=${groupDoc.id}`;
-
-
-            };
-
-
-            groupsList.appendChild(div);
-
-
-        });
-
-
-    });
 
 
 });
