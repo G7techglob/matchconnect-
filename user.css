@@ -82,6 +82,15 @@ body {
     border-top: 2px solid #e0e0e0;
   }
 
+.post{
+    width:100%;
+    background:#fff;
+    margin:0px 0;
+    border-top:1px solid #dbdbdb;
+    border-bottom:1px solid #dbdbdb;
+    overflow:hidden;
+}
+
   .post-header {
     display: flex;
     align-items: center;
