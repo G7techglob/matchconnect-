@@ -114,6 +114,7 @@ if (!uid) {
           const post = postDoc.data();
 
           const div = document.createElement("div");
+          div.className = "post";
 
           div.innerHTML = `
 
