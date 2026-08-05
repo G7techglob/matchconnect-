@@ -67,13 +67,14 @@ body {
 
 /* MESSAGES */
 
-#messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+#messages{
+    flex:1;
+    overflow-y:auto;
+    padding:15px;
+    padding-bottom:80px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
 }
 
 
@@ -132,48 +133,49 @@ body {
 
 /* FOOTER */
 
-.chat-footer {
-
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px;
-    background: white;
-    border-top: 1px solid #ddd;
-
+.chat-footer{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:8px;
+    background:#fff;
+    border-top:1px solid #ddd;
 }
 
-
-.chat-footer input {
-
-    flex: 1;
-    height: 42px;
-    border-radius: 22px;
-    border: 1px solid #ddd;
-    padding: 0 15px;
-    outline: none;
-
+.message-box{
+    flex:1;
+    min-width:0;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:#f1f1f1;
+    border-radius:30px;
+    padding:5px 10px;
 }
 
-
-
-.chat-footer button {
-
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: none;
-    background: #2563eb;
-    color: white;
-    cursor: pointer;
-
+.message-box input{
+    flex:1;
+    border:none;
+    background:transparent;
+    outline:none;
+    padding:10px;
+    font-size:15px;
 }
 
-
-.chat-footer button:hover {
-
-    opacity: .8;
-
+#sendBtn{
+    width:45px;
+    height:45px;
+    border:none;
+    border-radius:50%;
+    background:#2563eb;
+    color:#fff;
+    font-size:18px;
+    flex-shrink:0;
+    cursor:pointer;
 }
 
 
