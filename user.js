@@ -6,6 +6,7 @@ import {
   getDocs,
   query,
   where,
+  orderBy,
   updateDoc,
   increment,
   setDoc,
@@ -118,71 +119,74 @@ if (!uid) {
 
           div.innerHTML = `
 
-  <div class="post-header">
+<div class="post-header">
 
-    <img
-      src="${post.photoURL || 'images/default-avatar.png'}"
-      class="post-avatar"
-      width="50"
-    >
+<img
+src="${post.photoURL || 'images/default-avatar.png'}"
+class="post-avatar view-profile"
+data-uid="${post.userId}"
+>
 
-    <span class="post-user">
-      ${post.username || "User"}
-    </span>
+<span
+class="post-user view-profile"
+data-uid="${post.userId}"
+>
+${post.username || "User"}
+</span>
 
-  </div>
+</div>
 
-  <p>
-    ${post.content}
-  </p>
+<p>
+${post.content}
+</p>
 
-  <div class="post-actions">
+<div class="post-actions">
 
-    <button
-      class="like-btn"
-      data-id="${postDoc.id}">
-      ❤️ ${post.likes || 0}
-    </button>
+<button
+class="like-btn"
+data-id="${postDoc.id}">
+❤️ ${post.likes || 0}
+</button>
 
-    <button
-      class="comment-btn"
-      data-id="${postDoc.id}">
-      💬 ${post.comments || 0}
-    </button>
+<button
+class="comment-btn"
+data-id="${postDoc.id}">
+💬 ${post.comments || 0}
+</button>
 
-    <button
-      class="share-btn"
-      data-id="${postDoc.id}">
-      🔄 Share
-    </button>
+<button
+class="share-btn"
+data-id="${postDoc.id}">
+<i class="fa-solid fa-share"></i>
+</button>
 
-  </div>
+</div>
 
-  <div class="comment-section">
 
-    <div
-      class="comments-list"
-      id="comments-${postDoc.id}">
-    </div>
+<div class="comment-section">
 
-    <input
-      type="text"
-      class="comment-input"
-      data-id="${postDoc.id}"
-      placeholder="Write a comment..."
-    >
+<input
+type="text"
+class="comment-input"
+data-id="${postDoc.id}"
+placeholder="Write a comment..."
+>
 
-  <button
-    class="send-comment-btn"
-    data-id="${postDoc.id}">
-    Send
-  </button>
+<button
+class="send-comment-btn"
+data-id="${postDoc.id}">
+Send
+</button>
 
-  </div>
 
-  <hr>
+<div
+class="comments-list"
+id="comments-${postDoc.id}">
+</div>
 
-  `;
+</div>
+
+`;
 
           postsContainer.appendChild(div);
 
@@ -194,11 +198,39 @@ if (!uid) {
             console.log("Comments found:", commentsSnapshot.size);
 
             commentsSnapshot.forEach((commentDoc) => {
-              const comment = commentDoc.data();
-              const p = document.createElement("p");
-              p.innerHTML = `<strong>${comment.username}</strong>: ${comment.text}`;
-              commentsContainer.appendChild(p);
-            });
+
+  const comment = commentDoc.data();
+
+  const commentDiv = document.createElement("div");
+  commentDiv.className = "comment-item";
+
+  commentDiv.innerHTML = `
+
+<img
+src="${comment.photoURL || "images/default-avatar.png"}"
+class="comment-avatar view-profile"
+data-uid="${comment.userId}"
+>
+
+<div class="comment-body">
+
+<span
+class="comment-username view-profile"
+data-uid="${comment.userId}">
+${comment.username}
+</span>
+
+<div class="comment-text">
+${comment.text}
+</div>
+
+</div>
+
+`;
+
+  commentsContainer.appendChild(commentDiv);
+
+});
 
           } catch (err) {
             console.error("Error loading comments for post", postDoc.id, err);
