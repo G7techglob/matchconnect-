@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inbox Settings</title>
+
+    <link rel="stylesheet" href="inbox-settings.css">
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<div class="header">
+
+    <button id="backBtn">
+        <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <h2>Inbox Settings</h2>
+
+</div>
+
+<div class="settings">
+
+    <div class="item" id="viewProfile">
+        <i class="fa-solid fa-user"></i>
+        <span>View Profile</span>
+    </div>
+
+    <div class="item" id="muteChat">
+        <i class="fa-solid fa-bell-slash"></i>
+        <span>Mute Notifications</span>
+    </div>
+
+    <div class="item" id="pinChat">
+        <i class="fa-solid fa-thumbtack"></i>
+        <span>Pin Chat</span>
+    </div>
+
+    <div class="item" id="clearChat">
+        <i class="fa-solid fa-broom"></i>
+        <span>Clear Chat</span>
+    </div>
+
+    <div class="item danger" id="deleteChat">
+        <i class="fa-solid fa-trash"></i>
+        <span>Delete Chat</span>
+    </div>
+
+    <div class="item danger" id="blockUser">
+        <i class="fa-solid fa-ban"></i>
+        <span>Block User</span>
+    </div>
+
+    <div class="item danger" id="reportUser">
+        <i class="fa-solid fa-flag"></i>
+        <span>Report User</span>
+    </div>
+
+</div>
+
+<script type="module" src="inbox-settings.js"></script>
+
+</body>
+</html>
