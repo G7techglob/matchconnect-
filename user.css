@@ -168,3 +168,31 @@ body {
     border: none;
     border-top: 1px solid #e0e0e0;
   }
+
+
+.comment-item{
+    display:flex;
+    gap:10px;
+    margin-bottom:10px;
+    align-items:flex-start;
+}
+
+.comment-avatar{
+    width:35px;
+    height:35px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+.comment-body{
+    flex:1;
+}
+
+.comment-username{
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.comment-text{
+    margin-top:3px;
+}
