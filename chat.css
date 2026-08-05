@@ -343,7 +343,7 @@ body {
 #inboxSettingsBtn{
     background:transparent;
     border:none;
-    color:#fff; /* Change to #333 if your header is light */
+    color:#333; /* Change to #333 if your header is light */
     font-size:20px;
     cursor:pointer;
     width:40px;
