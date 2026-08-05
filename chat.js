@@ -512,3 +512,19 @@ function showMessageOptions(id){
 window.openUserProfile = function(uid){
     window.location.href = `user.html?uid=${uid}`;
 };
+
+// =========================
+// INBOX SETTINGS
+// =========================
+
+const inboxSettingsBtn = document.getElementById("inboxSettingsBtn");
+
+if (inboxSettingsBtn) {
+
+    inboxSettingsBtn.addEventListener("click", () => {
+
+        window.location.href = "inbox-settings.html";
+
+    });
+
+}
