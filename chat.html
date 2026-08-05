@@ -54,27 +54,28 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
     <div class="message-box">
 
-        <button id="imageBtn" title="Image">
-            <i class="fa-solid fa-image"></i>
-        </button>
+        <button id="mediaCameraBtn" title="Camera">
+    <i class="fa-solid fa-camera"></i>
+</button>
 
-        <input
-            type="file"
-            id="imageInput"
-            accept="image/*"
-            hidden
-        >
+<input
+    type="file"
+    id="cameraInput"
+    accept="image/*,video/*"
+    capture="environment"
+    hidden
+>
 
-        <button id="videoBtn" title="Video">
-            <i class="fa-solid fa-film"></i>
-        </button>
+<button id="mediaBtn" title="Gallery">
+    <i class="fa-solid fa-image"></i>
+</button>
 
-        <input
-            type="file"
-            id="videoInput"
-            accept="video/*"
-            hidden
-        >
+<input
+    type="file"
+    id="mediaInput"
+    accept="image/*,video/*"
+    hidden
+>
 
         <input
             id="messageInput"
