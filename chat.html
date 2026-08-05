@@ -52,10 +52,13 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
     <div class="chat-footer">
 
-     <button id="imageBtn" title="Image">
-    <i class="fa-solid fa-image"></i>
-     </button>
-            <input
+    <div class="message-box">
+
+        <button id="imageBtn" title="Image">
+            <i class="fa-solid fa-image"></i>
+        </button>
+
+        <input
             type="file"
             id="imageInput"
             accept="image/*"
@@ -63,8 +66,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         >
 
         <button id="videoBtn" title="Video">
-    <i class="fa-solid fa-film"></i>
+            <i class="fa-solid fa-film"></i>
         </button>
+
         <input
             type="file"
             id="videoInput"
@@ -79,12 +83,15 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         >
 
         <button id="recordBtn" title="Voice">
-    <i class="fa-solid fa-microphone"></i>
+            <i class="fa-solid fa-microphone"></i>
         </button>
 
-        <button id="sendBtn" title="Send">
-    <i class="fa-solid fa-paper-plane"></i>
-        </button>
+    </div>
+
+    <button id="sendBtn" title="Send">
+        <i class="fa-solid fa-paper-plane"></i>
+    </button>
+
     </div>
 
     <audio
