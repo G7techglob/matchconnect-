@@ -157,12 +157,28 @@ body {
     padding:5px 10px;
 }
 
+.message-box button{
+    width:36px;
+    height:36px;
+    border:none;
+    background:none;
+    color:#2563eb;
+    font-size:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    cursor:pointer;
+}
+
+
 .message-box input{
     flex:1;
+    min-width:0;
     border:none;
     background:transparent;
     outline:none;
-    padding:10px;
+    padding:10px 5px;
     font-size:15px;
 }
 
