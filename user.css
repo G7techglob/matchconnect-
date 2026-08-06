@@ -224,3 +224,46 @@ body {
 .comment-text{
     margin-top:3px;
 }
+
+/* USER PROFILE POSTS - MATCH DASHBOARD STYLE */
+
+.user-page .post{
+    width:100%;
+    background:#fff;
+    margin:0;
+    border-top:1px solid #dbdbdb;
+    border-bottom:1px solid #dbdbdb;
+    border-left:none;
+    border-right:none;
+    border-radius:0;
+    box-shadow:none;
+}
+
+
+/* Remove comment bubble/card */
+
+.user-page .comment-text{
+    display:block;
+    background:transparent;
+    padding:0;
+    border-radius:0;
+}
+
+
+/* Comment area same as dashboard */
+
+.user-page .comment-section{
+    background:#fff;
+    padding:10px 15px;
+    border:none;
+    border-radius:0;
+}
+
+
+/* Comment list no boxes */
+
+.user-page .comments-list p{
+    background:transparent;
+    border-radius:0;
+    padding:8px 0;
+}
