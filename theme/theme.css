@@ -1,0 +1,159 @@
+/* ==================================
+   MATCHCONNECT GLOBAL THEME SYSTEM
+   theme.css
+================================== */
+
+
+/* ==============================
+   LIGHT THEME (DEFAULT)
+============================== */
+
+:root {
+
+    --bg-color: #fafafa;
+    --surface-color: #ffffff;
+    --text-color: #262626;
+    --secondary-text: #777;
+
+    --border-color: #e5e5e5;
+
+    --primary-color: #ff4d6d;
+
+    --input-bg: #ffffff;
+
+    --shadow-color: rgba(0,0,0,0.08);
+
+}
+
+
+
+/* ==============================
+   DARK THEME
+============================== */
+
+body.dark-mode {
+
+    --bg-color: #121212;
+    --surface-color: #1e1e1e;
+
+    --text-color: #ffffff;
+    --secondary-text: #b5b5b5;
+
+    --border-color: #333333;
+
+    --primary-color: #ff6b88;
+
+    --input-bg: #242424;
+
+    --shadow-color: rgba(0,0,0,0.5);
+
+}
+
+
+
+/* ==============================
+   GLOBAL APPLICATION
+============================== */
+
+body {
+
+    background: var(--bg-color);
+
+    color: var(--text-color);
+
+}
+
+
+
+/* Text */
+
+h1,
+h2,
+h3,
+h4,
+p,
+span {
+
+    color: var(--text-color);
+
+}
+
+
+
+/* Cards */
+
+.card,
+.post,
+.settings-group,
+.user-card,
+.profile-box,
+.notification-card,
+.chat-container,
+.message-box {
+
+    background: var(--surface-color);
+
+    color: var(--text-color);
+
+    border-color: var(--border-color);
+
+}
+
+
+
+/* Inputs */
+
+input,
+textarea,
+select {
+
+    background: var(--input-bg);
+
+    color: var(--text-color);
+
+    border:1px solid var(--border-color);
+
+}
+
+
+
+/* Buttons */
+
+button {
+
+    color: var(--text-color);
+
+}
+
+
+
+/* Links */
+
+a {
+
+    color: var(--primary-color);
+
+}
+
+
+
+/* Borders */
+
+hr {
+
+    border-color: var(--border-color);
+
+}
+
+
+
+/* Shadows */
+
+.card,
+.post,
+.settings-group {
+
+    box-shadow:
+    0 2px 8px var(--shadow-color);
+
+}
