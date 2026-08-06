@@ -165,6 +165,8 @@ data-id="${postDoc.id}">
 
 <div class="comment-section">
 
+<div class="comment-form">
+
 <input
 type="text"
 class="comment-input"
@@ -178,6 +180,7 @@ data-id="${postDoc.id}">
 Send
 </button>
 
+</div>
 
 <div
 class="comments-list"
