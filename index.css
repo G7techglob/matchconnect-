@@ -655,10 +655,11 @@ a[href="#main-content"]:focus{
 }
 
 .comment-text{
-    display:inline-block;
-    background:#f1f2f6;
-    padding:10px 14px;
-    border-radius:18px;
+    display:block;
+    background:transparent;
+    padding:0;
+    margin-top:4px;
+    border-radius:0;
     font-size:14px;
     line-height:1.4;
     word-break:break-word;
