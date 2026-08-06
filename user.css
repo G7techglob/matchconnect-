@@ -126,20 +126,19 @@ body {
     font-size: 12px;
   }
 
-  .comment-section {
+  .comment-section{
+    padding:12px;
+    border-top:1px solid #e5e5e5;
     background:#fff;
-    padding:10px;
-    margin-top:10px;
-    border-top:1px solid #eee;
   }
 
-  .comment-input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-bottom: 8px;
-    box-sizing: border-box;
+  .comment-input{
+    flex:1;
+    height:42px;
+    border:1px solid #ddd;
+    border-radius:22px;
+    padding:0 16px;
+    margin:0;
   }
 
   .comments-list {
@@ -154,6 +153,19 @@ body {
     margin:5px 0;
     border-bottom:1px solid #eee;
   }
+.comment-form{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+.send-comment-btn{
+    background:none;
+    color:#0095f6;
+    border:none;
+    font-weight:bold;
+    padding:0;
+    white-space:nowrap;
+}
 
   .error-message {
     background-color: #f8d7da;
