@@ -21,6 +21,12 @@ body {
     position: relative;
     overflow: visible;
   }
+.profile-info{
+    width:100%;
+    margin:0;
+    padding:12px;
+}
+
 
   h2 {
     color: #333;
@@ -77,17 +83,17 @@ body {
   }
 
   #userPosts {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 2px solid #e0e0e0;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #e0e0e0;
   }
 
 .post{
     width:100%;
     background:#fff;
-    margin:0px 0;
-    border-top:1px solid #dbdbdb;
-    border-bottom:1px solid #dbdbdb;
+    margin:10px 0;
+    border:1px solid #dbdbdb;
+    border-radius:10px;
     overflow:hidden;
 }
 
@@ -121,10 +127,10 @@ body {
   }
 
   .comment-section {
-    background-color: #f9f9f9;
-    padding: 10px;
-    border-radius: 5px;
-    margin-top: 10px;
+    background:#fff;
+    padding:10px;
+    margin-top:10px;
+    border-top:1px solid #eee;
   }
 
   .comment-input {
@@ -143,10 +149,10 @@ body {
   }
 
   .comments-list p {
-    background-color: white;
-    padding: 8px;
-    border-radius: 4px;
-    margin: 5px 0;
+    background:transparent;
+    padding:8px 0;
+    margin:5px 0;
+    border-bottom:1px solid #eee;
   }
 
   .error-message {
