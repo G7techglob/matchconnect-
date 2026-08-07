@@ -46,6 +46,18 @@ a {
   cursor: pointer;
 }
 
+#followersLink,
+#followingLink {
+    color: #0095f6 !important;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+#followersLink:hover,
+#followingLink:hover {
+    color: #0077cc !important;
+}
+
 a:hover {
   text-decoration: underline;
 }
@@ -470,30 +482,20 @@ hr {
     color:#0095f6 !important;
 }
 
-#profilePostBtn,
-#followersBtn,
-#followingBtn {
+#profilePostBtn {
     background: transparent !important;
     color: #0095f6 !important;
     border: none !important;
-    padding: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    font-size: 14px !important;
-    font-weight: 600;
-    cursor: pointer;
 }
 
-#profilePostBtn:hover,
-#followersBtn:hover,
-#followingBtn:hover {
-    background: transparent !important;
-    color: #0077cc !important;
+#followersLink,
+#followingLink {
+    color: #0095f6 !important;
+    text-decoration: none;
+    font-weight: 600;
 }
-.followers-btn,
-.following-btn{
-    color:#0095f6 !important;
-    background:transparent !important;
-    border:none !important;
-    box-shadow:none !important;
+
+#followersLink:hover,
+#followingLink:hover {
+    color: #0077cc !important;
 }
