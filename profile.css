@@ -490,3 +490,10 @@ hr {
     background: transparent !important;
     color: #0077cc !important;
 }
+.followers-btn,
+.following-btn{
+    color:#0095f6 !important;
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+}
