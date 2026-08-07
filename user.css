@@ -153,12 +153,7 @@ body {
     overflow-y: auto;
   }
 
-  .comments-list p {
-    background:transparent;
-    padding:8px 0;
-    margin:5px 0;
-    border-bottom:1px solid #eee;
-  }
+  
 .comment-form{
     display:flex;
     align-items:center;
@@ -194,12 +189,19 @@ body {
   }
 
 
+.comments-list p {
+    background: transparent;
+    padding: 8px 0;
+    margin: 5px 0;
+    border-bottom: none;
+}
+
 .comment-item{
     display:flex;
     gap:10px;
     padding:10px 0;
     margin:0;
-    border-bottom:1px solid #eee;
+    border-bottom:none;
     background:transparent;
     border-radius:0;
     box-shadow:none;
@@ -231,10 +233,7 @@ body {
     width:100%;
     background:#fff;
     margin:0;
-    border-top:1px solid #dbdbdb;
-    border-bottom:1px solid #dbdbdb;
-    border-left:none;
-    border-right:none;
+    border:none;
     border-radius:0;
     box-shadow:none;
 }
