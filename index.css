@@ -705,17 +705,19 @@ a[href="#main-content"]:focus{
 }
 
 button#postBtn{
-    background:#1877f2 !important;
-    color:#fff !important;
-    border:0 !important;
+    background:transparent !important;
+    color:#1877f2 !important;
+    border:none !important;
     box-shadow:none !important;
-    border-radius:8px !important;
+    border-radius:0 !important;
+    padding:0 !important;
+    margin-top:12px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
 }
 
-button#postBtn{
-    background:#1877f2 !important;
-    color:#fff !important;
-    border:0 !important;
-    box-shadow:none !important;
-    border-radius:8px !important;
+button#postBtn:hover{
+    background:transparent !important;
+    color:#0d65d9 !important;
 }
