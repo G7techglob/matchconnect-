@@ -458,12 +458,13 @@ alt="Post image"
       <button class="comment-btn" data-id="${postDoc.id}">
         💬 <span class="comment-count">${post.comments || 0}</span>
       </button>
-      <button class="share-btn" data-id="${postDoc.id}">
-        🔄
-      </button>
-      <button class="delete-btn" data-id="${postDoc.id}">
-        🗑
-      </button>
+      <button class="share-btn" data-id="${postDoc.id}" title="Share">
+  🔄
+</button>
+
+<button class="delete-btn" data-id="${postDoc.id}" title="Delete">
+  🗑
+</button>
     </div>
     
     <div class="comment-input-wrapper">
