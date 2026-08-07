@@ -311,20 +311,27 @@ POSTS - NO CARDS
 
 .post-actions{
     display:flex;
+    align-items:center;
     gap:18px;
     padding:8px 15px;
     margin:0;
 }
 
 .post-actions button{
-    padding:8px;
     border:none;
-    background:transparent;
-    cursor:pointer;
+    background:none;
+    padding:0;
     font-size:15px;
+    cursor:pointer;
     color:#262626;
 }
 
+.like-btn:hover,
+.comment-btn:hover,
+.share-btn:hover,
+.delete-btn:hover{
+    opacity:0.6;
+}
 .comment-section{
     padding:10px 15px 15px;
 }
