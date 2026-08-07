@@ -1,7 +1,7 @@
 body { 
   font-family: Arial, sans-serif;
   margin: 0;
-  padding: 20px 20px 90px; /* bottom space for fixed navbar */
+  padding: 20px 8px 90px;
   background-color: #f5f5f5;
 }
 
@@ -400,3 +400,16 @@ hr {
     margin-top: 10px;
 }
 
+
+.my-posts,
+#myPosts,
+.post-container{
+    width:100%;
+    margin-left:0;
+    margin-right:0;
+}
+
+.post-container{
+    padding-left:4px;
+    padding-right:4px;
+}
