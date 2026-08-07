@@ -459,10 +459,10 @@ alt="Post image"
         💬 <span class="comment-count">${post.comments || 0}</span>
       </button>
       <button class="share-btn" data-id="${postDoc.id}">
-        🔄 Share
+        🔄
       </button>
       <button class="delete-btn" data-id="${postDoc.id}">
-        🗑 Delete
+        🗑
       </button>
     </div>
     
