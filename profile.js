@@ -465,18 +465,21 @@ alt="Post image"
         🗑 Delete
       </button>
     </div>
-    <div class="comments-list" id="comments-${postDoc.id}"></div>
+    
     <div class="comment-input-wrapper">
-      <input
-        type="text"
-        class="comment-input"
-        data-id="${postDoc.id}"
-        placeholder="Write a comment..."
-        maxlength="500"
-      >
-      <button class="send-comment-btn" data-id="${postDoc.id}">Send</button>
-    </div>
-    <hr>
+  <input
+    type="text"
+    class="comment-input"
+    data-id="${postDoc.id}"
+    placeholder="Write a comment..."
+    maxlength="500"
+  >
+  <button class="send-comment-btn" data-id="${postDoc.id}">Send</button>
+</div>
+
+<div class="comments-list" id="comments-${postDoc.id}"></div>
+
+<hr>
   `;
 
   myPosts.appendChild(div);
@@ -504,7 +507,43 @@ async function loadComments(postId, postElement) {
       const sanitizedUsername = sanitizeText(comment.username || "User");
       const sanitizedText = sanitizeText(comment.text || "");
 
-      p.innerHTML = `<strong>${sanitizedUsername}</strong>: ${sanitizedText}`;
+      p.innerHTML = `
+<div class="comment-content">
+    <strong>${sanitizedUsername}</strong>
+    <span>${sanitizedText}</span>
+</div>
+
+<div class="comment-actions">
+
+<button class="like-comment-btn" data-comment="${commentDoc.id}" data-post="${postId}">
+❤️ <span class="comment-like-count">${comment.likes || 0}</span>
+</button>
+
+<button class="reply-comment-btn" data-comment="${commentDoc.id}">
+Reply
+</button>
+
+</div>
+
+<div class="reply-box" id="reply-${commentDoc.id}" style="display:none">
+
+<input 
+class="reply-input"
+placeholder="Write a reply..."
+data-comment="${commentDoc.id}"
+>
+
+<button 
+class="send-reply-btn"
+data-comment="${commentDoc.id}"
+data-post="${postId}">
+Send
+</button>
+
+</div>
+
+<div class="replies-list" id="replies-${commentDoc.id}"></div>
+`;
       commentsContainer.appendChild(p);
     });
   } catch (error) {
