@@ -143,14 +143,14 @@ button:disabled {
 .comment-input-wrapper{
     display:flex;
     align-items:center;
-    gap:3px;
+    gap:1px;
     margin-bottom:8px;
 }
 
 .comment-input{
     flex:0.85;
-    height:30px;
-    padding:0 10px;
+    height:20px;
+    padding:0 5px;
     border:1px solid #ddd;
     border-radius:15px;
     box-sizing:border-box;
