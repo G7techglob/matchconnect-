@@ -51,7 +51,7 @@ a:hover {
 }
 
 /* Main action buttons only (avoid affecting icon/menu buttons) */
-.post-actions button,
+
 .profile-menu button,
 #saveProfileBtn,
 #profilePostBtn {
@@ -65,7 +65,7 @@ a:hover {
   font-size: 14px;
 }
 
-.post-actions button:hover,
+
 .profile-menu button:hover,
 #saveProfileBtn:hover,
 #profilePostBtn:hover {
@@ -110,9 +110,26 @@ button:disabled {
 }
 
 .post-actions button {
-  flex: 1;
-  padding: 8px;
-  font-size: 12px;
+  flex:1;
+  padding:6px 4px;
+  font-size:13px;
+  background:transparent;
+  color:#555;
+  border:none;
+  border-radius:0;
+  margin:0;
+}
+
+.post-actions{
+    display:flex;
+    gap:15px;
+    margin:10px 0;
+    border:none;
+}
+
+.post-actions button:hover{
+    background:transparent;
+    color:#0095f6;
 }
 
 .comment-section{
