@@ -143,27 +143,32 @@ ${isFollowing ? "Following " : "Follow"}
     ❤️ ${post.likes || 0}
   </button>
 
-  <button
-  class="comment-btn"
+  <button class="comment-btn"
   data-id="${postDoc.id}">
-  💬 ${post.comments || 0}
+    💬 ${post.comments || 0}
   </button>
 
-  <button
-class="share-btn"
-data-id="${postDoc.id}">
-  <i class="fa-solid fa-share"></i>
-</button>
+  <button class="share-btn"
+  data-id="${postDoc.id}">
+    🔄
+  </button>
 
-   ${
+  ${
     auth.currentUser &&
     auth.currentUser.uid === post.userId
-      ? `<button class="delete-btn" data-id="${postDoc.id}">
-   <i class="fa-solid fa-trash"></i>
-</button>`
-      : ""
-   }
-   </div>
+    ?
+    `
+    <button class="delete-btn"
+    data-id="${postDoc.id}">
+      🗑
+    </button>
+    `
+    :
+    ""
+  }
+
+</div>
+
 
 
 <div class="comment-section">
