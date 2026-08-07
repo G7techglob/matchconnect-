@@ -501,18 +501,16 @@ hr {
 }
 
 .edit-profile-btn{
-    display:inline-block;
-    background:#0095f6;
-    color:#fff !important;
+    background:transparent;
+    color:#0095f6 !important;
     text-decoration:none;
-    padding:10px 18px;
-    border-radius:6px;
+    padding:0;
+    border:none;
     font-size:14px;
     font-weight:600;
-    transition:0.2s;
+    cursor:pointer;
 }
 
 .edit-profile-btn:hover{
-    background:#0077cc;
-    color:#fff !important;
-}
+    color:#0077cc !important;
+  }
