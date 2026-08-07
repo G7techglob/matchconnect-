@@ -256,46 +256,57 @@ if (profilePostBtn) {
 // ==================== LOAD POSTS ====================
 
 async function loadMyPosts() {
+
   const myPosts = document.getElementById("myPosts");
+
   if (!myPosts) return;
 
   myPosts.innerHTML = "";
 
-  const currentUser = auth.currentUser;
+  const user = auth.currentUser;
 
-if (!currentUser) {
-  console.log("No logged in user found");
-  return;
-}
+  if (!user) {
+    console.log("No logged in user");
+    return;
+  }
 
-console.log("Current user ID:", currentUser.uid);
 
   try {
-    const postsSnapshot = await getDocs(collection(db, "posts"));
-    console.log("Number of posts:", postsSnapshot.size);
 
-    let count = 0;
+    const q = query(
+      collection(db, "posts"),
+      where("userId", "==", user.uid),
+      orderBy("createdAt", "desc")
+    );
 
-for (const postDoc of postsSnapshot.docs) {
-  const post = postDoc.data();
 
-  if (post.userId === currentUser.uid) {
-    count++;
-    await renderPost(postDoc);
+    const snapshot = await getDocs(q);
+
+
+    console.log("Posts on profile:", snapshot.size);
+
+
+    const postCount = document.getElementById("postCount");
+
+    if(postCount){
+      postCount.textContent = snapshot.size;
+    }
+
+
+    for (const postDoc of snapshot.docs) {
+
+      await renderPost(postDoc);
+
+    }
+
+
+  } catch(error) {
+
+    console.error("Profile posts error:", error);
+
   }
-}
 
-const postCount = document.getElementById("postCount");
-
-if (postCount) {
-  postCount.textContent = count;
 }
-  } catch (error) {
-    console.error("Error loading posts:", error);
-    showNotification("Error loading posts: " + error.message, true);
-  }
-}
-
 async function loadFollowingPosts() {
 
   const container = document.getElementById("followingPosts");
