@@ -24,7 +24,7 @@ body {
 .profile-info{
     width:100%;
     margin:0;
-    padding:12px;
+    padding:10px 8px;
 }
 
 
@@ -82,10 +82,10 @@ body {
     text-decoration: underline;
   }
 
-  #userPosts {
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid #e0e0e0;
+  #userPosts{
+    margin-top:2px;
+    padding-top:2px;
+    border-top:1px solid #dbdbdb;
   }
 
 .post{
@@ -233,7 +233,9 @@ body {
     width:100%;
     background:#fff;
     margin:0;
+    padding:16px 0;
     border:none;
+    border-bottom:1px solid #dbdbdb;
     border-radius:0;
     box-shadow:none;
 }
@@ -265,4 +267,16 @@ body {
     background:transparent;
     border-radius:0;
     padding:8px 0;
+}
+
+
+#userPosts{
+    width:100%;
+    margin-left:0;
+    margin-right:0;
+}
+
+.user-page .post{
+    padding-left:8px;
+    padding-right:8px;
 }
