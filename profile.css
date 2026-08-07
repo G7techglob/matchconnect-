@@ -143,18 +143,18 @@ button:disabled {
 .comment-input-wrapper{
     display:flex;
     align-items:center;
-    gap:5px;
-    margin-bottom:10px;
+    gap:3px;
+    margin-bottom:8px;
 }
 
 .comment-input{
-    flex:1;
-    height:34px;
-    padding:0 12px;
+    flex:0.85;
+    height:30px;
+    padding:0 10px;
     border:1px solid #ddd;
-    border-radius:18px;
+    border-radius:15px;
     box-sizing:border-box;
-    font-size:14px;
+    font-size:13px;
 }
 
 .send-comment-btn{
@@ -163,8 +163,8 @@ button:disabled {
     color:#0095f6;
     font-weight:bold;
     cursor:pointer;
-    padding:0;
-    font-size:14px;
+    padding:0 2px;
+    font-size:13px;
 }
 
 .comments-list{
