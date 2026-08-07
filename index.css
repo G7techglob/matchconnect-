@@ -703,3 +703,11 @@ a[href="#main-content"]:focus{
 .comment-actions button:hover{
     color:#0095f6;
 }
+
+button#postBtn{
+    background:#1877f2 !important;
+    color:#fff !important;
+    border:0 !important;
+    box-shadow:none !important;
+    border-radius:8px !important;
+}
