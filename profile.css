@@ -124,17 +124,18 @@ button:disabled {
 .comment-input-wrapper{
     display:flex;
     align-items:center;
-    gap:10px;
-    margin-bottom:12px;
+    gap:5px;
+    margin-bottom:10px;
 }
 
 .comment-input{
     flex:1;
-    height:40px;
-    padding:0 15px;
+    height:34px;
+    padding:0 12px;
     border:1px solid #ddd;
-    border-radius:20px;
+    border-radius:18px;
     box-sizing:border-box;
+    font-size:14px;
 }
 
 .send-comment-btn{
@@ -144,6 +145,7 @@ button:disabled {
     font-weight:bold;
     cursor:pointer;
     padding:0;
+    font-size:14px;
 }
 
 .comments-list{
