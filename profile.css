@@ -469,3 +469,24 @@ hr {
     background:transparent !important;
     color:#0095f6 !important;
 }
+
+#profilePostBtn,
+#followersBtn,
+#followingBtn {
+    background: transparent !important;
+    color: #0095f6 !important;
+    border: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    font-size: 14px !important;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#profilePostBtn:hover,
+#followersBtn:hover,
+#followingBtn:hover {
+    background: transparent !important;
+    color: #0077cc !important;
+}
