@@ -104,9 +104,11 @@ button:disabled {
 }
 
 .post-actions {
-  display: flex;
-  gap: 10px;
-  margin: 10px 0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin:10px 0;
 }
 
 .post-actions button {
@@ -431,4 +433,20 @@ hr {
 .post-container{
     padding-left:0;
     padding-right:0;
+}
+/* Clean post action buttons */
+.post-actions button{
+    background:transparent !important;
+    color:#555 !important;
+    border:none !important;
+    box-shadow:none !important;
+    padding:4px 0 !important;
+    margin:0 !important;
+    border-radius:0 !important;
+    font-size:13px;
+}
+
+.post-actions button:hover{
+    background:transparent !important;
+    color:#0095f6 !important;
 }
