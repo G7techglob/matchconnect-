@@ -68,7 +68,11 @@ if (savedAccounts.length === 0) {
 savedAccounts.forEach((account) => {
 
     const accountBox =
-        document.createElement("div");
+        document.createElement("button");
+
+
+    accountBox.type = "button";
+
 
     accountBox.className =
         "account-box saved-account";
@@ -93,7 +97,7 @@ savedAccounts.forEach((account) => {
             </h4>
 
             <p>
-                ${account.email}
+                ${account.email || ""}
             </p>
 
         </div>
@@ -101,7 +105,35 @@ savedAccounts.forEach((account) => {
     `;
 
 
-    savedAccountsList.appendChild(accountBox);
+    // ========================================
+    // ACCOUNT CLICK TEST
+    // ========================================
+
+    accountBox.addEventListener(
+        "click",
+        () => {
+
+            console.log(
+                "Selected saved account:",
+                account.uid
+            );
+
+
+            alert(
+                "Selected: " +
+                (
+                    account.name ||
+                    account.email
+                )
+            );
+
+        }
+    );
+
+
+    savedAccountsList.appendChild(
+        accountBox
+    );
 
 });
 
