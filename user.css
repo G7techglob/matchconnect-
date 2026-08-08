@@ -34,11 +34,14 @@ body {
   }
 
   #userPhoto {
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     object-fit: cover;
     display: block;
-    margin: 0 auto 20px;
+    margin: 0;
     border: 3px solid #e0e0e0;
+    flex-shrink: 0;
   }
 
   h3 {
@@ -280,3 +283,101 @@ body {
     padding-left:8px;
     padding-right:8px;
 }
+
+/* =========================
+   USER PROFILE TOP ROW
+========================= */
+
+.user-page .profile-main-row {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    margin: 15px 0 20px;
+}
+
+.user-page .profile-main-row #userPhoto {
+    width: 120px !important;
+    height: 120px !important;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 !important;
+    border: 3px solid #e0e0e0;
+    flex: 0 0 120px;
+}
+
+.user-page .follow-side {
+    flex: 0 0 75px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-page .follow-side a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 75px;
+    min-width: 75px;
+    color: #0095f6 !important;
+    text-decoration: none !important;
+}
+
+.user-page .follow-label {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.user-page .follow-side span:last-child {
+    font-size: 17px;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+.user-page .follow-side a:hover {
+    color: #0077cc !important;
+    text-decoration: none !important;
+}
+
+/* Username */
+
+.user-page .profile-info > h3 {
+    text-align: center;
+    margin: 5px 0 15px;
+}
+
+/* Follow + Message buttons */
+
+.user-page .user-action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0 15px;
+}
+
+.user-page .user-action-buttons button {
+    margin: 0;
+}
+
+/* Bio and member date */
+
+.user-page #userBio,
+.user-page #joinDate {
+    text-align: center;
+}
+
+/* Post count */
+
+.user-page #profileStats {
+    text-align: center;
+}
+
+.user-page #profileStats p {
+    margin: 10px 0;
+    }
