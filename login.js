@@ -1,120 +1,346 @@
-import { auth } from "./firebase.js";
+import { auth, db } from "./firebase.js";
+
 import {
-    signInWithEmailAndPassword,
-    signOut,
-    sendPasswordResetEmail
+signInWithEmailAndPassword,
+signOut,
+sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-const loginBtn = document.getElementById("loginBtn");
 
-loginBtn.addEventListener("click", () => {
+import {
+doc,
+getDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
+const loginBtn =
+document.getElementById("loginBtn");
 
-    signInWithEmailAndPassword(auth, email, password)
-    .then(async (userCredential) => {
+// ========================================
+// LOGIN
+// ========================================
 
-    const user = userCredential.user;
+loginBtn.addEventListener("click", async () => {
 
-    // Refresh the user's information
+const email =
+    document.getElementById("loginEmail").value.trim();
+
+const password =
+    document.getElementById("loginPassword").value;
+
+
+if (!email || !password) {
+
+    alert("Please enter your email and password.");
+
+    return;
+}
+
+
+try {
+
+    // ========================================
+    // SIGN IN
+    // ========================================
+
+    const userCredential =
+        await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+
+
+    const user =
+        userCredential.user;
+
+
+    // ========================================
+    // REFRESH USER INFORMATION
+    // ========================================
+
     await user.reload();
 
+
+    // ========================================
+    // EMAIL VERIFICATION
+    // ========================================
+
     if (!user.emailVerified) {
-        alert("Please verify your email before logging in.");
+
+        alert(
+            "Please verify your email before logging in."
+        );
 
         await signOut(auth);
 
         return;
     }
 
-    // Save account for MatchConnect account switching
-const savedAccounts =
-    JSON.parse(localStorage.getItem("matchconnectAccounts")) || [];
 
-const existingAccount = savedAccounts.find(
-    account => account.uid === user.uid
-);
+    // ========================================
+    // DEFAULT PROFILE INFORMATION
+    // ========================================
 
-if (!existingAccount) {
+    let profileName =
+        user.displayName ||
+        "MatchConnect User";
 
-    savedAccounts.push({
+
+    let profilePhoto =
+        user.photoURL ||
+        "assets/images/default-profile.png";
+
+
+    // ========================================
+    // GET MATCHCONNECT PROFILE FROM FIRESTORE
+    // ========================================
+
+    try {
+
+        const profileRef =
+            doc(
+                db,
+                "users",
+                user.uid
+            );
+
+
+        const profileSnap =
+            await getDoc(profileRef);
+
+
+        if (profileSnap.exists()) {
+
+            const profileData =
+                profileSnap.data();
+
+
+            // Username / name
+            profileName =
+                profileData.name ||
+                profileData.username ||
+                profileData.displayName ||
+                profileName;
+
+
+            // Profile picture
+            profilePhoto =
+                profileData.photoURL ||
+                profileData.profilePhoto ||
+                profileData.profileImage ||
+                profileData.photo ||
+                profilePhoto;
+
+        }
+
+    } catch (profileError) {
+
+        console.error(
+            "Error loading MatchConnect profile:",
+            profileError
+        );
+
+    }
+
+
+    // ========================================
+    // SAVE ACCOUNT FOR ACCOUNT SWITCHING
+    // ========================================
+
+    const savedAccounts =
+        JSON.parse(
+            localStorage.getItem(
+                "matchconnectAccounts"
+            )
+        ) || [];
+
+
+    // Find account by Firebase UID
+    const existingAccount =
+        savedAccounts.find(
+            account =>
+                account.uid === user.uid
+        );
+
+
+    // Information we want to remember
+    const accountData = {
+
         uid: user.uid,
+
         email: user.email,
-        name: user.displayName || "MatchConnect User",
-        photo: user.photoURL || ""
-    });
+
+        name: profileName,
+
+        photo: profilePhoto
+
+    };
+
+
+    // ========================================
+    // UPDATE EXISTING ACCOUNT
+    // ========================================
+
+    if (existingAccount) {
+
+        existingAccount.email =
+            accountData.email;
+
+        existingAccount.name =
+            accountData.name;
+
+        existingAccount.photo =
+            accountData.photo;
+
+    }
+
+    // ========================================
+    // OR ADD NEW ACCOUNT
+    // ========================================
+
+    else {
+
+        savedAccounts.push(
+            accountData
+        );
+
+    }
+
+
+    // ========================================
+    // SAVE TO DEVICE
+    // ========================================
 
     localStorage.setItem(
         "matchconnectAccounts",
-        JSON.stringify(savedAccounts)
+        JSON.stringify(
+            savedAccounts
+        )
     );
+
+
+    // ========================================
+    // LOGIN SUCCESS
+    // ========================================
+
+    alert("Login successful!");
+
+
+    window.location.href =
+        "index.html";
+
+
+} catch (error) {
+
+    console.error(
+        "Login error:",
+        error
+    );
+
+    alert(
+        error.message
+    );
+
 }
-
-alert("Login successful!");
-
-window.location.href = "index.html";
-})
-    .catch((error) => {
-        alert(error.message);
-    });
 
 });
 
-const forgotPassword = document.getElementById("forgotPassword");
+// ========================================
+// FORGOT PASSWORD
+// ========================================
 
+const forgotPassword =
+document.getElementById(
+"forgotPassword"
+);
 
-forgotPassword.addEventListener("click", async (e) => {
+forgotPassword.addEventListener(
+"click",
+async (e) => {
 
     e.preventDefault();
 
 
-    const email = document.getElementById("loginEmail").value.trim();
+    const email =
+        document
+            .getElementById("loginEmail")
+            .value
+            .trim();
 
 
     if (!email) {
 
-        alert("Please enter your email first.");
+        alert(
+            "Please enter your email first."
+        );
 
         return;
-
     }
 
 
     try {
 
-        await sendPasswordResetEmail(auth, email);
+        await sendPasswordResetEmail(
+            auth,
+            email
+        );
 
 
-        alert("Password reset link has been sent to your email. Check your inbox.");
+        alert(
+            "Password reset link has been sent to your email. Check your inbox."
+        );
 
 
     } catch (error) {
 
-        alert(error.message);
+        alert(
+            error.message
+        );
 
     }
 
-});
+}
 
-const togglePassword = document.getElementById("togglePassword");
+);
 
-const loginPassword = document.getElementById("loginPassword");
+// ========================================
+// TOGGLE PASSWORD VISIBILITY
+// ========================================
 
+const togglePassword =
+document.getElementById(
+"togglePassword"
+);
 
-togglePassword.addEventListener("click", () => {
+const loginPassword =
+document.getElementById(
+"loginPassword"
+);
 
-    if (loginPassword.type === "password") {
+togglePassword.addEventListener(
+"click",
+() => {
 
-        loginPassword.type = "text";
+    if (
+        loginPassword.type ===
+        "password"
+    ) {
 
-        togglePassword.textContent = "visibility_off";
+        loginPassword.type =
+            "text";
+
+        togglePassword.textContent =
+            "visibility_off";
 
     } else {
 
-        loginPassword.type = "password";
+        loginPassword.type =
+            "password";
 
-        togglePassword.textContent = "visibility";
+        togglePassword.textContent =
+            "visibility";
 
     }
 
-});
+}
+
+);
