@@ -27,9 +27,32 @@ loginBtn.addEventListener("click", () => {
         return;
     }
 
-    alert("Login successful!");
+    // Save account for MatchConnect account switching
+const savedAccounts =
+    JSON.parse(localStorage.getItem("matchconnectAccounts")) || [];
 
-    window.location.href = "index.html";
+const existingAccount = savedAccounts.find(
+    account => account.uid === user.uid
+);
+
+if (!existingAccount) {
+
+    savedAccounts.push({
+        uid: user.uid,
+        email: user.email,
+        name: user.displayName || "MatchConnect User",
+        photo: user.photoURL || ""
+    });
+
+    localStorage.setItem(
+        "matchconnectAccounts",
+        JSON.stringify(savedAccounts)
+    );
+}
+
+alert("Login successful!");
+
+window.location.href = "index.html";
 })
     .catch((error) => {
         alert(error.message);
