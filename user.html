@@ -13,23 +13,40 @@ content="width=device-width, initial-scale=1.0">
 </head>
 <body class="user-page">
 
-<div class="profile-container">
-  <h2>User Profile</h2>
-  <div id="userMenuContainer"></div>
-  
-    <section class="profile-info" aria-label="Profile information">
-    
+<div class="profile-container">  <h2>User Profile</h2>  <div id="userMenuContainer"></div>  <section class="profile-info" aria-label="Profile information"><!-- Followers + Profile Photo + Following -->
+<div class="profile-main-row">
+
+  <div class="follow-side follow-left">
+    <a id="followersLink" href="#" aria-label="View followers list">
+      <span class="follow-label">Followers</span>
+      <span id="followersCount">0</span>
+    </a>
+  </div>
 
   <img
     id="userPhoto"
     src="images/default-avatar.png"
     width="120"
+    height="120"
     alt="User Profile Picture"
   >
 
-  <h3 id="userName">
-    Loading...
-  </h3>
+  <div class="follow-side follow-right">
+    <a id="followingLink" href="#" aria-label="View following list">
+      <span class="follow-label">Following</span>
+      <span id="followingCount">0</span>
+    </a>
+  </div>
+
+</div>
+
+<!-- Username -->
+<h3 id="userName">
+  Loading...
+</h3>
+
+<!-- Follow + Message -->
+<div class="user-action-buttons">
 
   <button id="followBtn">
     Follow
@@ -39,21 +56,28 @@ content="width=device-width, initial-scale=1.0">
     Message
   </button>
 
-  <p>
-    <a id="followersLink">
-      Followers:
-      <span id="followersCount">0</span>
-    </a>
-  </p>
+</div>
 
-  <p>
-    <a id="followingLink">
-      Following:
-      <span id="followingCount">0</span>
-    </a>
-  </p>
+<!-- Bio -->
+<p id="userBio">
+  Loading...
+</p>
 
-      <section class="profile-tabs">
+<!-- Join Date -->
+<p id="joinDate">
+  Member since: Loading...
+</p>
+
+<!-- Post Count -->
+<section id="profileStats" aria-label="Profile statistics">
+  <p>
+    Posts:
+    <span id="postCount">0</span>
+  </p>
+</section>
+
+<!-- Profile Tabs -->
+<section class="profile-tabs">
 
   <button id="userPostsTab">
     Posts
@@ -67,27 +91,16 @@ content="width=device-width, initial-scale=1.0">
     Reels
   </button>
 
-      </section>
+</section>
 
-  <p>
-    Posts:
-    <span id="postCount">0</span>
-  </p>
+<!-- User Posts -->
+<h3>User Posts</h3>
 
-  <p id="userBio">
-    Loading...
-  </p>
+<div id="userPosts">
+  Loading posts...
+</div>
 
-  <p id="joinDate">
-    Member since: Loading...
-  </p>
-
-  <h3>User Posts</h3>
-
-  <div id="userPosts">
-    Loading posts...
-  </div>
-      </section>
+  </section>
 </div>
   
 
