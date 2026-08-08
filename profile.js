@@ -135,6 +135,9 @@ onAuthStateChanged(auth, async (user) => {
     if (editBio) editBio.value = data.bio || "";
     if (photoURLInput) photoURLInput.value = data.photoURL || "";
 
+console.log("Loading post count...");
+await loadPostCount(user);
+
 console.log("Loading my posts...");
 await loadMyPosts(user);
 
@@ -244,7 +247,7 @@ if (profilePostBtn) {
       showNotification("Post created!");
       const postContent = document.getElementById("profilePostContent");
       if (postContent) postContent.value = "";
-      await loadMyPosts();
+      await loadMyPosts(user);
     } catch (error) {
       console.error("Error creating post:", error);
       showNotification("Error creating post: " + error.message, true);
@@ -671,7 +674,7 @@ async function handleSendComment(postId) {
 
     input.value = "";
     showNotification("Comment added!");
-    await loadMyPosts(user);
+    await loadMyPosts(auth.currentUser);
   } catch (error) {
     console.error("Error adding comment:", error);
     showNotification("Error adding comment: " + error.message, true);
