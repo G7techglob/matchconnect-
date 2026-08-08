@@ -58,7 +58,9 @@ if (!uid) {
         const followRef = doc(db, "users", uid, "followers", currentUser.uid);
         const existingFollow = await getDoc(followRef);
         if (existingFollow.exists()) {
-          followBtn.textContent = "Following";
+  followBtn.textContent = "Unfollow";
+} else {
+  followBtn.textContent = "Follow";
         }
       }
 
@@ -70,7 +72,7 @@ if (!uid) {
             await deleteDoc(followRef);
             const followingRef = doc(db, "users", currentUser.uid, "following", uid);
             await deleteDoc(followingRef);
-            followBtn.textContent = "Follow";
+            followBtn.textContent = "Unfollow";
           } else {
             await setDoc(followRef, { userId: currentUser.uid });
             const followingRef = doc(db, "users", currentUser.uid, "following", uid);
