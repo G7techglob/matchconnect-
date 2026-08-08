@@ -26,8 +26,9 @@ h2 {
   border-radius: 50%;
   object-fit: cover;
   display: block;
-  margin: 20px auto;
+  margin: 0;
   border: 3px solid #e0e0e0;
+  flex-shrink: 0;
 }
 
 h3 {
@@ -534,51 +535,67 @@ hr {
     background: none !important;
     color: #0077cc !important;
 }
-
 /* =========================
-PROFILE PHOTO + FOLLOW STATS
+   PROFILE PHOTO + FOLLOW STATS
 ========================= */
 
 .profile-main-row {
-width: 100%;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 18px;
-margin: 15px 0 20px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  margin: 15px 0 20px;
 }
 
 .profile-main-row #profilePhoto {
-width: 120px;
-height: 120px;
-object-fit: cover;
-border-radius: 50%;
-flex-shrink: 0;
+  width: 120px !important;
+  height: 120px !important;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 !important;
+  border: 3px solid #e0e0e0;
+  flex: 0 0 120px;
 }
 
 .follow-side {
-display: flex;
-align-items: center;
-justify-content: center;
+  flex: 0 0 75px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .follow-side a {
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-text-decoration: none;
-color: inherit;
-min-width: 75px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 75px;
+  min-width: 75px;
+  color: #0095f6 !important;
+  text-decoration: none !important;
 }
 
 .follow-label {
-font-weight: 600;
-font-size: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .follow-side span:last-child {
-font-size: 17px;
-font-weight: bold;
-margin-top: 3px;
+  font-size: 17px;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.profile-info h2 {
+  text-align: center;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.profile-info p {
+  text-align: center;
 }
