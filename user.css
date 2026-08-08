@@ -384,3 +384,35 @@ body {
 .user-page #profileStats p {
     margin: 10px 0;
     }
+
+/* =========================
+   PROFILE TABS SPACING
+========================= */
+
+.user-page .profile-tabs {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px 0;
+    padding: 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.user-page .profile-tabs button {
+    flex: 1;
+    width: 33.333%;
+    background: none;
+    border: none;
+    padding: 12px 0;
+    margin: 0;
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+}
+
+.user-page .profile-tabs button:hover {
+    background: none;
+    color: #ff4d6d;
+}
