@@ -252,6 +252,32 @@ if (profilePostBtn) {
   });
 }
 
+// ==================== LOAD POST COUNT ====================
+async function loadPostCount(user) {
+  const postCount = document.getElementById("postCount");
+
+  if (!postCount) {
+    console.log("postCount element NOT FOUND");
+    return;
+  }
+
+  try {
+    const postsQuery = query(
+      collection(db, "posts"),
+      where("userId", "==", user.uid)
+    );
+
+    const snapshot = await getDocs(postsQuery);
+
+    postCount.textContent = String(snapshot.size);
+
+    console.log("My post count:", snapshot.size);
+
+  } catch (error) {
+    console.error("Error loading post count:", error);
+    postCount.textContent = "0";
+  }
+}
 // ==================== LOAD POSTS ====================
 async function loadMyPosts(user) {
   console.log("STEP 1: loadMyPosts started");
