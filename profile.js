@@ -1,5 +1,4 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-console.log("PROFILE JS LOADED");
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 import {
@@ -136,8 +135,8 @@ onAuthStateChanged(auth, async (user) => {
     if (editBio) editBio.value = data.bio || "";
     if (photoURLInput) photoURLInput.value = data.photoURL || "";
 
-    console.log("Loading my posts...");
-await loadMyPosts();
+console.log("Loading my posts...");
+await loadMyPosts(user);
 
 console.log("Loading following posts...");
 await loadFollowingPosts();
@@ -298,13 +297,6 @@ async function loadMyPosts(user) {
   }
 }
 
-onAuthStateChanged(auth, (user) => {
-  console.log("AUTH STATE:", user ? user.uid : "No user");
-
-  if (user) {
-    loadMyPosts(user);
-  }
-});
 
 async function loadFollowingPosts() {
 
@@ -653,7 +645,7 @@ async function handleSendComment(postId) {
 
     input.value = "";
     showNotification("Comment added!");
-    await loadMyPosts();
+    await loadMyPosts(user);
   } catch (error) {
     console.error("Error adding comment:", error);
     showNotification("Error adding comment: " + error.message, true);
