@@ -270,35 +270,32 @@ async function loadMyPosts() {
     return;
   }
 
-
   try {
 
     const q = query(
       collection(db, "posts"),
-      where("userId", "==", user.uid),
       orderBy("createdAt", "desc")
     );
 
-
     const snapshot = await getDocs(q);
-
 
     console.log("Posts on profile:", snapshot.size);
 
-
     const postCount = document.getElementById("postCount");
 
-    if(postCount){
+    if (postCount) {
       postCount.textContent = snapshot.size;
     }
 
-
     for (const postDoc of snapshot.docs) {
+
+      const post = postDoc.data();
+
+      if (post.userId !== user.uid) continue;
 
       await renderPost(postDoc);
 
     }
-
 
   } catch(error) {
 
