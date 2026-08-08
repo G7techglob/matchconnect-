@@ -365,7 +365,26 @@ body {
 }
 
 .user-page .user-action-buttons button {
-    margin: 0;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    color: #0095f6 !important;
+    font-size: 15px;
+    font-weight: 600;
+
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+
+    cursor: pointer;
+}
+
+.user-page .user-action-buttons button:hover {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #0077cc !important;
 }
 
 /* Bio and member date */
