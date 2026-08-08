@@ -1,20 +1,16 @@
 import { auth } from "./firebase.js";
 
 import {
-    onAuthStateChanged,
-    signOut
+onAuthStateChanged,
+signOut
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
+// ========================================
+// ELEMENTS
+// ========================================
 
-// Back button
-
-document.getElementById("backBtn").onclick = () => {
-
-    history.back();
-
-};
-
-
+const backBtn =
+document.getElementById("backBtn");
 
 const profileImage =
 document.getElementById("profileImage");
@@ -25,98 +21,160 @@ document.getElementById("displayName");
 const email =
 document.getElementById("email");
 
-
+const savedAccountsList =
+document.getElementById("savedAccountsList");
 
 const addAccountBtn =
 document.getElementById("addAccountBtn");
 
-
 const logoutBtn =
 document.getElementById("logoutBtn");
 
+// ========================================
+// BACK BUTTON
+// ========================================
 
+backBtn.onclick = () => {
 
-
-// Load current account
-
-onAuthStateChanged(auth,(user)=>{
-
-
-    if(!user){
-
-        window.location.href="login.html";
-
-        return;
-
-    }
-
-
-
-    email.textContent =
-    user.email;
-
-
-
-    displayName.textContent =
-    user.displayName || "MatchConnect User";
-
-
-
-    if(user.photoURL){
-
-        profileImage.src =
-        user.photoURL;
-
-    }
-
-
-
-});
-
-
-
-
-
-// Add another account
-
-addAccountBtn.onclick = ()=>{
-
-
-    // Sign out current account
-    // Then login with another account
-
-    signOut(auth)
-    .then(()=>{
-
-        window.location.href="login.html";
-
-    });
-
+history.back();
 
 };
 
+// ========================================
+// LOAD SAVED ACCOUNTS
+// ========================================
+
+function loadSavedAccounts() {
+
+const savedAccounts =
+    JSON.parse(
+        localStorage.getItem("matchconnectAccounts")
+    ) || [];
 
 
+savedAccountsList.innerHTML = "";
 
 
-// Logout current account
+if (savedAccounts.length === 0) {
 
-logoutBtn.onclick = async()=>{
+    savedAccountsList.innerHTML = `
+        <p>No saved accounts yet.</p>
+    `;
+
+    return;
+}
 
 
-    const confirmLogout =
+savedAccounts.forEach((account) => {
+
+    const accountBox =
+        document.createElement("div");
+
+    accountBox.className =
+        "account-box saved-account";
+
+
+    const image =
+        account.photo ||
+        "assets/images/default-profile.png";
+
+
+    accountBox.innerHTML = `
+
+        <img
+            src="${image}"
+            alt="Profile"
+        >
+
+        <div>
+
+            <h4>
+                ${account.name || "MatchConnect User"}
+            </h4>
+
+            <p>
+                ${account.email}
+            </p>
+
+        </div>
+
+    `;
+
+
+    savedAccountsList.appendChild(accountBox);
+
+});
+
+}
+
+// ========================================
+// LOAD CURRENT ACCOUNT
+// ========================================
+
+onAuthStateChanged(auth, (user) => {
+
+if (!user) {
+
+    window.location.href =
+        "login.html";
+
+    return;
+}
+
+
+email.textContent =
+    user.email || "";
+
+
+displayName.textContent =
+    user.displayName ||
+    "MatchConnect User";
+
+
+if (user.photoURL) {
+
+    profileImage.src =
+        user.photoURL;
+
+}
+
+
+// Load saved accounts
+loadSavedAccounts();
+
+});
+
+// ========================================
+// ADD ANOTHER ACCOUNT
+// ========================================
+
+addAccountBtn.onclick = async () => {
+
+await signOut(auth);
+
+window.location.href =
+    "login.html";
+
+};
+
+// ========================================
+// LOG OUT CURRENT ACCOUNT
+// ========================================
+
+logoutBtn.onclick = async () => {
+
+const confirmLogout =
     confirm("Log out this account?");
 
 
-    if(!confirmLogout)
+if (!confirmLogout) {
     return;
+}
 
 
+await signOut(auth);
 
-    await signOut(auth);
-
-
-    window.location.href="login.html";
-
+window.location.href =
+    "login.html";
 
 };
