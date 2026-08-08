@@ -351,14 +351,17 @@ body {
     margin: 5px 0 15px;
 }
 
-/* Follow + Message buttons */
+/* =========================
+   FOLLOW + MESSAGE BUTTONS
+========================= */
 
 .user-page .user-action-buttons {
+    width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 10px;
     margin: 10px 0 15px;
+    padding: 0 8px;
 }
 
 .user-page .user-action-buttons button {
