@@ -254,56 +254,58 @@ if (profilePostBtn) {
 }
 
 // ==================== LOAD POSTS ====================
-
-async function loadMyPosts() {
+async function loadMyPosts(user) {
+  console.log("STEP 1: loadMyPosts started");
 
   const myPosts = document.getElementById("myPosts");
 
-  if (!myPosts) return;
-
-  myPosts.innerHTML = "";
-
-  const user = auth.currentUser;
-
-  if (!user) {
-    console.log("No logged in user");
+  if (!myPosts) {
+    console.log("STEP 2: myPosts element NOT FOUND");
     return;
   }
 
-  try {
+  myPosts.innerHTML = "";
 
-    const q = query(
+  try {
+    console.log("STEP 3: Querying posts for UID:", user.uid);
+
+    const postsQuery = query(
       collection(db, "posts"),
-      orderBy("createdAt", "desc")
+      where("userId", "==", user.uid)
     );
 
-    const snapshot = await getDocs(q);
+    const snapshot = await getDocs(postsQuery);
 
-    console.log("Posts on profile:", snapshot.size);
+    console.log("STEP 4: Posts found:", snapshot.size);
 
-    const postCount = document.getElementById("postCount");
-
-    if (postCount) {
-      postCount.textContent = snapshot.size;
+    if (snapshot.empty) {
+      myPosts.innerHTML = `
+        <p class="no-posts">You haven't posted anything yet.</p>
+      `;
+      return;
     }
 
-    for (const postDoc of snapshot.docs) {
+    snapshot.forEach((postDoc) => {
+      console.log("STEP 5: Rendering post:", postDoc.id);
 
-      const post = postDoc.data();
+      renderPost(postDoc);
+    });
 
-      if (post.userId !== user.uid) continue;
+    console.log("STEP 6: Finished loading my posts");
 
-      await renderPost(postDoc);
-
-    }
-
-  } catch(error) {
-
-    console.error("Profile posts error:", error);
-
+  } catch (error) {
+    console.error("STEP ERROR: loadMyPosts failed:", error);
   }
-
 }
+
+onAuthStateChanged(auth, (user) => {
+  console.log("AUTH STATE:", user ? user.uid : "No user");
+
+  if (user) {
+    loadMyPosts(user);
+  }
+});
+
 async function loadFollowingPosts() {
 
   const container = document.getElementById("followingPosts");
