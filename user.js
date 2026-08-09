@@ -1,4 +1,5 @@
 import { auth, db } from "./firebase.js";
+
 import {
   doc,
   getDoc,
@@ -6,317 +7,683 @@ import {
   getDocs,
   query,
   where,
-  orderBy,
   updateDoc,
   increment,
   setDoc,
   deleteDoc,
   addDoc,
-  serverTimestamp,
-  onSnapshot
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const params = new URLSearchParams(window.location.search);
-
 const uid = params.get("uid");
 
-// Function to show error message
+// ===============================
+// SHOW ERROR
+// ===============================
+
 function showError(message) {
-  document.getElementById("userName").textContent = message;
-  document.getElementById("userBio").textContent = "User not found or no longer available";
-  document.getElementById("userPhoto").src = "images/default-avatar.png";
+  const userName = document.getElementById("userName");
+  const userBio = document.getElementById("userBio");
+  const userPhoto = document.getElementById("userPhoto");
+
+  if (userName) {
+    userName.textContent = message;
+  }
+
+  if (userBio) {
+    userBio.textContent =
+      "User not found or no longer available";
+  }
+
+  if (userPhoto) {
+    userPhoto.src = "images/default-avatar.png";
+  }
 }
 
-// Check if uid exists
-if (!uid) {
-  showError("No user specified");
-} else {
-  try {
-    const userDoc = await getDoc(doc(db, "users", uid));
+// ===============================
+// LOAD USER PROFILE
+// ===============================
 
-    if (userDoc.exists()) {
+if (!uid) {
+
+  showError("No user specified");
+
+} else {
+
+  try {
+
+    const userDoc = await getDoc(
+      doc(db, "users", uid)
+    );
+
+    if (!userDoc.exists()) {
+
+      showError("User not found");
+
+    } else {
+
       const data = userDoc.data();
 
-      document.getElementById("userPhoto").src = data.photoURL || "images/default-avatar.png";
+      // ===============================
+      // BASIC PROFILE INFORMATION
+      // ===============================
 
-      document.getElementById("userName").textContent = data.name || "No Name";
+      const userPhoto =
+        document.getElementById("userPhoto");
 
-      const joinDate = document.getElementById("joinDate");
+      const userName =
+        document.getElementById("userName");
 
-      if (joinDate && data.createdAt) {
-        const date = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
-        joinDate.textContent = "Member since: " + date.toLocaleDateString();
+      const userBio =
+        document.getElementById("userBio");
+
+      if (userPhoto) {
+        userPhoto.src =
+          data.photoURL ||
+          "images/default-avatar.png";
       }
 
-      document.getElementById("userBio").textContent = data.bio || "No bio yet";
+      if (userName) {
+        userName.textContent =
+          data.name || "No Name";
+      }
 
-      const followBtn = document.getElementById("followBtn");
+      if (userBio) {
+        userBio.textContent =
+          data.bio || "No bio yet";
+      }
+
+      // ===============================
+      // JOIN DATE
+      // ===============================
+
+      const joinDate =
+        document.getElementById("joinDate");
+
+      if (joinDate && data.createdAt) {
+
+        const date =
+          data.createdAt.toDate
+            ? data.createdAt.toDate()
+            : new Date(data.createdAt);
+
+        joinDate.textContent =
+          "Member since: " +
+          date.toLocaleDateString();
+      }
+
+      // ===============================
+      // CURRENT USER
+      // ===============================
 
       const currentUser = auth.currentUser;
 
-      if (currentUser && currentUser.uid !== uid) {
-        const followRef = doc(db, "users", uid, "followers", currentUser.uid);
-        const existingFollow = await getDoc(followRef);
+      // ===============================
+      // FOLLOW SYSTEM
+      // ===============================
+
+      const followBtn =
+        document.getElementById("followBtn");
+
+      if (
+        followBtn &&
+        currentUser &&
+        currentUser.uid !== uid
+      ) {
+
+        const followRef = doc(
+          db,
+          "users",
+          uid,
+          "followers",
+          currentUser.uid
+        );
+
+        const existingFollow =
+          await getDoc(followRef);
+
         if (existingFollow.exists()) {
-  followBtn.textContent = "Unfollow";
-} else {
-  followBtn.textContent = "Follow";
+          followBtn.textContent = "Following";
+        } else {
+          followBtn.textContent = "Follow";
         }
-      }
 
-      if (currentUser && currentUser.uid !== uid) {
-        followBtn.addEventListener("click", async () => {
-          const followRef = doc(db, "users", uid, "followers", currentUser.uid);
-          const existingFollow = await getDoc(followRef);
-          if (existingFollow.exists()) {
-            await deleteDoc(followRef);
-            const followingRef = doc(db, "users", currentUser.uid, "following", uid);
-            await deleteDoc(followingRef);
-            followBtn.textContent = "Unfollow";
-          } else {
-            await setDoc(followRef, { userId: currentUser.uid });
-            const followingRef = doc(db, "users", currentUser.uid, "following", uid);
-            await setDoc(followingRef, { userId: uid });
-            await addDoc(collection(db, "notifications"), {
-              userId: uid,
-              senderId: currentUser.uid,
-              type: "follow",
-              createdAt: serverTimestamp(),
-              read: false
-            });
-            followBtn.textContent = "Following";
+        followBtn.addEventListener(
+          "click",
+          async () => {
+
+            try {
+
+              const existing =
+                await getDoc(followRef);
+
+              if (existing.exists()) {
+
+                // UNFOLLOW
+
+                await deleteDoc(followRef);
+
+                const followingRef = doc(
+                  db,
+                  "users",
+                  currentUser.uid,
+                  "following",
+                  uid
+                );
+
+                await deleteDoc(followingRef);
+
+                followBtn.textContent = "Follow";
+
+              } else {
+
+                // FOLLOW
+
+                await setDoc(
+                  followRef,
+                  {
+                    userId: currentUser.uid
+                  }
+                );
+
+                const followingRef = doc(
+                  db,
+                  "users",
+                  currentUser.uid,
+                  "following",
+                  uid
+                );
+
+                await setDoc(
+                  followingRef,
+                  {
+                    userId: uid
+                  }
+                );
+
+                await addDoc(
+                  collection(db, "notifications"),
+                  {
+                    userId: uid,
+                    senderId: currentUser.uid,
+                    type: "follow",
+                    createdAt: serverTimestamp(),
+                    read: false
+                  }
+                );
+
+                followBtn.textContent =
+                  "Following";
+              }
+
+              // Refresh follower count
+              const followersSnapshot =
+                await getDocs(
+                  collection(
+                    db,
+                    "users",
+                    uid,
+                    "followers"
+                  )
+                );
+
+              const followersCount =
+                document.getElementById(
+                  "followersCount"
+                );
+
+              if (followersCount) {
+                followersCount.textContent =
+                  followersSnapshot.size;
+              }
+
+            } catch (error) {
+
+              console.error(
+                "Follow error:",
+                error
+              );
+
+              alert(
+                "Unable to update follow status."
+              );
+            }
+
           }
-        });
+        );
       }
 
-      const followersCount = document.getElementById("followersCount");
-      const followingCount = document.getElementById("followingCount");
+      // ===============================
+      // FOLLOWERS / FOLLOWING COUNTS
+      // ===============================
 
-      const followersSnapshot = await getDocs(collection(db, "users", uid, "followers"));
-      followersCount.textContent = followersSnapshot.size;
-      const followingSnapshot = await getDocs(collection(db, "users", uid, "following"));
-      followingCount.textContent = followingSnapshot.size;
+      const followersSnapshot =
+        await getDocs(
+          collection(
+            db,
+            "users",
+            uid,
+            "followers"
+          )
+        );
 
-      document.getElementById("followersLink").href = `followers.html?uid=${uid}`;
-      document.getElementById("followingLink").href = `following.html?uid=${uid}`;
+      const followingSnapshot =
+        await getDocs(
+          collection(
+            db,
+            "users",
+            uid,
+            "following"
+          )
+        );
 
-      const postsQuery = query(collection(db, "posts"), where("userId", "==", uid));
-      const postsSnapshot = await getDocs(postsQuery);
+      const followersCount =
+        document.getElementById(
+          "followersCount"
+        );
 
-      const postCount = document.getElementById("postCount");
+      const followingCount =
+        document.getElementById(
+          "followingCount"
+        );
+
+      if (followersCount) {
+        followersCount.textContent =
+          followersSnapshot.size;
+      }
+
+      if (followingCount) {
+        followingCount.textContent =
+          followingSnapshot.size;
+      }
+
+      // ===============================
+      // FOLLOWERS / FOLLOWING LINKS
+      // ===============================
+
+      const followersLink =
+        document.getElementById(
+          "followersLink"
+        );
+
+      const followingLink =
+        document.getElementById(
+          "followingLink"
+        );
+
+      if (followersLink) {
+        followersLink.href =
+          `followers.html?uid=${uid}`;
+      }
+
+      if (followingLink) {
+        followingLink.href =
+          `following.html?uid=${uid}`;
+      }
+
+      // ===============================
+      // LOAD USER POSTS
+      // ===============================
+
+      const postsQuery = query(
+        collection(db, "posts"),
+        where("userId", "==", uid)
+      );
+
+      const postsSnapshot =
+        await getDocs(postsQuery);
+
+      // ===============================
+      // POST COUNT
+      // ===============================
+
+      const postCount =
+        document.getElementById("postCount");
+
       if (postCount) {
-        postCount.textContent = postsSnapshot.size;
+        postCount.textContent =
+          postsSnapshot.size;
       }
 
-      const postsContainer = document.getElementById("userPosts");
-      postsContainer.innerHTML = "";
+      // ===============================
+      // POSTS CONTAINER
+      // ===============================
 
-      // Use for...of so we can await inside the loop and catch per-post errors
-      for (const postDoc of postsSnapshot.docs) {
-        try {
-          const post = postDoc.data();
+      const postsContainer =
+        document.getElementById(
+          "userPosts"
+        );
 
-          const div = document.createElement("div");
-          div.className = "post";
+      if (postsContainer) {
 
-          div.innerHTML = `
+        postsContainer.innerHTML = "";
 
-<div class="post-header">
+        if (postsSnapshot.empty) {
 
-<img
-src="${post.photoURL || 'images/default-avatar.png'}"
-class="post-avatar view-profile"
-data-uid="${post.userId}"
->
+          postsContainer.innerHTML =
+            "<p>No posts yet.</p>";
 
-<span
-class="post-user view-profile"
-data-uid="${post.userId}"
->
-${post.username || "User"}
-</span>
+        } else {
 
-</div>
+          for (
+            const postDoc
+            of postsSnapshot.docs
+          ) {
 
-<p>
-${post.content}
-</p>
+            const post =
+              postDoc.data();
 
-<div class="post-actions">
+            const div =
+              document.createElement("div");
 
-<button
-class="like-btn"
-data-id="${postDoc.id}">
-❤️ ${post.likes || 0}
-</button>
+            div.className =
+              "post";
 
-<button
-class="comment-btn"
-data-id="${postDoc.id}">
-💬 ${post.comments || 0}
-</button>
+            div.innerHTML = `
 
-<button
-class="share-btn"
-data-id="${postDoc.id}">
-<i class="fa-solid fa-share"></i>
-</button>
+              <div class="post-header">
 
-</div>
+                <img
+                  src="${
+                    post.photoURL ||
+                    "images/default-avatar.png"
+                  }"
+                  class="post-avatar view-profile"
+                  data-uid="${post.userId}"
+                  alt="Profile"
+                >
 
+                <span
+                  class="post-user view-profile"
+                  data-uid="${post.userId}"
+                >
+                  ${
+                    post.username ||
+                    "User"
+                  }
+                </span>
 
-div.innerHTML = `
+              </div>
 
-<div class="post-header">
+              <p class="post-content">
+                ${
+                  post.content || ""
+                }
+              </p>
 
-<img
-src="${post.photoURL || 'images/default-avatar.png'}"
-class="post-avatar view-profile"
-data-uid="${post.userId}"
->
+              <div class="post-actions">
 
-<span
-class="post-user view-profile"
-data-uid="${post.userId}"
->
-${post.username || "User"}
-</span>
+                <button
+                  class="like-btn"
+                  data-id="${postDoc.id}"
+                >
+                  ❤️
+                  ${
+                    post.likes || 0
+                  }
+                </button>
 
-</div>
+                <button
+                  class="comment-btn"
+                  data-id="${postDoc.id}"
+                >
+                  💬
+                  ${
+                    post.comments || 0
+                  }
+                </button>
 
-<p>
-${post.content}
-</p>
+                <button
+                  class="share-btn"
+                  data-id="${postDoc.id}"
+                >
+                  <i class="fa-solid fa-share"></i>
+                </button>
 
-<div class="post-actions">
+              </div>
 
-<button
-class="like-btn"
-data-id="${postDoc.id}">
-❤️ ${post.likes || 0}
-</button>
+            `;
 
-<button
-class="comment-btn"
-data-id="${postDoc.id}">
-💬 ${post.comments || 0}
-</button>
-
-<button
-class="share-btn"
-data-id="${postDoc.id}">
-<i class="fa-solid fa-share"></i>
-</button>
-
-</div>
-
-`;
-
-          postsContainer.appendChild(div);
-
-        } catch (err) {
-          console.error('Error loading post', postDoc.id, err);
+            postsContainer.appendChild(div);
+          }
         }
       }
-
-    } else {
-      // User document doesn't exist
-      showError("User not found");
     }
+
   } catch (error) {
-    console.error("Error loading user profile:", error);
-    showError("Error loading user profile");
+
+    console.error(
+      "Error loading user profile:",
+      error
+    );
+
+    showError(
+      "Error loading user profile"
+    );
   }
 }
 
-document.addEventListener("click", async (e) => {
-  if (!e.target.classList.contains("like-btn")) return;
+// ===============================
+// LIKE POST
+// ===============================
 
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Please login first");
-    return;
-  }
+document.addEventListener(
+  "click",
+  async (e) => {
 
-  if (user.uid === uid) {
-  alert("You cannot block yourself.");
-  return;
-  }
-  const postId = e.target.dataset.id;
-  const likeRef = doc(db, "posts", postId, "likes", user.uid);
+    const likeBtn =
+      e.target.closest(".like-btn");
 
-  try {
-    const existingLike = await getDoc(likeRef);
-    if (existingLike.exists()) {
-      await deleteDoc(likeRef);
-      await updateDoc(doc(db, "posts", postId), { likes: increment(-1) });
-    } else {
-      await setDoc(likeRef, { userId: user.uid });
-      await updateDoc(doc(db, "posts", postId), { likes: increment(1) });
+    if (!likeBtn) return;
+
+    const user =
+      auth.currentUser;
+
+    if (!user) {
+      alert("Please login first");
+      return;
     }
 
-    location.reload();
-  } catch (error) {
-    console.error("Like error:", error);
+    const postId =
+      likeBtn.dataset.id;
+
+    if (!postId) return;
+
+    const likeRef = doc(
+      db,
+      "posts",
+      postId,
+      "likes",
+      user.uid
+    );
+
+    try {
+
+      const existingLike =
+        await getDoc(likeRef);
+
+      if (existingLike.exists()) {
+
+        await deleteDoc(likeRef);
+
+        await updateDoc(
+          doc(db, "posts", postId),
+          {
+            likes: increment(-1)
+          }
+        );
+
+      } else {
+
+        await setDoc(
+          likeRef,
+          {
+            userId: user.uid
+          }
+        );
+
+        await updateDoc(
+          doc(db, "posts", postId),
+          {
+            likes: increment(1)
+          }
+        );
+      }
+
+      location.reload();
+
+    } catch (error) {
+
+      console.error(
+        "Like error:",
+        error
+      );
+    }
   }
-});
+);
 
-// ==================== OPEN COMMENTS PAGE ====================
+// ===============================
+// OPEN COMMENTS PAGE
+// ===============================
 
-document.addEventListener("click", (e) => {
+document.addEventListener(
+  "click",
+  (e) => {
 
-  const commentBtn = e.target.closest(".comment-btn");
+    const commentBtn =
+      e.target.closest(".comment-btn");
 
-  if (!commentBtn) return;
+    if (!commentBtn) return;
 
-  const postId = commentBtn.dataset.id;
+    const postId =
+      commentBtn.dataset.id;
 
-  if (!postId) return;
+    if (!postId) return;
 
-  window.location.href = `comments.html?postId=${postId}`;
+    window.location.href =
+      `comments.html?postId=${postId}`;
+  }
+);
 
-});
+// ===============================
+// SHARE PROFILE
+// ===============================
 
-const messageBtn = document.getElementById("messageBtn");
+document.addEventListener(
+  "click",
+  (e) => {
+
+    const shareBtn =
+      e.target.closest(".share-btn");
+
+    if (!shareBtn) return;
+
+    const profileLink =
+      window.location.href;
+
+    const whatsappUrl =
+      `https://wa.me/?text=${encodeURIComponent(
+        profileLink
+      )}`;
+
+    window.open(
+      whatsappUrl,
+      "_blank"
+    );
+  }
+);
+
+// ===============================
+// MESSAGE BUTTON
+// ===============================
+
+const messageBtn =
+  document.getElementById(
+    "messageBtn"
+  );
+
 if (messageBtn && uid) {
-  messageBtn.addEventListener("click", () => {
-    window.location.href = `chat.html?uid=${uid}`;
-  });
+
+  messageBtn.addEventListener(
+    "click",
+    () => {
+
+      window.location.href =
+        `chat.html?uid=${uid}`;
+    }
+  );
 }
 
-// Photos button
-const userPhotosTab = document.getElementById("userPhotosTab");
+// ===============================
+// PHOTOS TAB
+// ===============================
+
+const userPhotosTab =
+  document.getElementById(
+    "userPhotosTab"
+  );
 
 if (userPhotosTab && uid) {
-  userPhotosTab.addEventListener("click", () => {
-    window.location.href = `media.html?uid=${uid}&type=photos`;
-  });
+
+  userPhotosTab.addEventListener(
+    "click",
+    () => {
+
+      window.location.href =
+        `media.html?uid=${uid}&type=photos`;
+    }
+  );
 }
 
-// Reels button
-const userReelsTab = document.getElementById("userReelsTab");
+// ===============================
+// REELS TAB
+// ===============================
+
+const userReelsTab =
+  document.getElementById(
+    "userReelsTab"
+  );
 
 if (userReelsTab && uid) {
-  userReelsTab.addEventListener("click", () => {
-    window.location.href = `media.html?uid=${uid}&type=reels`;
-  });
+
+  userReelsTab.addEventListener(
+    "click",
+    () => {
+
+      window.location.href =
+        `media.html?uid=${uid}&type=reels`;
+    }
+  );
 }
 
-// Posts button
-const userPostsTab = document.getElementById("userPostsTab");
+// ===============================
+// POSTS TAB
+// ===============================
+
+const userPostsTab =
+  document.getElementById(
+    "userPostsTab"
+  );
 
 if (userPostsTab) {
-  userPostsTab.addEventListener("click", () => {
-    document.getElementById("userPosts").scrollIntoView({
-      behavior: "smooth"
-    });
-  });
-}
 
-document.addEventListener("click", (e) => {
-  if (!e.target.classList.contains("share-btn")) return;
-  const profileLink = window.location.href;
-  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(profileLink)}`;
-  window.open(whatsappUrl, "_blank");
-});
- 
+  userPostsTab.addEventListener(
+    "click",
+    () => {
+
+      const posts =
+        document.getElementById(
+          "userPosts"
+        );
+
+      if (posts) {
+
+        posts.scrollIntoView({
+          behavior: "smooth"
+        });
+
+      }
+    }
+  );
+}
