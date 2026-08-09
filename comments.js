@@ -939,3 +939,95 @@ document.addEventListener("click", async (e) => {
   }
 
 });
+
+// ================================
+// LIKE MAIN COMMENT
+// ================================
+
+document.addEventListener("click", async (e) => {
+
+  const btn = e.target.closest(".like-comment-btn");
+
+  if (!btn) return;
+
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert("Please login first");
+    return;
+  }
+
+  const commentId = btn.dataset.id;
+
+  if (!commentId) {
+    console.error("Missing commentId");
+    return;
+  }
+
+  // Comment document
+  const commentRef = doc(
+    db,
+    "posts",
+    postId,
+    "comments",
+    commentId
+  );
+
+  // Like document for this user
+  const likeRef = doc(
+    db,
+    "posts",
+    postId,
+    "comments",
+    commentId,
+    "likes",
+    user.uid
+  );
+
+  try {
+
+    const likeSnap = await getDoc(likeRef);
+
+    if (likeSnap.exists()) {
+
+      // =========================
+      // REMOVE COMMENT LIKE
+      // =========================
+
+      await deleteDoc(likeRef);
+
+      await updateDoc(commentRef, {
+        likes: increment(-1)
+      });
+
+    } else {
+
+      // =========================
+      // ADD COMMENT LIKE
+      // =========================
+
+      await setDoc(likeRef, {
+        userId: user.uid,
+        createdAt: serverTimestamp()
+      });
+
+      await updateDoc(commentRef, {
+        likes: increment(1)
+      });
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "LIKE COMMENT ERROR:",
+      error
+    );
+
+    alert(
+      "Unable to like this comment."
+    );
+
+  }
+
+});
