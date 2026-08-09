@@ -328,9 +328,166 @@ function loadComments() {
           `;
 
 
-          commentsContainer.appendChild(
-            commentDiv
-          );
+          commentsContainer.appendChild(commentDiv);
+
+// ================================
+// LOAD REPLIES FOR THIS COMMENT
+// ================================
+
+const repliesRef = collection(
+  db,
+  "posts",
+  postId,
+  "comments",
+  commentDoc.id,
+  "replies"
+);
+
+const repliesQuery = query(
+  repliesRef,
+  orderBy("createdAt", "asc")
+);
+
+onSnapshot(
+  repliesQuery,
+  async (replySnapshot) => {
+
+    const repliesContainer =
+      commentDiv.querySelector(
+        ".replies"
+      );
+
+    if (!repliesContainer) return;
+
+    repliesContainer.innerHTML = "";
+
+    replySnapshot.forEach(
+      async (replyDoc) => {
+
+        const reply =
+          replyDoc.data();
+
+        let replyUsername =
+          reply.username || "User";
+
+        let replyPhoto =
+          reply.photoURL ||
+          "images/default-avatar.png";
+
+
+        // ================================
+        // GET LATEST REPLY USER PROFILE
+        // ================================
+
+        if (reply.userId) {
+
+          try {
+
+            const replyUserSnap =
+              await getDoc(
+                doc(
+                  db,
+                  "users",
+                  reply.userId
+                )
+              );
+
+            if (replyUserSnap.exists()) {
+
+              const replyUserData =
+                replyUserSnap.data();
+
+              replyUsername =
+                replyUserData.name ||
+                replyUsername;
+
+              replyPhoto =
+                replyUserData.photoURL ||
+                replyPhoto;
+
+            }
+
+          } catch (error) {
+
+            console.error(
+              "Reply profile error:",
+              error
+            );
+
+          }
+
+        }
+
+
+        // ================================
+        // CREATE REPLY
+        // ================================
+
+        const replyDiv =
+          document.createElement("div");
+
+        replyDiv.className =
+          "reply-item";
+
+
+        replyDiv.innerHTML = `
+
+          <img
+            src="${replyPhoto}"
+            class="reply-avatar view-profile"
+            data-uid="${reply.userId}"
+            alt="Profile"
+            onerror="this.src='images/default-avatar.png'"
+          >
+
+          <div class="reply-content">
+
+            <span
+              class="reply-username view-profile"
+              data-uid="${reply.userId}"
+            >
+              ${escapeHTML(replyUsername)}
+            </span>
+
+            <div class="reply-text">
+              ${escapeHTML(reply.text || "")}
+            </div>
+
+            <div class="reply-actions">
+
+              <button
+                class="like-reply-btn"
+                data-comment="${commentDoc.id}"
+                data-id="${replyDoc.id}"
+              >
+                ❤️
+                ${reply.likes || 0}
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+
+
+        repliesContainer.appendChild(
+          replyDiv
+        );
+
+      }
+    );
+
+  },
+  (error) => {
+
+    console.error(
+      "Replies error:",
+      error
+    );
+
+  }
+);
 
         }
       );
