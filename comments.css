@@ -447,19 +447,17 @@ body{
 .send-reply-btn:active{
     transform:scale(.95);
 }
-
-
 /* ================================
-   REPLY TO REPLY
+REPLY TO REPLY
 ================================ */
 
 .nested-replies{
-    margin-left:34px;
-    margin-top:8px;
-    padding-left:10px;
-    border-left:2px solid #e5e5e5;
+margin-left:28px;
+margin-top:7px;
+padding-left:10px;
+border-left:2px solid #e1e1e1;
+width:calc(100% - 28px);
 }
-
 
 /* ================================
    NESTED REPLY
