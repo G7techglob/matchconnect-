@@ -14,7 +14,6 @@ import {
   deleteDoc,
   setDoc,
   query,
-  orderBy,
   where
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
@@ -637,39 +636,6 @@ function handleSharePost(postId) {
   const postLink = `https://g7techglob.github.io/matchconnect-/post.html?id=${postId}`;
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(postLink)}`;
   window.open(whatsappUrl, "_blank");
-}
-
-  const input = document.querySelector(`.comment-input[data-id="${postId}"]`);
-  if (!input) return;
-
-  const text = input.value.trim();
-  if (!text) {
-    showNotification("Write a comment", true);
-    return;
-  }
-
-  try {
-    const userSnap = await getDoc(doc(db, "users", user.uid));
-    const profileData = userSnap.data() || {};
-
-    await addDoc(collection(db, "posts", postId, "comments"), {
-      text,
-      userId: user.uid,
-      username: profileData.name || user.email || "User",
-      createdAt: serverTimestamp()
-    });
-
-    await updateDoc(doc(db, "posts", postId), {
-      comments: increment(1)
-    });
-
-    input.value = "";
-    showNotification("Comment added!");
-    await loadMyPosts(auth.currentUser);
-  } catch (error) {
-    console.error("Error adding comment:", error);
-    showNotification("Error adding comment: " + error.message, true);
-  }
 }
 
 /**
