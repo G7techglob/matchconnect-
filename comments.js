@@ -617,3 +617,71 @@ document.addEventListener("click", (e) => {
       : "none";
 
 });
+
+// ================================
+// SEND REPLY
+// ================================
+
+document.addEventListener("click", async (e) => {
+
+  const btn = e.target.closest(".send-reply-btn");
+
+  if (!btn) return;
+
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert("Please login first");
+    return;
+  }
+
+  const commentId = btn.dataset.id;
+
+  const input = document.querySelector(
+    `.reply-input[data-id="${commentId}"]`
+  );
+
+  if (!input) return;
+
+  const text = input.value.trim();
+
+  if (!text) return;
+
+  try {
+
+    const userSnap = await getDoc(
+      doc(db, "users", user.uid)
+    );
+
+    const userData = userSnap.data() || {};
+
+    await addDoc(
+      collection(
+        db,
+        "posts",
+        postId,
+        "comments",
+        commentId,
+        "replies"
+      ),
+      {
+        text,
+        userId: user.uid,
+        username: userData.name || "User",
+        photoURL:
+          userData.photoURL ||
+          "images/default-avatar.png",
+        createdAt: serverTimestamp(),
+        likes: 0
+      }
+    );
+
+    input.value = "";
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+});
