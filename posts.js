@@ -180,6 +180,20 @@ ${isFollowing ? "Following " : "Follow"}
   });
 
 }
+document.addEventListener("click", (e) => {
+
+  if (!e.target.classList.contains("comment-btn")) return;
+
+  const postId = e.target.dataset.id;
+
+  if (!postId) {
+    console.error("No post ID found for comment button");
+    return;
+  }
+
+  window.location.href = `comments.html?postId=${postId}`;
+
+});
 
 // CREATE POST
 function setupPosting() {
@@ -323,15 +337,7 @@ document.addEventListener("click", async (e) => {
 
 });
 
-document.addEventListener("click", (e) => {
 
-  if (!e.target.classList.contains("comment-btn")) return;
-
-  const postId = e.target.dataset.id;
-
-  window.location.href = `comments.html?postId=${postId}`;
-
-});
 
 document.addEventListener("click", async (e) => {
 
