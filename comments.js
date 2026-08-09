@@ -331,22 +331,28 @@ async function createCommentElement(
 
       <div class="comment-actions">
 
-        <button
-          class="reply-btn"
-          data-parent-type="comment"
-          data-parent-id="${commentId}"
-        >
-          Reply
-        </button>
+  <button
+    class="reply-btn"
+    data-parent-type="comment"
+    data-parent-id="${commentId}"
+  >
+    Reply
+  </button>
 
-        <button
-          class="like-comment-btn"
-          data-id="${commentId}"
-        >
-          ❤️ ${comment.likes || 0}
-        </button>
+  <button
+    class="like-comment-btn"
+    data-id="${commentId}"
+  >
+    ❤️ ${comment.likes || 0}
+  </button>
 
-      </div>
+  <span class="reply-count">
+    ${comment.replyCount || 0}
+    ${(comment.replyCount || 0) === 1 ? "reply" : "replies"}
+  </span>
+
+</div>
+
 
       <div
         class="reply-box"
@@ -1004,10 +1010,34 @@ document.addEventListener(
         : null
   }
 );
-      await updateDoc(
+
+
+// ================================
+// INCREASE POST COMMENT COUNT
+// ================================
+
+await updateDoc(
   doc(db, "posts", postId),
   {
     comments: increment(1)
+  }
+);
+
+
+// ================================
+// INCREASE MAIN COMMENT REPLY COUNT
+// ================================
+
+await updateDoc(
+  doc(
+    db,
+    "posts",
+    postId,
+    "comments",
+    commentId
+  ),
+  {
+    replyCount: increment(1)
   }
 );
 
