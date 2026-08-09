@@ -431,28 +431,37 @@ async function loadFollowingPosts() {
     }
 
 /**
- * Render a single post with comments
+ * Render a single post
  */
 async function renderPost(postDoc) {
+
   const myPosts = document.getElementById("myPosts");
+
   if (!myPosts) return;
 
   const post = postDoc.data();
 
   if (post.userId !== auth.currentUser?.uid) return;
 
-  // Create post container
   const div = document.createElement("div");
+
   div.className = "post-container";
+
   div.setAttribute("data-post-id", postDoc.id);
 
-  // Sanitize user content
-  const sanitizedUsername = sanitizeText(post.username || "User");
-  const sanitizedContent = sanitizeText(post.content || "");
-  const photoURL = safeImageUrl(post.photoURL);
+  const sanitizedUsername =
+    sanitizeText(post.username || "User");
+
+  const sanitizedContent =
+    sanitizeText(post.content || "");
+
+  const photoURL =
+    safeImageUrl(post.photoURL);
 
   div.innerHTML = `
+
     <div class="post-header">
+
       <img
         src="${photoURL}"
         class="post-avatar"
@@ -460,155 +469,147 @@ async function renderPost(postDoc) {
         alt="User avatar"
         onerror="this.src='images/default-avatar.png'"
       >
-      <strong>${sanitizedUsername}</strong>
+
+      <strong>
+        ${sanitizedUsername}
+      </strong>
 
       <br>
 
       <small>
         ${
           post.createdAt?.seconds
-            ? new Date(post.createdAt.seconds * 1000).toLocaleString()
+            ? new Date(
+                post.createdAt.seconds * 1000
+              ).toLocaleString()
             : ""
         }
       </small>
+
     </div>
-    <p class="post-content">${sanitizedContent}</p>
 
-${post.imageURL ? `
-<img 
-src="${safeImageUrl(post.imageURL)}"
-class="post-image"
-alt="Post image"
->
-` : ""}
+    <p class="post-content">
+      ${sanitizedContent}
+    </p>
 
-<div class="post-actions">
-      <button class="like-btn" data-id="${postDoc.id}">
-        ❤️ <span class="like-count">${post.likes || 0}</span>
+    ${
+      post.imageURL
+        ? `
+          <img
+            src="${safeImageUrl(post.imageURL)}"
+            class="post-image"
+            alt="Post image"
+          >
+        `
+        : ""
+    }
+
+    <div class="post-actions">
+
+      <button
+        class="like-btn"
+        data-id="${postDoc.id}"
+      >
+        ❤️
+        <span class="like-count">
+          ${post.likes || 0}
+        </span>
       </button>
-      <button class="comment-btn" data-id="${postDoc.id}">
-        💬 <span class="comment-count">${post.comments || 0}</span>
-      </button>
-      <button class="share-btn" data-id="${postDoc.id}" title="Share">
-  🔄
-</button>
 
-<button class="delete-btn" data-id="${postDoc.id}" title="Delete">
-  🗑
-</button>
+      <button
+        class="comment-btn"
+        data-id="${postDoc.id}"
+      >
+        💬
+        <span class="comment-count">
+          ${post.comments || 0}
+        </span>
+      </button>
+
+      <button
+        class="share-btn"
+        data-id="${postDoc.id}"
+        title="Share"
+      >
+        🔄
+      </button>
+
+      <button
+        class="delete-btn"
+        data-id="${postDoc.id}"
+        title="Delete"
+      >
+        🗑
+      </button>
+
     </div>
-    
-    <div class="comment-input-wrapper">
-  <input
-    type="text"
-    class="comment-input"
-    data-id="${postDoc.id}"
-    placeholder="Write a comment..."
-    maxlength="500"
-  >
-  <button class="send-comment-btn" data-id="${postDoc.id}">Send</button>
-</div>
 
-<div class="comments-list" id="comments-${postDoc.id}"></div>
-
-<hr>
   `;
 
   myPosts.appendChild(div);
-
-  // Load comments
-  await loadComments(postDoc.id, div);
-}
-
-/**
- * Load and render comments for a post
- */
-async function loadComments(postId, postElement) {
-  try {
-    const commentsContainer = postElement.querySelector(`#comments-${postId}`);
-    if (!commentsContainer) return;
-
-    const commentsSnapshot = await getDocs(collection(db, "posts", postId, "comments"));
-
-    commentsSnapshot.forEach((commentDoc) => {
-      const comment = commentDoc.data();
-      const p = document.createElement("p");
-      p.className = "comment";
-
-      // Sanitize comment content
-      const sanitizedUsername = sanitizeText(comment.username || "User");
-      const sanitizedText = sanitizeText(comment.text || "");
-
-      p.innerHTML = `
-<div class="comment-content">
-    <strong>${sanitizedUsername}</strong>
-    <span>${sanitizedText}</span>
-</div>
-
-<div class="comment-actions">
-
-<button class="like-comment-btn" data-comment="${commentDoc.id}" data-post="${postId}">
-❤️ <span class="comment-like-count">${comment.likes || 0}</span>
-</button>
-
-<button class="reply-comment-btn" data-comment="${commentDoc.id}">
-Reply
-</button>
-
-</div>
-
-<div class="reply-box" id="reply-${commentDoc.id}" style="display:none">
-
-<input 
-class="reply-input"
-placeholder="Write a reply..."
-data-comment="${commentDoc.id}"
->
-
-<button 
-class="send-reply-btn"
-data-comment="${commentDoc.id}"
-data-post="${postId}">
-Send
-</button>
-
-</div>
-
-<div class="replies-list" id="replies-${commentDoc.id}"></div>
-`;
-      commentsContainer.appendChild(p);
-    });
-  } catch (error) {
-    console.error("Error loading comments:", error);
-  }
 }
 
 // ==================== EVENT DELEGATOR ====================
-// Consolidate all click handlers to avoid memory leaks
 
 document.addEventListener("click", async (e) => {
+
   const target = e.target.closest("button");
+
   if (!target) return;
 
   const postId = target.dataset.id;
+
   if (!postId) return;
 
-  // Delete post
+
+  // ====================
+  // OPEN COMMENTS PAGE
+  // ====================
+
+  if (target.classList.contains("comment-btn")) {
+
+    window.location.href =
+      `comments.html?postId=${postId}`;
+
+    return;
+  }
+
+
+  // ====================
+  // DELETE POST
+  // ====================
+
   if (target.classList.contains("delete-btn")) {
+
     await handleDeletePost(postId);
+
+    return;
   }
-  // Share post
-  else if (target.classList.contains("share-btn")) {
+
+
+  // ====================
+  // SHARE POST
+  // ====================
+
+  if (target.classList.contains("share-btn")) {
+
     handleSharePost(postId);
+
+    return;
   }
-  // Send comment
-  else if (target.classList.contains("send-comment-btn")) {
-    await handleSendComment(postId);
-  }
-  // Like post
-  else if (target.classList.contains("like-btn")) {
+
+
+  // ====================
+  // LIKE POST
+  // ====================
+
+  if (target.classList.contains("like-btn")) {
+
     await handleLikePost(postId);
+
+    return;
   }
+
 });
 
 // ==================== POST ACTIONS ====================
@@ -637,16 +638,6 @@ function handleSharePost(postId) {
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(postLink)}`;
   window.open(whatsappUrl, "_blank");
 }
-
-/**
- * Handle send comment action
- */
-async function handleSendComment(postId) {
-  const user = auth.currentUser;
-  if (!user) {
-    showNotification("Please login", true);
-    return;
-  }
 
   const input = document.querySelector(`.comment-input[data-id="${postId}"]`);
   if (!input) return;
