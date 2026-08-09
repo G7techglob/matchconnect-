@@ -10,7 +10,9 @@ import {
   doc,
   getDoc,
   updateDoc,
-  increment
+  increment,
+    setDoc,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 
@@ -838,6 +840,84 @@ document.addEventListener("click", async (e) => {
   } catch (error) {
 
     console.error(error);
+
+  }
+
+});
+// ================================
+// LIKE REPLY
+// ================================
+
+document.addEventListener("click", async (e) => {
+
+  const btn = e.target.closest(".like-reply-btn");
+
+  if (!btn) return;
+
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert("Please login first");
+    return;
+  }
+
+  const commentId = btn.dataset.comment;
+  const replyId = btn.dataset.id;
+
+  if (!commentId || !replyId) return;
+
+  const replyRef = doc(
+    db,
+    "posts",
+    postId,
+    "comments",
+    commentId,
+    "replies",
+    replyId
+  );
+
+  const likeRef = doc(
+    db,
+    "posts",
+    postId,
+    "comments",
+    commentId,
+    "replies",
+    replyId,
+    "likes",
+    user.uid
+  );
+
+  try {
+
+    const existingLike = await getDoc(likeRef);
+
+    if (existingLike.exists()) {
+
+      await deleteDoc(likeRef);
+
+      await updateDoc(replyRef, {
+        likes: increment(-1)
+      });
+
+    } else {
+
+      await setDoc(likeRef, {
+        userId: user.uid
+      });
+
+      await updateDoc(replyRef, {
+        likes: increment(1)
+      });
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Like reply error:",
+      error
+    );
 
   }
 
