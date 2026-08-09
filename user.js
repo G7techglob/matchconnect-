@@ -165,81 +165,54 @@ data-id="${postDoc.id}">
 </div>
 
 
-<div class="comment-section">
+div.innerHTML = `
 
-<div class="comment-form">
+<div class="post-header">
 
-<input
-type="text"
-class="comment-input"
-data-id="${postDoc.id}"
-placeholder="Write a comment..."
+<img
+src="${post.photoURL || 'images/default-avatar.png'}"
+class="post-avatar view-profile"
+data-uid="${post.userId}"
 >
 
+<span
+class="post-user view-profile"
+data-uid="${post.userId}"
+>
+${post.username || "User"}
+</span>
+
+</div>
+
+<p>
+${post.content}
+</p>
+
+<div class="post-actions">
+
 <button
-class="send-comment-btn"
+class="like-btn"
 data-id="${postDoc.id}">
-Send
+❤️ ${post.likes || 0}
 </button>
 
-</div>
+<button
+class="comment-btn"
+data-id="${postDoc.id}">
+💬 ${post.comments || 0}
+</button>
 
-<div
-class="comments-list"
-id="comments-${postDoc.id}">
-</div>
+<button
+class="share-btn"
+data-id="${postDoc.id}">
+<i class="fa-solid fa-share"></i>
+</button>
 
 </div>
 
 `;
 
           postsContainer.appendChild(div);
-
-          const commentsContainer = div.querySelector(`#comments-${postDoc.id}`);
-
-          try {
-            const commentsSnapshot = await getDocs(collection(db, "posts", postDoc.id, "comments"));
-
-            console.log("Comments found:", commentsSnapshot.size);
-
-            commentsSnapshot.forEach((commentDoc) => {
-
-  const comment = commentDoc.data();
-
-  const commentDiv = document.createElement("div");
-  commentDiv.className = "comment-item";
-
-  commentDiv.innerHTML = `
-
-<img
-src="${comment.photoURL || "images/default-avatar.png"}"
-class="comment-avatar view-profile"
-data-uid="${comment.userId}"
->
-
-<div class="comment-body">
-
-<span
-class="comment-username view-profile"
-data-uid="${comment.userId}">
-${comment.username}
-</span>
-
-<div class="comment-text">
-${comment.text}
-</div>
-
-</div>
-
-`;
-
-  commentsContainer.appendChild(commentDiv);
-
-});
-
-          } catch (err) {
-            console.error("Error loading comments for post", postDoc.id, err);
-          }
 
         } catch (err) {
           console.error('Error loading post', postDoc.id, err);
@@ -288,38 +261,20 @@ document.addEventListener("click", async (e) => {
   }
 });
 
-document.addEventListener("click", async (e) => {
-  if (!e.target.classList.contains("send-comment-btn")) return;
+// ==================== OPEN COMMENTS PAGE ====================
 
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Please login first");
-    return;
-  }
+document.addEventListener("click", (e) => {
 
-  const postId = e.target.dataset.id;
-  const input = document.querySelector(`.comment-input[data-id="${postId}"]`);
-  const text = input.value.trim();
-  if (!text) return;
+  const commentBtn = e.target.closest(".comment-btn");
 
-  try {
-    const userProfile = await getDoc(doc(db, "users", user.uid));
-    const profileData = userProfile.data();
+  if (!commentBtn) return;
 
-    await addDoc(collection(db, "posts", postId, "comments"), {
-      text,
-      userId: user.uid,
-      username: profileData.name || user.email,
-      createdAt: serverTimestamp()
-    });
+  const postId = commentBtn.dataset.id;
 
-    await updateDoc(doc(db, "posts", postId), { comments: increment(1) });
-    input.value = "";
-    location.reload();
+  if (!postId) return;
 
-  } catch (error) {
-    console.error("Comment error:", error);
-  }
+  window.location.href = `comments.html?postId=${postId}`;
+
 });
 
 const messageBtn = document.getElementById("messageBtn");
