@@ -168,103 +168,17 @@ ${isFollowing ? "Following " : "Follow"}
   }
 
 </div>
-
-
-
-<div class="comment-section">
-
-  <input
-    type="text"
-    class="comment-input"
-    data-id="${postDoc.id}"
-    placeholder="Write a comment..."
-  >
-
-  <button
-    class="send-comment-btn"
-    data-id="${postDoc.id}">
-    Send
-  </button>
-
-
-  <div
-    class="comments-list"
-    id="comments-${postDoc.id}">
-  </div>
-
-</div>
-
-
 `;
+document.addEventListener("click", (e) => {
 
-      const commentsContainer =
-  div.querySelector(
-    `#comments-${postDoc.id}`
-  );
+  if (!e.target.classList.contains("comment-btn")) return;
 
-const commentsSnapshot =
-  await getDocs(
-    collection(
-      db,
-      "posts",
-      postDoc.id,
-      "comments"
-    )
-  );
+  const postId = e.target.dataset.id;
 
-commentsSnapshot.forEach((commentDoc) => {
-
-  const comment = commentDoc.data();
-
-  const commentDiv = document.createElement("div");
-  commentDiv.className = "comment-item";
-
-  commentDiv.innerHTML = `
-
-<img
-src="${comment.photoURL || "images/default-avatar.png"}"
-class="comment-avatar view-profile"
-data-uid="${comment.userId}"
->
-
-<div class="comment-body">
-
-<span
-class="comment-username view-profile"
-data-uid="${comment.userId}"
->
-${comment.username}
-</span>
-
-<div class="comment-text">
-${escapeHTML(comment.text)}
-</div>
-
-<div class="comment-actions">
-
-<button
-class="like-comment-btn"
-data-postid="${postDoc.id}"
-data-commentid="${commentDoc.id}">
-❤️ ${comment.likes || 0}
-</button>
-
-<button
-class="reply-comment-btn"
-data-postid="${postDoc.id}"
-data-commentid="${commentDoc.id}">
-💬 Reply
-</button>
-
-</div>
-
-</div>
-
-`;
-
-  commentsContainer.appendChild(commentDiv);
+  window.location.href = `comments.html?postId=${postId}`;
 
 });
+      
       postsContainer.appendChild(div);
 
     });
