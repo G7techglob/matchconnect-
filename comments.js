@@ -582,12 +582,13 @@ async function createReplyElement(
         </button>
 
         <button
-          class="like-reply-btn"
-          data-comment="${commentId}"
-          data-id="${replyId}"
-        >
-          ❤️ ${reply.likes || 0}
-        </button>
+  class="like-reply-btn"
+  data-comment="${commentId}"
+  data-id="${replyId}"
+  data-parent-reply-id="${reply.parentReplyId || ""}"
+>
+  ❤️ ${reply.likes || 0}
+</button>
 
       </div>
 
@@ -976,22 +977,32 @@ document.addEventListener(
 
 
       await addDoc(
-        repliesRef,
-        {
-          text: text,
-          userId: user.uid,
-          username:
-            userData.name ||
-            user.email ||
-            "User",
-          photoURL:
-            userData.photoURL ||
-            "images/default-avatar.png",
-          createdAt:
-            serverTimestamp(),
-          likes: 0
-        }
-      );
+  repliesRef,
+  {
+    text: text,
+
+    userId: user.uid,
+
+    username:
+      userData.name ||
+      user.email ||
+      "User",
+
+    photoURL:
+      userData.photoURL ||
+      "images/default-avatar.png",
+
+    createdAt:
+      serverTimestamp(),
+
+    likes: 0,
+
+    parentReplyId:
+      parentType === "reply"
+        ? parentId
+        : null
+  }
+);
 
 
       textInput.value = "";
@@ -1126,9 +1137,8 @@ document.addEventListener(
   }
 );
 
-
 // ================================
-// LIKE REPLY
+// LIKE REPLY / NESTED REPLY
 // ================================
 
 document.addEventListener(
@@ -1161,6 +1171,9 @@ document.addEventListener(
     const replyId =
       btn.dataset.id;
 
+    const parentReplyId =
+      btn.dataset.parentReplyId || null;
+
 
     if (!commentId || !replyId) {
 
@@ -1173,37 +1186,91 @@ document.addEventListener(
     }
 
 
-    const replyRef =
-      doc(
-        db,
-        "posts",
-        postId,
-        "comments",
-        commentId,
-        "replies",
-        replyId
-      );
-
-
-    const likeRef =
-      doc(
-        db,
-        "posts",
-        postId,
-        "comments",
-        commentId,
-        "replies",
-        replyId,
-        "likes",
-        user.uid
-      );
-
-
     try {
+
+      let replyRef;
+      let likeRef;
+
+
+      // ==================================
+      // LIKE TOP-LEVEL REPLY
+      // ==================================
+
+      if (!parentReplyId) {
+
+        replyRef =
+          doc(
+            db,
+            "posts",
+            postId,
+            "comments",
+            commentId,
+            "replies",
+            replyId
+          );
+
+
+        likeRef =
+          doc(
+            db,
+            "posts",
+            postId,
+            "comments",
+            commentId,
+            "replies",
+            replyId,
+            "likes",
+            user.uid
+          );
+
+      }
+
+
+      // ==================================
+      // LIKE REPLY TO A REPLY
+      // ==================================
+
+      else {
+
+        replyRef =
+          doc(
+            db,
+            "posts",
+            postId,
+            "comments",
+            commentId,
+            "replies",
+            parentReplyId,
+            "replies",
+            replyId
+          );
+
+
+        likeRef =
+          doc(
+            db,
+            "posts",
+            postId,
+            "comments",
+            commentId,
+            "replies",
+            parentReplyId,
+            "replies",
+            replyId,
+            "likes",
+            user.uid
+          );
+
+      }
+
 
       const likeSnap =
         await getDoc(likeRef);
 
+
+      // ==================================
+      // REMOVE LIKE
+      // ==================================
 
       if (likeSnap.exists()) {
 
@@ -1217,17 +1284,26 @@ document.addEventListener(
           }
         );
 
-      } else {
+      }
+
+
+      // ==================================
+      // ADD LIKE
+      // ==================================
+
+      else {
 
         await setDoc(
           likeRef,
           {
             userId:
               user.uid,
+
             createdAt:
               serverTimestamp()
           }
         );
+
 
         await updateDoc(
           replyRef,
