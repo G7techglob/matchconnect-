@@ -144,11 +144,12 @@ body{
 }
 
 .comment-content{
-    background:#fff;
-    border-radius:15px;
-    padding:9px 12px;
+    background:transparent;
+    border-radius:0;
+    padding:0;
     max-width:calc(100% - 52px);
-    box-shadow:0 1px 3px rgba(0,0,0,.08);
+    box-shadow:none;
+    min-width:0;
 }
 
 .comment-username{
@@ -317,6 +318,30 @@ body{
         font-size:14px;
     }
 
+   /* ================================
+   COMMENT ACTIONS
+================================ */
+
+.comment-actions{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-top:5px;
+}
+
+.comment-actions button{
+    border:none;
+    background:none;
+    padding:2px 0;
+    font-size:12px;
+    color:#65676b;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.comment-actions button:active{
+    transform:scale(.95);
+}
     .comment-box{
         min-height:60px;
         padding:7px 8px;
@@ -367,9 +392,9 @@ body{
 }
 
 .reply-content{
-    background:#f5f6f7;
-    border-radius:14px;
-    padding:8px 10px;
+    background:transparent;
+    border-radius:0;
+    padding:0;
     max-width:calc(100% - 42px);
     min-width:0;
 }
@@ -476,9 +501,9 @@ width:calc(100% - 28px);
 }
 
 .nested-replies .reply-content{
-    background:#f5f6f7;
-    border-radius:13px;
-    padding:7px 9px;
+    background:transparent;
+    border-radius:0;
+    padding:0;
     max-width:calc(100% - 38px);
 }
 
