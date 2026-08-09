@@ -272,18 +272,58 @@ function loadComments() {
 
             <div class="comment-content">
 
-              <span
-                class="comment-username view-profile"
-                data-uid="${comment.userId}"
-              >
-                ${escapeHTML(username)}
-              </span>
+  <span
+    class="comment-username view-profile"
+    data-uid="${comment.userId}"
+  >
+    ${escapeHTML(username)}
+  </span>
 
-              <div class="comment-text">
-                ${escapeHTML(comment.text || "")}
-              </div>
+  <div class="comment-text">
+    ${escapeHTML(comment.text || "")}
+  </div>
 
-            </div>
+  <div class="comment-actions">
+
+    <button
+      class="reply-btn"
+      data-id="${commentDoc.id}">
+      Reply
+    </button>
+
+    <button
+      class="like-comment-btn"
+      data-id="${commentDoc.id}">
+      ❤️ ${comment.likes || 0}
+    </button>
+
+  </div>
+
+  <div
+    class="reply-box"
+    id="reply-box-${commentDoc.id}"
+    style="display:none;">
+
+    <input
+      type="text"
+      class="reply-input"
+      data-id="${commentDoc.id}"
+      placeholder="Write a reply...">
+
+    <button
+      class="send-reply-btn"
+      data-id="${commentDoc.id}">
+      Send
+    </button>
+
+  </div>
+
+  <div
+    class="replies"
+    id="replies-${commentDoc.id}">
+  </div>
+
+</div>
 
           `;
 
@@ -558,3 +598,22 @@ function escapeHTML(str) {
     .replaceAll("'", "&#039;");
 
       }
+
+document.addEventListener("click", (e) => {
+
+  const btn = e.target.closest(".reply-btn");
+
+  if (!btn) return;
+
+  const box = document.getElementById(
+    `reply-box-${btn.dataset.id}`
+  );
+
+  if (!box) return;
+
+  box.style.display =
+    box.style.display === "none"
+      ? "flex"
+      : "none";
+
+});
