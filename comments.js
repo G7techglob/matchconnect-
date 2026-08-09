@@ -1004,6 +1004,12 @@ document.addEventListener(
         : null
   }
 );
+      await updateDoc(
+  doc(db, "posts", postId),
+  {
+    comments: increment(1)
+  }
+);
 
 
       textInput.value = "";
