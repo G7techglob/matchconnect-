@@ -446,12 +446,12 @@ function loadReplies(
 
 
         const replyDiv =
-          await createReplyElement(
-            commentId,
-            replyDoc.id,
-            reply
-          );
-
+  await createReplyElement(
+    commentId,
+    replyDoc.id,
+    reply,
+    parentReplyId
+  );
 
         container.appendChild(
           replyDiv
@@ -495,7 +495,8 @@ function loadReplies(
 async function createReplyElement(
   commentId,
   replyId,
-  reply
+  reply,
+  parentReplyId = null
 ) {
 
   let username =
@@ -585,7 +586,7 @@ async function createReplyElement(
   class="like-reply-btn"
   data-comment="${commentId}"
   data-id="${replyId}"
-  data-parent-reply-id="${reply.parentReplyId || ""}"
+  data-parent-reply="${parentReplyId || ""}"
 >
   ❤️ ${reply.likes || 0}
 </button>
