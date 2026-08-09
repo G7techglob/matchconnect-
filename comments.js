@@ -1138,7 +1138,7 @@ document.addEventListener(
 );
 
 // ================================
-// LIKE REPLY / NESTED REPLY
+// LIKE REPLY + REPLY TO REPLY
 // ================================
 
 document.addEventListener(
@@ -1165,14 +1165,21 @@ document.addEventListener(
     }
 
 
+    // Main comment ID
     const commentId =
       btn.dataset.comment;
 
+
+    // Reply ID
     const replyId =
       btn.dataset.id;
 
+
+    // Parent reply ID
+    // This exists only when this is
+    // a reply to another reply.
     const parentReplyId =
-      btn.dataset.parentReplyId || null;
+      btn.dataset.parentReply;
 
 
     if (!commentId || !replyId) {
@@ -1192,9 +1199,9 @@ document.addEventListener(
       let likeRef;
 
 
-      // ==================================
-      // LIKE TOP-LEVEL REPLY
-      // ==================================
+      // =====================================
+      // FIRST-LEVEL REPLY
+      // =====================================
 
       if (!parentReplyId) {
 
@@ -1226,9 +1233,9 @@ document.addEventListener(
       }
 
 
-      // ==================================
-      // LIKE REPLY TO A REPLY
-      // ==================================
+      // =====================================
+      // REPLY TO REPLY
+      // =====================================
 
       else {
 
@@ -1264,17 +1271,26 @@ document.addEventListener(
       }
 
 
+      // =====================================
+      // CHECK LIKE
+      // =====================================
+
       const likeSnap =
-        await getDoc(likeRef);
+        await getDoc(
+          likeRef
+        );
 
 
-      // ==================================
+      // =====================================
       // REMOVE LIKE
-      // ==================================
+      // =====================================
 
       if (likeSnap.exists()) {
 
-        await deleteDoc(likeRef);
+        await deleteDoc(
+          likeRef
+        );
+
 
         await updateDoc(
           replyRef,
@@ -1287,9 +1303,9 @@ document.addEventListener(
       }
 
 
-      // ==================================
+      // =====================================
       // ADD LIKE
-      // ==================================
+      // =====================================
 
       else {
 
@@ -1315,6 +1331,7 @@ document.addEventListener(
 
       }
 
+
     } catch (error) {
 
       console.error(
@@ -1330,7 +1347,6 @@ document.addEventListener(
 
   }
 );
-
 
 // ================================
 // OPEN USER PROFILE
