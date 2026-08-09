@@ -844,6 +844,7 @@ document.addEventListener("click", async (e) => {
   }
 
 });
+
 // ================================
 // LIKE REPLY
 // ================================
@@ -864,7 +865,10 @@ document.addEventListener("click", async (e) => {
   const commentId = btn.dataset.comment;
   const replyId = btn.dataset.id;
 
-  if (!commentId || !replyId) return;
+  if (!commentId || !replyId) {
+    console.error("Missing commentId or replyId");
+    return;
+  }
 
   const replyRef = doc(
     db,
@@ -890,9 +894,13 @@ document.addEventListener("click", async (e) => {
 
   try {
 
-    const existingLike = await getDoc(likeRef);
+    const likeSnap = await getDoc(likeRef);
 
-    if (existingLike.exists()) {
+    if (likeSnap.exists()) {
+
+      // =========================
+      // REMOVE LIKE
+      // =========================
 
       await deleteDoc(likeRef);
 
@@ -902,8 +910,13 @@ document.addEventListener("click", async (e) => {
 
     } else {
 
+      // =========================
+      // ADD LIKE
+      // =========================
+
       await setDoc(likeRef, {
-        userId: user.uid
+        userId: user.uid,
+        createdAt: serverTimestamp()
       });
 
       await updateDoc(replyRef, {
@@ -915,8 +928,12 @@ document.addEventListener("click", async (e) => {
   } catch (error) {
 
     console.error(
-      "Like reply error:",
+      "LIKE REPLY ERROR:",
       error
+    );
+
+    alert(
+      "Unable to like this reply."
     );
 
   }
