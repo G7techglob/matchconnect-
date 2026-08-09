@@ -168,17 +168,7 @@ ${isFollowing ? "Following " : "Follow"}
   }
 
 </div>
-`;
-document.addEventListener("click", (e) => {
-
-  if (!e.target.classList.contains("comment-btn")) return;
-
-  const postId = e.target.dataset.id;
-
-  window.location.href = `comments.html?postId=${postId}`;
-
-});
-      
+`;   
       postsContainer.appendChild(div);
 
     });
@@ -330,6 +320,16 @@ document.addEventListener("click", async (e) => {
     );
 
   }
+
+});
+
+document.addEventListener("click", (e) => {
+
+  if (!e.target.classList.contains("comment-btn")) return;
+
+  const postId = e.target.dataset.id;
+
+  window.location.href = `comments.html?postId=${postId}`;
 
 });
 
