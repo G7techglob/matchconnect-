@@ -11,18 +11,20 @@ import {
   getDoc,
   updateDoc,
   increment,
-    setDoc,
+  setDoc,
   deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 
 // ================================
-// GET POST ID FROM URL
+// GET POST ID
 // ================================
 
-const params = new URLSearchParams(window.location.search);
+const params =
+  new URLSearchParams(window.location.search);
 
-const postId = params.get("postId");
+const postId =
+  params.get("postId");
 
 
 // ================================
@@ -46,7 +48,7 @@ const myProfilePic =
 
 
 // ================================
-// CHECK POST ID
+// CHECK POST
 // ================================
 
 if (!postId) {
@@ -57,8 +59,6 @@ if (!postId) {
     </div>
   `;
 
-  console.error("No postId found in URL.");
-
 } else {
 
   loadPost();
@@ -68,7 +68,7 @@ if (!postId) {
 
 
 // ================================
-// LOAD SELECTED POST
+// LOAD POST
 // ================================
 
 async function loadPost() {
@@ -95,15 +95,13 @@ async function loadPost() {
     const post =
       postSnap.data();
 
-    let profileName =
+    let username =
       post.username || "User";
 
-    let profilePhoto =
+    let photoURL =
       post.photoURL ||
       "images/default-avatar.png";
 
-
-    // Get latest profile information
 
     if (post.userId) {
 
@@ -117,11 +115,11 @@ async function loadPost() {
         const userData =
           userSnap.data();
 
-        profileName =
-          userData.name || profileName;
+        username =
+          userData.name || username;
 
-        profilePhoto =
-          userData.photoURL || profilePhoto;
+        photoURL =
+          userData.photoURL || photoURL;
 
       }
 
@@ -135,16 +133,17 @@ async function loadPost() {
         <div class="comment-post-header">
 
           <img
-            src="${profilePhoto}"
+            src="${photoURL}"
             class="post-avatar view-profile"
             data-uid="${post.userId}"
+            onerror="this.src='images/default-avatar.png'"
           >
 
           <span
             class="post-username view-profile"
             data-uid="${post.userId}"
           >
-            ${escapeHTML(profileName)}
+            ${escapeHTML(username)}
           </span>
 
         </div>
@@ -164,19 +163,13 @@ async function loadPost() {
       error
     );
 
-    postContainer.innerHTML = `
-      <div class="loading">
-        Unable to load post.
-      </div>
-    `;
-
   }
 
 }
 
 
 // ================================
-// LOAD COMMENTS
+// LOAD MAIN COMMENTS
 // ================================
 
 function loadComments() {
@@ -214,285 +207,27 @@ function loadComments() {
       }
 
 
-      snapshot.forEach(
-        async (commentDoc) => {
-
-          const comment =
-            commentDoc.data();
-
-          let username =
-            comment.username || "User";
-
-          let photoURL =
-            comment.photoURL ||
-            "images/default-avatar.png";
-
-
-          // Get latest profile information
-
-          if (comment.userId) {
-
-            const userSnap =
-              await getDoc(
-                doc(
-                  db,
-                  "users",
-                  comment.userId
-                )
-              );
-
-            if (userSnap.exists()) {
-
-              const userData =
-                userSnap.data();
-
-              username =
-                userData.name || username;
-
-              photoURL =
-                userData.photoURL || photoURL;
-
-            }
-
-          }
-
-
-          const commentDiv =
-            document.createElement("div");
-
-          commentDiv.className =
-            "comment-item";
-
-
-          commentDiv.innerHTML = `
-
-            <img
-              src="${photoURL}"
-              class="comment-avatar view-profile"
-              data-uid="${comment.userId}"
-            >
-
-            <div class="comment-content">
-
-  <span
-    class="comment-username view-profile"
-    data-uid="${comment.userId}"
-  >
-    ${escapeHTML(username)}
-  </span>
-
-  <div class="comment-text">
-    ${escapeHTML(comment.text || "")}
-  </div>
-
-  <div class="comment-actions">
-
-    <button
-      class="reply-btn"
-      data-id="${commentDoc.id}">
-      Reply
-    </button>
-
-    <button
-      class="like-comment-btn"
-      data-id="${commentDoc.id}">
-      ❤️ ${comment.likes || 0}
-    </button>
-
-  </div>
-
-  <div
-    class="reply-box"
-    id="reply-box-${commentDoc.id}"
-    style="display:none;">
-
-    <input
-      type="text"
-      class="reply-input"
-      data-id="${commentDoc.id}"
-      placeholder="Write a reply...">
-
-    <button
-      class="send-reply-btn"
-      data-id="${commentDoc.id}">
-      Send
-    </button>
-
-  </div>
-
-  <div
-    class="replies"
-    id="replies-${commentDoc.id}">
-  </div>
-
-</div>
-
-          `;
-
-
-          commentsContainer.appendChild(commentDiv);
-
-// ================================
-// LOAD REPLIES FOR THIS COMMENT
-// ================================
-
-const repliesRef = collection(
-  db,
-  "posts",
-  postId,
-  "comments",
-  commentDoc.id,
-  "replies"
-);
-
-const repliesQuery = query(
-  repliesRef,
-  orderBy("createdAt", "asc")
-);
-
-onSnapshot(
-  repliesQuery,
-  async (replySnapshot) => {
-
-    const repliesContainer =
-      commentDiv.querySelector(
-        ".replies"
-      );
-
-    if (!repliesContainer) return;
-
-    repliesContainer.innerHTML = "";
-
-    replySnapshot.forEach(
-      async (replyDoc) => {
-
-        const reply =
-          replyDoc.data();
-
-        let replyUsername =
-          reply.username || "User";
-
-        let replyPhoto =
-          reply.photoURL ||
-          "images/default-avatar.png";
-
-
-        // ================================
-        // GET LATEST REPLY USER PROFILE
-        // ================================
-
-        if (reply.userId) {
-
-          try {
-
-            const replyUserSnap =
-              await getDoc(
-                doc(
-                  db,
-                  "users",
-                  reply.userId
-                )
-              );
-
-            if (replyUserSnap.exists()) {
-
-              const replyUserData =
-                replyUserSnap.data();
-
-              replyUsername =
-                replyUserData.name ||
-                replyUsername;
-
-              replyPhoto =
-                replyUserData.photoURL ||
-                replyPhoto;
-
-            }
-
-          } catch (error) {
-
-            console.error(
-              "Reply profile error:",
-              error
-            );
-
-          }
-
-        }
-
-
-        // ================================
-        // CREATE REPLY
-        // ================================
-
-        const replyDiv =
-          document.createElement("div");
-
-        replyDiv.className =
-          "reply-item";
-
-
-        replyDiv.innerHTML = `
-
-          <img
-            src="${replyPhoto}"
-            class="reply-avatar view-profile"
-            data-uid="${reply.userId}"
-            alt="Profile"
-            onerror="this.src='images/default-avatar.png'"
-          >
-
-          <div class="reply-content">
-
-            <span
-              class="reply-username view-profile"
-              data-uid="${reply.userId}"
-            >
-              ${escapeHTML(replyUsername)}
-            </span>
-
-            <div class="reply-text">
-              ${escapeHTML(reply.text || "")}
-            </div>
-
-            <div class="reply-actions">
-
-              <button
-                class="like-reply-btn"
-                data-comment="${commentDoc.id}"
-                data-id="${replyDoc.id}"
-              >
-                ❤️
-                ${reply.likes || 0}
-              </button>
-
-            </div>
-
-          </div>
-
-        `;
-
-
-        repliesContainer.appendChild(
-          replyDiv
+      for (const commentDoc of snapshot.docs) {
+
+        const comment =
+          commentDoc.data();
+
+        const commentDiv =
+          await createCommentElement(
+            commentDoc.id,
+            comment
+          );
+
+        commentsContainer.appendChild(
+          commentDiv
+        );
+
+        loadReplies(
+          commentDoc.id,
+          commentDiv.querySelector(".replies")
         );
 
       }
-    );
-
-  },
-  (error) => {
-
-    console.error(
-      "Replies error:",
-      error
-    );
-
-  }
-);
-
-        }
-      );
 
     },
     (error) => {
@@ -515,7 +250,383 @@ onSnapshot(
 
 
 // ================================
-// LOAD CURRENT USER PROFILE PHOTO
+// CREATE COMMENT
+// ================================
+
+async function createCommentElement(
+  commentId,
+  comment
+) {
+
+  let username =
+    comment.username || "User";
+
+  let photoURL =
+    comment.photoURL ||
+    "images/default-avatar.png";
+
+
+  if (comment.userId) {
+
+    try {
+
+      const userSnap =
+        await getDoc(
+          doc(db, "users", comment.userId)
+        );
+
+      if (userSnap.exists()) {
+
+        const userData =
+          userSnap.data();
+
+        username =
+          userData.name || username;
+
+        photoURL =
+          userData.photoURL || photoURL;
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Comment profile error:",
+        error
+      );
+
+    }
+
+  }
+
+
+  const div =
+    document.createElement("div");
+
+  div.className =
+    "comment-item";
+
+
+  div.innerHTML = `
+
+    <img
+      src="${photoURL}"
+      class="comment-avatar view-profile"
+      data-uid="${comment.userId}"
+      onerror="this.src='images/default-avatar.png'"
+    >
+
+    <div class="comment-content">
+
+      <span
+        class="comment-username view-profile"
+        data-uid="${comment.userId}"
+      >
+        ${escapeHTML(username)}
+      </span>
+
+      <div class="comment-text">
+        ${escapeHTML(comment.text || "")}
+      </div>
+
+      <div class="comment-actions">
+
+        <button
+          class="reply-btn"
+          data-parent-type="comment"
+          data-parent-id="${commentId}"
+        >
+          Reply
+        </button>
+
+        <button
+          class="like-comment-btn"
+          data-id="${commentId}"
+        >
+          ❤️ ${comment.likes || 0}
+        </button>
+
+      </div>
+
+      <div
+        class="reply-box"
+        style="display:none;"
+      >
+
+        <input
+          type="text"
+          class="reply-input"
+          placeholder="Write a reply..."
+        >
+
+        <button
+          class="send-reply-btn"
+          data-parent-type="comment"
+          data-parent-id="${commentId}"
+        >
+          Send
+        </button>
+
+      </div>
+
+      <div class="replies"></div>
+
+    </div>
+
+  `;
+
+  return div;
+
+}
+
+
+// ================================
+// LOAD REPLIES RECURSIVELY
+// ================================
+
+function loadReplies(
+  commentId,
+  container,
+  parentReplyId = null
+) {
+
+  let repliesRef;
+
+
+  if (!parentReplyId) {
+
+    repliesRef =
+      collection(
+        db,
+        "posts",
+        postId,
+        "comments",
+        commentId,
+        "replies"
+      );
+
+  } else {
+
+    repliesRef =
+      collection(
+        db,
+        "posts",
+        postId,
+        "comments",
+        commentId,
+        "replies",
+        parentReplyId,
+        "replies"
+      );
+
+  }
+
+
+  const q =
+    query(
+      repliesRef,
+      orderBy("createdAt", "asc")
+    );
+
+
+  onSnapshot(
+    q,
+    async (snapshot) => {
+
+      container.innerHTML = "";
+
+
+      for (
+        const replyDoc
+        of snapshot.docs
+      ) {
+
+        const reply =
+          replyDoc.data();
+
+
+        const replyDiv =
+          await createReplyElement(
+            commentId,
+            replyDoc.id,
+            reply
+          );
+
+
+        container.appendChild(
+          replyDiv
+        );
+
+
+        const nestedReplies =
+          replyDiv.querySelector(
+            ".nested-replies"
+          );
+
+
+        // Load replies to this reply
+
+        loadReplies(
+          commentId,
+          nestedReplies,
+          replyDoc.id
+        );
+
+      }
+
+    },
+    (error) => {
+
+      console.error(
+        "Replies error:",
+        error
+      );
+
+    }
+  );
+
+}
+
+
+// ================================
+// CREATE REPLY
+// ================================
+
+async function createReplyElement(
+  commentId,
+  replyId,
+  reply
+) {
+
+  let username =
+    reply.username || "User";
+
+  let photoURL =
+    reply.photoURL ||
+    "images/default-avatar.png";
+
+
+  if (reply.userId) {
+
+    try {
+
+      const userSnap =
+        await getDoc(
+          doc(db, "users", reply.userId)
+        );
+
+      if (userSnap.exists()) {
+
+        const userData =
+          userSnap.data();
+
+        username =
+          userData.name || username;
+
+        photoURL =
+          userData.photoURL || photoURL;
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Reply profile error:",
+        error
+      );
+
+    }
+
+  }
+
+
+  const div =
+    document.createElement("div");
+
+  div.className =
+    "reply-item";
+
+
+  div.innerHTML = `
+
+    <img
+      src="${photoURL}"
+      class="reply-avatar view-profile"
+      data-uid="${reply.userId}"
+      alt="Profile"
+      onerror="this.src='images/default-avatar.png'"
+    >
+
+    <div class="reply-content">
+
+      <span
+        class="reply-username view-profile"
+        data-uid="${reply.userId}"
+      >
+        ${escapeHTML(username)}
+      </span>
+
+      <div class="reply-text">
+        ${escapeHTML(reply.text || "")}
+      </div>
+
+      <div class="reply-actions">
+
+        <button
+          class="reply-btn"
+          data-parent-type="reply"
+          data-comment-id="${commentId}"
+          data-parent-id="${replyId}"
+        >
+          Reply
+        </button>
+
+        <button
+          class="like-reply-btn"
+          data-comment="${commentId}"
+          data-id="${replyId}"
+        >
+          ❤️ ${reply.likes || 0}
+        </button>
+
+      </div>
+
+      <div
+        class="reply-box"
+        style="display:none;"
+      >
+
+        <input
+          type="text"
+          class="reply-input"
+          placeholder="Write a reply..."
+        >
+
+        <button
+          class="send-reply-btn"
+          data-parent-type="reply"
+          data-comment-id="${commentId}"
+          data-parent-id="${replyId}"
+        >
+          Send
+        </button>
+
+      </div>
+
+      <div class="nested-replies"></div>
+
+    </div>
+
+  `;
+
+
+  return div;
+
+}
+
+
+// ================================
+// CURRENT USER PHOTO
 // ================================
 
 auth.onAuthStateChanged(
@@ -555,7 +666,7 @@ auth.onAuthStateChanged(
 
 
 // ================================
-// SEND COMMENT
+// SEND MAIN COMMENT
 // ================================
 
 sendCommentBtn.addEventListener(
@@ -602,8 +713,6 @@ async function sendComment() {
 
   try {
 
-    // Get user profile
-
     const userSnap =
       await getDoc(
         doc(db, "users", user.uid)
@@ -615,18 +724,6 @@ async function sendComment() {
         : {};
 
 
-    const username =
-      userData.name ||
-      user.email ||
-      "User";
-
-    const photoURL =
-      userData.photoURL ||
-      "images/default-avatar.png";
-
-
-    // Add comment
-
     await addDoc(
       collection(
         db,
@@ -637,14 +734,19 @@ async function sendComment() {
       {
         text: text,
         userId: user.uid,
-        username: username,
-        photoURL: photoURL,
-        createdAt: serverTimestamp()
+        username:
+          userData.name ||
+          user.email ||
+          "User",
+        photoURL:
+          userData.photoURL ||
+          "images/default-avatar.png",
+        createdAt:
+          serverTimestamp(),
+        likes: 0
       }
     );
 
-
-    // Update comment count
 
     await updateDoc(
       doc(db, "posts", postId),
@@ -654,20 +756,17 @@ async function sendComment() {
     );
 
 
-    // Get post owner
-
     const postSnap =
       await getDoc(
         doc(db, "posts", postId)
       );
+
 
     if (postSnap.exists()) {
 
       const post =
         postSnap.data();
 
-
-      // Don't notify yourself
 
       if (post.userId !== user.uid) {
 
@@ -681,7 +780,8 @@ async function sendComment() {
             senderId: user.uid,
             type: "comment",
             postId: postId,
-            createdAt: serverTimestamp(),
+            createdAt:
+              serverTimestamp(),
             read: false
           }
         );
@@ -690,8 +790,6 @@ async function sendComment() {
 
     }
 
-
-    // Clear input
 
     commentInput.value = "";
 
@@ -706,12 +804,456 @@ async function sendComment() {
     );
 
     alert(
-      "Unable to send comment. Please try again."
+      "Unable to send comment."
     );
 
   }
 
 }
+
+
+// ================================
+// REPLY BUTTON
+// ================================
+
+document.addEventListener(
+  "click",
+  (e) => {
+
+    const btn =
+      e.target.closest(".reply-btn");
+
+    if (!btn) return;
+
+
+    const parent =
+      btn.closest(
+        ".comment-content, .reply-content"
+      );
+
+    if (!parent) return;
+
+
+    const box =
+      parent.querySelector(
+        ":scope > .reply-box"
+      );
+
+    if (!box) return;
+
+
+    box.style.display =
+      box.style.display === "none"
+        ? "flex"
+        : "none";
+
+
+    if (box.style.display === "flex") {
+
+      const input =
+        box.querySelector(
+          ".reply-input"
+        );
+
+      if (input) {
+        input.focus();
+      }
+
+    }
+
+  }
+);
+
+
+// ================================
+// SEND REPLY / REPLY TO REPLY
+// ================================
+
+document.addEventListener(
+  "click",
+  async (e) => {
+
+    const btn =
+      e.target.closest(
+        ".send-reply-btn"
+      );
+
+    if (!btn) return;
+
+
+    const user =
+      auth.currentUser;
+
+    if (!user) {
+
+      alert("Please login first");
+
+      return;
+
+    }
+
+
+    const textInput =
+      btn.parentElement.querySelector(
+        ".reply-input"
+      );
+
+    if (!textInput) return;
+
+
+    const text =
+      textInput.value.trim();
+
+    if (!text) return;
+
+
+    const parentType =
+      btn.dataset.parentType;
+
+    const parentId =
+      btn.dataset.parentId;
+
+    const commentId =
+      btn.dataset.commentId ||
+      parentId;
+
+
+    try {
+
+      const userSnap =
+        await getDoc(
+          doc(db, "users", user.uid)
+        );
+
+      const userData =
+        userSnap.data() || {};
+
+
+      let repliesRef;
+
+
+      // =========================
+      // REPLY TO MAIN COMMENT
+      // =========================
+
+      if (parentType === "comment") {
+
+        repliesRef =
+          collection(
+            db,
+            "posts",
+            postId,
+            "comments",
+            parentId,
+            "replies"
+          );
+
+      }
+
+
+      // =========================
+      // REPLY TO A REPLY
+      // =========================
+
+      else if (parentType === "reply") {
+
+        repliesRef =
+          collection(
+            db,
+            "posts",
+            postId,
+            "comments",
+            commentId,
+            "replies",
+            parentId,
+            "replies"
+          );
+
+      }
+
+
+      if (!repliesRef) return;
+
+
+      await addDoc(
+        repliesRef,
+        {
+          text: text,
+          userId: user.uid,
+          username:
+            userData.name ||
+            user.email ||
+            "User",
+          photoURL:
+            userData.photoURL ||
+            "images/default-avatar.png",
+          createdAt:
+            serverTimestamp(),
+          likes: 0
+        }
+      );
+
+
+      textInput.value = "";
+
+      textInput.focus();
+
+
+    } catch (error) {
+
+      console.error(
+        "Send reply error:",
+        error
+      );
+
+      alert(
+        "Unable to send reply."
+      );
+
+    }
+
+  }
+);
+
+
+// ================================
+// LIKE MAIN COMMENT
+// ================================
+
+document.addEventListener(
+  "click",
+  async (e) => {
+
+    const btn =
+      e.target.closest(
+        ".like-comment-btn"
+      );
+
+    if (!btn) return;
+
+
+    const user =
+      auth.currentUser;
+
+    if (!user) {
+
+      alert("Please login first");
+
+      return;
+
+    }
+
+
+    const commentId =
+      btn.dataset.id;
+
+
+    const commentRef =
+      doc(
+        db,
+        "posts",
+        postId,
+        "comments",
+        commentId
+      );
+
+
+    const likeRef =
+      doc(
+        db,
+        "posts",
+        postId,
+        "comments",
+        commentId,
+        "likes",
+        user.uid
+      );
+
+
+    try {
+
+      const likeSnap =
+        await getDoc(likeRef);
+
+
+      if (likeSnap.exists()) {
+
+        await deleteDoc(likeRef);
+
+        await updateDoc(
+          commentRef,
+          {
+            likes:
+              increment(-1)
+          }
+        );
+
+      } else {
+
+        await setDoc(
+          likeRef,
+          {
+            userId:
+              user.uid,
+            createdAt:
+              serverTimestamp()
+          }
+        );
+
+        await updateDoc(
+          commentRef,
+          {
+            likes:
+              increment(1)
+          }
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "LIKE COMMENT ERROR:",
+        error
+      );
+
+      alert(
+        "Unable to like this comment."
+      );
+
+    }
+
+  }
+);
+
+
+// ================================
+// LIKE REPLY
+// ================================
+
+document.addEventListener(
+  "click",
+  async (e) => {
+
+    const btn =
+      e.target.closest(
+        ".like-reply-btn"
+      );
+
+    if (!btn) return;
+
+
+    const user =
+      auth.currentUser;
+
+    if (!user) {
+
+      alert("Please login first");
+
+      return;
+
+    }
+
+
+    const commentId =
+      btn.dataset.comment;
+
+    const replyId =
+      btn.dataset.id;
+
+
+    if (!commentId || !replyId) {
+
+      console.error(
+        "Missing commentId or replyId"
+      );
+
+      return;
+
+    }
+
+
+    const replyRef =
+      doc(
+        db,
+        "posts",
+        postId,
+        "comments",
+        commentId,
+        "replies",
+        replyId
+      );
+
+
+    const likeRef =
+      doc(
+        db,
+        "posts",
+        postId,
+        "comments",
+        commentId,
+        "replies",
+        replyId,
+        "likes",
+        user.uid
+      );
+
+
+    try {
+
+      const likeSnap =
+        await getDoc(likeRef);
+
+
+      if (likeSnap.exists()) {
+
+        await deleteDoc(likeRef);
+
+        await updateDoc(
+          replyRef,
+          {
+            likes:
+              increment(-1)
+          }
+        );
+
+      } else {
+
+        await setDoc(
+          likeRef,
+          {
+            userId:
+              user.uid,
+            createdAt:
+              serverTimestamp()
+          }
+        );
+
+        await updateDoc(
+          replyRef,
+          {
+            likes:
+              increment(1)
+          }
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "LIKE REPLY ERROR:",
+        error
+      );
+
+      alert(
+        "Unable to like this reply."
+      );
+
+    }
+
+  }
+);
 
 
 // ================================
@@ -722,15 +1264,16 @@ document.addEventListener(
   "click",
   (e) => {
 
-    if (
-      !e.target.classList.contains(
-        "view-profile"
-      )
-    ) return;
+    const profile =
+      e.target.closest(
+        ".view-profile"
+      );
+
+    if (!profile) return;
 
 
     const uid =
-      e.target.dataset.uid;
+      profile.dataset.uid;
 
 
     if (!uid) return;
@@ -750,284 +1293,25 @@ document.addEventListener(
 function escapeHTML(str) {
 
   return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 
       }
-
-document.addEventListener("click", (e) => {
-
-  const btn = e.target.closest(".reply-btn");
-
-  if (!btn) return;
-
-  const box = document.getElementById(
-    `reply-box-${btn.dataset.id}`
-  );
-
-  if (!box) return;
-
-  box.style.display =
-    box.style.display === "none"
-      ? "flex"
-      : "none";
-
-});
-
-// ================================
-// SEND REPLY
-// ================================
-
-document.addEventListener("click", async (e) => {
-
-  const btn = e.target.closest(".send-reply-btn");
-
-  if (!btn) return;
-
-  const user = auth.currentUser;
-
-  if (!user) {
-    alert("Please login first");
-    return;
-  }
-
-  const commentId = btn.dataset.id;
-
-  const input = document.querySelector(
-    `.reply-input[data-id="${commentId}"]`
-  );
-
-  if (!input) return;
-
-  const text = input.value.trim();
-
-  if (!text) return;
-
-  try {
-
-    const userSnap = await getDoc(
-      doc(db, "users", user.uid)
-    );
-
-    const userData = userSnap.data() || {};
-
-    await addDoc(
-      collection(
-        db,
-        "posts",
-        postId,
-        "comments",
-        commentId,
-        "replies"
-      ),
-      {
-        text,
-        userId: user.uid,
-        username: userData.name || "User",
-        photoURL:
-          userData.photoURL ||
-          "images/default-avatar.png",
-        createdAt: serverTimestamp(),
-        likes: 0
-      }
-    );
-
-    input.value = "";
-
-  } catch (error) {
-
-    console.error(error);
-
-  }
-
-});
-
-// ================================
-// LIKE REPLY
-// ================================
-
-document.addEventListener("click", async (e) => {
-
-  const btn = e.target.closest(".like-reply-btn");
-
-  if (!btn) return;
-
-  const user = auth.currentUser;
-
-  if (!user) {
-    alert("Please login first");
-    return;
-  }
-
-  const commentId = btn.dataset.comment;
-  const replyId = btn.dataset.id;
-
-  if (!commentId || !replyId) {
-    console.error("Missing commentId or replyId");
-    return;
-  }
-
-  const replyRef = doc(
-    db,
-    "posts",
-    postId,
-    "comments",
-    commentId,
-    "replies",
-    replyId
-  );
-
-  const likeRef = doc(
-    db,
-    "posts",
-    postId,
-    "comments",
-    commentId,
-    "replies",
-    replyId,
-    "likes",
-    user.uid
-  );
-
-  try {
-
-    const likeSnap = await getDoc(likeRef);
-
-    if (likeSnap.exists()) {
-
-      // =========================
-      // REMOVE LIKE
-      // =========================
-
-      await deleteDoc(likeRef);
-
-      await updateDoc(replyRef, {
-        likes: increment(-1)
-      });
-
-    } else {
-
-      // =========================
-      // ADD LIKE
-      // =========================
-
-      await setDoc(likeRef, {
-        userId: user.uid,
-        createdAt: serverTimestamp()
-      });
-
-      await updateDoc(replyRef, {
-        likes: increment(1)
-      });
-
-    }
-
-  } catch (error) {
-
-    console.error(
-      "LIKE REPLY ERROR:",
-      error
-    );
-
-    alert(
-      "Unable to like this reply."
-    );
-
-  }
-
-});
-
-// ================================
-// LIKE MAIN COMMENT
-// ================================
-
-document.addEventListener("click", async (e) => {
-
-  const btn = e.target.closest(".like-comment-btn");
-
-  if (!btn) return;
-
-  const user = auth.currentUser;
-
-  if (!user) {
-    alert("Please login first");
-    return;
-  }
-
-  const commentId = btn.dataset.id;
-
-  if (!commentId) {
-    console.error("Missing commentId");
-    return;
-  }
-
-  // Comment document
-  const commentRef = doc(
-    db,
-    "posts",
-    postId,
-    "comments",
-    commentId
-  );
-
-  // Like document for this user
-  const likeRef = doc(
-    db,
-    "posts",
-    postId,
-    "comments",
-    commentId,
-    "likes",
-    user.uid
-  );
-
-  try {
-
-    const likeSnap = await getDoc(likeRef);
-
-    if (likeSnap.exists()) {
-
-      // =========================
-      // REMOVE COMMENT LIKE
-      // =========================
-
-      await deleteDoc(likeRef);
-
-      await updateDoc(commentRef, {
-        likes: increment(-1)
-      });
-
-    } else {
-
-      // =========================
-      // ADD COMMENT LIKE
-      // =========================
-
-      await setDoc(likeRef, {
-        userId: user.uid,
-        createdAt: serverTimestamp()
-      });
-
-      await updateDoc(commentRef, {
-        likes: increment(1)
-      });
-
-    }
-
-  } catch (error) {
-
-    console.error(
-      "LIKE COMMENT ERROR:",
-      error
-    );
-
-    alert(
-      "Unable to like this comment."
-    );
-
-  }
-
-});
