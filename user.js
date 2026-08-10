@@ -567,7 +567,7 @@ document.addEventListener(
 );
 
 // ===============================
-// SHARE PROFILE
+// SHARE POST
 // ===============================
 
 document.addEventListener(
@@ -579,18 +579,17 @@ document.addEventListener(
 
     if (!shareBtn) return;
 
-    const profileLink =
-      window.location.href;
+    const postId =
+      shareBtn.dataset.id;
 
-    const whatsappUrl =
-      `https://wa.me/?text=${encodeURIComponent(
-        profileLink
-      )}`;
+    if (!postId) {
+      console.error("No post ID found for sharing");
+      return;
+    }
 
-    window.open(
-      whatsappUrl,
-      "_blank"
-    );
+    // Open MatchConnect Share Post options
+    window.location.href =
+      `share-post.html?id=${encodeURIComponent(postId)}`;
   }
 );
 
