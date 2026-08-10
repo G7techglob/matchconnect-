@@ -103,16 +103,30 @@ for (const groupDoc of groupsSnap.docs) {
         time = last.time;
     }
 
+    // Check whether this group is pinned by the current user
+const groupSettingsSnap = await getDoc(
+    doc(
+        db,
+        "groupSettings",
+        user.uid + "_" + groupDoc.id
+    )
+);
+
+const groupPinned =
+    groupSettingsSnap.exists() &&
+    groupSettingsSnap.data().pinned === true;
+
     conversations.push({
-        isGroup: true,
-        groupId: groupDoc.id,
-        name: group.name,
-        photo: group.photoURL || "images/default-avatar.png",
-        online: false,
-        message,
-        time,
-        unread: false
-    });
+    isGroup: true,
+    groupId: groupDoc.id,
+    pinned: groupPinned,
+    name: group.name,
+    photo: group.photoURL || "images/default-avatar.png",
+    online: false,
+    message,
+    time,
+    unread: false
+});
 }
 
 
