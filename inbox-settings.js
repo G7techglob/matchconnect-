@@ -2,6 +2,7 @@ import { auth, db } from "./firebase.js";
 
 import {
     doc,
+    getDoc,
     setDoc,
     collection,
     getDocs,
@@ -42,16 +43,31 @@ document.getElementById("pinChat").onclick = async () => {
 
     if (!user) return;
 
+    const settingsRef = doc(
+        db,
+        "chatSettings",
+        user.uid + "_" + receiverUid
+    );
+
+    const settingsSnap = await getDoc(settingsRef);
+
+    let pinned = false;
+
+    if (settingsSnap.exists()) {
+        pinned = settingsSnap.data().pinned === true;
+    }
+
     await setDoc(
-        doc(db, "chatSettings", user.uid + "_" + receiverUid),
+        settingsRef,
         {
-            pinned: true
+            pinned: !pinned
         },
         { merge: true }
     );
 
-    alert("Chat pinned successfully.");
+    alert(!pinned ? "Chat pinned successfully." : "Chat unpinned successfully.");
 };
+
 
 document.getElementById("clearChat").onclick = async () => {
 
