@@ -405,8 +405,6 @@ if (muteGroupBtn) {
     };
 
 }
-
-
 // =====================================================
 // JOIN GROUP
 // =====================================================
@@ -441,35 +439,44 @@ async function updateJoinGroupButton() {
         members.includes(currentUser.uid);
 
 
-    if (joinGroupBtn) {
-
-        const span =
-            joinGroupBtn.querySelector("span");
+    if (!joinGroupBtn) return;
 
 
-        if (alreadyMember) {
+    const span =
+        joinGroupBtn.querySelector("span");
 
-            if (span) {
-                span.textContent =
-                    "Joined Group";
-            }
 
-            joinGroupBtn.disabled = true;
+    if (alreadyMember) {
 
-            joinGroupBtn.style.opacity = "0.6";
+        if (span) {
 
-        } else {
-
-            if (span) {
-                span.textContent =
-                    "Join Group";
-            }
-
-            joinGroupBtn.disabled = false;
-
-            joinGroupBtn.style.opacity = "1";
+            span.textContent =
+                "Joined Group";
 
         }
+
+
+        joinGroupBtn.disabled =
+            true;
+
+        joinGroupBtn.style.opacity =
+            "0.6";
+
+    } else {
+
+        if (span) {
+
+            span.textContent =
+                "Join Group";
+
+        }
+
+
+        joinGroupBtn.disabled =
+            false;
+
+        joinGroupBtn.style.opacity =
+            "1";
 
     }
 
@@ -478,92 +485,135 @@ async function updateJoinGroupButton() {
 
 if (joinGroupBtn) {
 
-    joinGroupBtn.onclick = async () => {
+    joinGroupBtn.onclick =
+        async () => {
 
-        if (!currentUser) {
+            if (!currentUser) {
 
-            alert("Please login first.");
-            return;
+                alert(
+                    "Please login first."
+                );
 
-        }
-
-
-        try {
-
-            const groupRef =
-                doc(db, "groups", groupId);
-
-
-            const groupSnap =
-                await getDoc(groupRef);
-
-
-            if (!groupSnap.exists()) {
-
-                alert("Group does not exist.");
                 return;
 
             }
 
 
-            const group =
-                groupSnap.data();
+            try {
+
+                const groupRef =
+                    doc(
+                        db,
+                        "groups",
+                        groupId
+                    );
 
 
-            const members =
-                Array.isArray(group.members)
-                    ? group.members
-                    : [];
+                const groupSnap =
+                    await getDoc(groupRef);
 
 
-            // Already a member
-            if (members.includes(currentUser.uid)) {
+                if (!groupSnap.exists()) {
 
-                alert("You are already a member of this group.");
+                    alert(
+                        "Group does not exist."
+                    );
+
+                    return;
+
+                }
+
+
+                const group =
+                    groupSnap.data();
+
+
+                const members =
+                    Array.isArray(
+                        group.members
+                    )
+                        ? group.members
+                        : [];
+
+
+                // =========================
+                // ALREADY A MEMBER
+                // =========================
+
+                if (
+                    members.includes(
+                        currentUser.uid
+                    )
+                ) {
+
+                    alert(
+                        "You are already a member of this group."
+                    );
+
+                    await updateJoinGroupButton();
+
+                    return;
+
+                }
+
+
+                // =========================
+                // JOIN GROUP
+                // =========================
+                //
+                // Add user back to members
+                // AND remove them from
+                // formerMembers.
+                //
+
+                await updateDoc(
+                    groupRef,
+                    {
+
+                        members:
+                            arrayUnion(
+                                currentUser.uid
+                            ),
+
+                        formerMembers:
+                            arrayRemove(
+                                currentUser.uid
+                            )
+
+                    }
+                );
+
+
+                // =========================
+                // UPDATE BUTTON
+                // =========================
 
                 await updateJoinGroupButton();
 
-                return;
+
+                alert(
+                    "You joined the group successfully! 🎉"
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Join group error:",
+                    error
+                );
+
+
+                alert(
+                    "Unable to join group. Please try again."
+                );
 
             }
 
-
-            // Add current user
-            await updateDoc(
-                groupRef,
-                {
-                    members:
-                        arrayUnion(currentUser.uid)
-                }
-            );
-
-
-            alert(
-                "You joined the group successfully! 🎉"
-            );
-
-
-            await updateJoinGroupButton();
-
-
-        } catch (error) {
-
-            console.error(
-                "Join group error:",
-                error
-            );
-
-
-            alert(
-                "Unable to join group. Please try again."
-            );
-
-        }
-
-    };
+        };
 
 }
-
+            
 
 // =====================================================
 // ADD MEMBERS
