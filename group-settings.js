@@ -668,42 +668,66 @@ if (leaveGroupBtn) {
 
     leaveGroupBtn.onclick = async () => {
 
-        const confirmLeave =
-            confirm(
-                "Are you sure you want to leave this group?"
-            );
+        if (!currentUser) {
+            alert("Please login first.");
+            return;
+        }
 
+        const confirmLeave = confirm(
+            "Are you sure you want to leave this group?"
+        );
 
         if (!confirmLeave) return;
 
-
         try {
 
-            const groupRef =
-                doc(db, "groups", groupId);
+            const groupRef = doc(
+                db,
+                "groups",
+                groupId
+            );
 
+            const groupSnap = await getDoc(groupRef);
 
+            if (!groupSnap.exists()) {
+
+                alert("Group does not exist.");
+                return;
+
+            }
+
+            const group = groupSnap.data();
+
+            const members = Array.isArray(group.members)
+                ? group.members
+                : [];
+
+            // Make sure the user is currently a member
+            if (!members.includes(currentUser.uid)) {
+
+                alert("You are not currently a member of this group.");
+                return;
+
+            }
+
+            // Remove the user from active members
+            // but keep the user connected to the group
+            // through formerMembers.
             await updateDoc(
                 groupRef,
                 {
+                    members: arrayRemove(currentUser.uid),
 
-                    members:
-                        arrayRemove(
-                            currentUser.uid
-                        )
-
+                    formerMembers:
+                        arrayUnion(currentUser.uid)
                 }
             );
 
-
             alert(
-                "You left the group"
+                "You left the group successfully."
             );
 
-
-            location.href =
-                "chats.html";
-
+            location.href = "chats.html";
 
         } catch (error) {
 
@@ -713,7 +737,7 @@ if (leaveGroupBtn) {
             );
 
             alert(
-                "Unable to leave group."
+                "Unable to leave the group. Please try again."
             );
 
         }
@@ -721,7 +745,6 @@ if (leaveGroupBtn) {
     };
 
 }
-
 
 // =====================================================
 // CHANGE GROUP NAME
