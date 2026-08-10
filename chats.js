@@ -3,6 +3,7 @@ import { auth, db } from "./firebase.js";
 import {
     collection,
     getDocs,
+    getDoc,
     query,
     orderBy,
     limit,
@@ -149,10 +150,18 @@ for(const userDoc of usersSnap.docs){
     messagesSnap.docs[0].data();
 
 
+    const settingsSnap = await getDoc(
+    doc(db, "chatSettings", user.uid + "_" + userDoc.id)
+);
+
+const pinned =
+    settingsSnap.exists() &&
+    settingsSnap.data().pinned === true;
 
     conversations.push({
 
         uid:userDoc.id,
+        pinned: pinned,
 
         name:
         otherUser.name ||
