@@ -79,16 +79,28 @@ document.getElementById("pinChat").onclick = async () => {
         pinned = settingsSnap.data().pinned === true;
     }
 
+    const newPinnedState = !pinned;
+
     await setDoc(
         settingsRef,
         {
-            pinned: !pinned
+            pinned: newPinnedState
         },
         { merge: true }
     );
 
-    alert(!pinned ? "Chat pinned successfully." : "Chat unpinned successfully.");
+    // Change the button immediately
+    pinChatText.textContent = newPinnedState
+        ? "Unpin Chat"
+        : "Pin Chat";
+
+    alert(
+        newPinnedState
+            ? "Chat pinned successfully."
+            : "Chat unpinned successfully."
+    );
 };
+
 await updatePinButton();
 
 document.getElementById("clearChat").onclick = async () => {
