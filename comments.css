@@ -305,10 +305,10 @@ body{
         min-width:38px;
     }
 
-    .comment-content{
-        max-width:calc(100% - 46px);
-        padding:8px 10px;
-    }
+.comment-content{
+    max-width:calc(100% - 46px);
+    padding:0;
+}
 
     .comment-username{
         font-size:13px;
@@ -368,303 +368,303 @@ body{
     }
 
    }
-
 /* ================================
-   NORMAL REPLIES
+REPLIES
+FACEBOOK-STYLE VERTICAL LAYOUT
 ================================ */
 
 .reply-item{
-    display:flex;
-    align-items:flex-start;
-    gap:8px;
-    margin-top:10px;
-    margin-bottom:8px;
-    width:100%;
+display:flex;
+align-items:flex-start;
+gap:8px;
+margin-top:10px;
+margin-bottom:8px;
+width:100%;
 }
 
 .reply-avatar{
-    width:34px;
-    height:34px;
-    min-width:34px;
-    border-radius:50%;
-    object-fit:cover;
-    cursor:pointer;
+width:32px;
+height:32px;
+min-width:32px;
+border-radius:50%;
+object-fit:cover;
+cursor:pointer;
 }
 
 .reply-content{
-    background:transparent;
-    border-radius:0;
-    padding:0;
-    max-width:calc(100% - 42px);
-    min-width:0;
+flex:1;
+min-width:0;
+max-width:none;
+background:transparent;
+padding:0;
+border-radius:0;
 }
 
 .reply-username{
-    display:block;
-    font-size:13px;
-    font-weight:bold;
-    margin-bottom:3px;
-    cursor:pointer;
+display:block;
+font-size:13px;
+font-weight:bold;
+margin-bottom:3px;
+cursor:pointer;
 }
 
 .reply-text{
-    font-size:14px;
-    line-height:1.4;
-    word-break:break-word;
-    overflow-wrap:anywhere;
+font-size:14px;
+line-height:1.4;
+word-break:break-word;
+overflow-wrap:anywhere;
 }
 
 .reply-actions{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-top:5px;
+display:flex;
+align-items:center;
+gap:12px;
+margin-top:5px;
 }
 
 .reply-actions button{
-    border:none;
-    background:none;
-    padding:2px 0;
-    font-size:12px;
-    color:#555;
-    cursor:pointer;
+border:none;
+background:none;
+padding:2px 0;
+font-size:12px;
+color:#65676b;
+font-weight:600;
+cursor:pointer;
 }
 
 .reply-actions button:active{
-    transform:scale(.95);
+transform:scale(.95);
 }
 
-
 /* ================================
-   REPLY INPUT
+REPLY INPUT
 ================================ */
 
 .reply-box{
-    display:none;
-    align-items:center;
-    gap:6px;
-    margin-top:7px;
-    width:100%;
+display:none;
+align-items:center;
+gap:6px;
+margin-top:7px;
+width:100%;
 }
 
 .reply-input{
-    flex:1;
-    min-width:0;
-    height:34px;
-    border:1px solid #ddd;
-    border-radius:18px;
-    outline:none;
-    padding:0 11px;
-    font-size:13px;
-    background:#fff;
+flex:1;
+min-width:0;
+height:34px;
+border:1px solid #ddd;
+border-radius:18px;
+outline:none;
+padding:0 11px;
+font-size:13px;
+background:#fff;
 }
 
 .send-reply-btn{
-    border:none;
-    background:#1877f2;
-    color:#fff;
-    border-radius:18px;
-    padding:7px 12px;
-    font-size:12px;
-    cursor:pointer;
+border:none;
+background:#1877f2;
+color:#fff;
+border-radius:18px;
+padding:7px 12px;
+font-size:12px;
+cursor:pointer;
 }
 
 .send-reply-btn:active{
-    transform:scale(.95);
+transform:scale(.95);
 }
 
-
 /* ================================
-   REPLY TO REPLY
-   FACEBOOK-STYLE VERTICAL LAYOUT
+ALL REPLIES
+KEEP EVERYTHING ON ONE VERTICAL
+LEVEL UNDER THE ORIGINAL COMMENT
 ================================ */
 
 .nested-replies{
-    margin-left:0;
-    margin-top:7px;
-    padding-left:0;
-    border-left:none;
-    width:100%;
+display:block;
+width:100%;
+margin:8px 0 0 0;
+padding:0 0 0 42px;
+border-left:none;
 }
 
-/* ================================
-   NESTED REPLY ITEM
-================================ */
+/* Every reply inside the reply area
+stays at the SAME indentation */
 
 .nested-replies .reply-item{
-    display:flex;
-    align-items:flex-start;
-    gap:7px;
-    margin-top:8px;
-    margin-bottom:8px;
-    padding:0;
-    width:100%;
+display:flex;
+align-items:flex-start;
+gap:7px;
+width:100%;
+margin:8px 0;
+padding:0;
 }
 
 /* ================================
-   NESTED REPLY PROFILE
+REPLY PROFILE
 ================================ */
 
 .nested-replies .reply-avatar{
-    width:30px;
-    height:30px;
-    min-width:30px;
-    border-radius:50%;
-    object-fit:cover;
+width:30px;
+height:30px;
+min-width:30px;
+border-radius:50%;
 }
 
 /* ================================
-   NESTED REPLY CONTENT
+REPLY CONTENT
 ================================ */
 
 .nested-replies .reply-content{
-    flex:1;
-    min-width:0;
-    max-width:none;
-    background:transparent;
-    border-radius:0;
-    padding:0;
+flex:1;
+min-width:0;
+max-width:none;
+padding:0;
+background:transparent;
 }
 
 /* ================================
-   NESTED REPLY USERNAME
+REPLY USERNAME
 ================================ */
 
 .nested-replies .reply-username{
-    display:block;
-    font-size:12px;
-    font-weight:bold;
-    margin-bottom:3px;
+font-size:12px;
+font-weight:bold;
+margin-bottom:3px;
 }
 
 /* ================================
-   NESTED REPLY TEXT
+REPLY TEXT
 ================================ */
 
 .nested-replies .reply-text{
-    font-size:13px;
-    line-height:1.4;
-    word-break:break-word;
-    overflow-wrap:anywhere;
+font-size:13px;
+line-height:1.4;
+word-break:break-word;
+overflow-wrap:anywhere;
 }
 
 /* ================================
-   NESTED REPLY ACTIONS
+REPLY ACTIONS
 ================================ */
 
 .nested-replies .reply-actions{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-top:4px;
+display:flex;
+align-items:center;
+gap:10px;
+margin-top:4px;
 }
 
 .nested-replies .reply-actions button{
-    border:none;
-    background:none;
-    padding:2px 0;
-    font-size:11px;
-    color:#65676b;
-    cursor:pointer;
+border:none;
+background:none;
+padding:2px 0;
+font-size:11px;
+color:#65676b;
+cursor:pointer;
 }
 
 /* ================================
-   NESTED REPLY INPUT
+REPLY INPUT
 ================================ */
 
 .nested-replies .reply-box{
-    display:none;
-    align-items:center;
-    gap:5px;
-    margin-top:6px;
-    width:100%;
+display:none;
+align-items:center;
+gap:5px;
+margin-top:6px;
+width:100%;
 }
 
 .nested-replies .reply-input{
-    flex:1;
-    min-width:0;
-    height:32px;
-    border:1px solid #ddd;
-    border-radius:17px;
-    outline:none;
-    padding:0 9px;
-    font-size:12px;
-    background:#fff;
+flex:1;
+min-width:0;
+height:32px;
+border:1px solid #ddd;
+border-radius:17px;
+outline:none;
+padding:0 9px;
+font-size:12px;
+background:#fff;
 }
 
 .nested-replies .send-reply-btn{
-    border:none;
-    background:#1877f2;
-    color:#fff;
-    border-radius:17px;
-    padding:6px 10px;
-    font-size:11px;
-    cursor:pointer;
+border:none;
+background:#1877f2;
+color:#fff;
+border-radius:17px;
+padding:6px 10px;
+font-size:11px;
+cursor:pointer;
 }
 
 /* ================================
-   DEEPER REPLIES
-   KEEP THEM VERTICAL TOO
+IMPORTANT:
+DEEPER REPLIES MUST NOT INDENT
+AGAIN
 ================================ */
 
 .nested-replies .nested-replies{
-    margin-left:0;
-    padding-left:0;
-    width:100%;
-    border-left:none;
+margin:0;
+padding:0;
+width:100%;
+border:none;
 }
 
 /* ================================
-   MOBILE
+MOBILE
 ================================ */
 
 @media(max-width:600px){
 
-    .nested-replies{
-    margin-left:0;
-    padding-left:0;
+.nested-replies{
     width:100%;
-    }
+    margin:8px 0 0 0;
+    padding-left:38px;
+}
 
-    .nested-replies .reply-avatar{
-        width:27px;
-        height:27px;
-        min-width:27px;
-    }
+.nested-replies .reply-item{
+    gap:6px;
+    margin:8px 0;
+}
 
-    .nested-replies .reply-content{
-        max-width:none;
-    }
+.nested-replies .reply-avatar{
+    width:27px;
+    height:27px;
+    min-width:27px;
+}
 
-    .nested-replies .reply-username{
-        font-size:11px;
-    }
+.nested-replies .reply-username{
+    font-size:11px;
+}
 
-    .nested-replies .reply-text{
-        font-size:12px;
-    }
+.nested-replies .reply-text{
+    font-size:12px;
+}
 
-    .nested-replies .reply-actions{
-        gap:9px;
-    }
+.nested-replies .reply-actions{
+    gap:9px;
+}
 
-    .nested-replies .reply-actions button{
-        font-size:10px;
-    }
+.nested-replies .reply-actions button{
+    font-size:10px;
+}
 
-    .nested-replies .reply-input{
-        height:30px;
-        font-size:11px;
-    }
+.nested-replies .reply-input{
+    height:30px;
+    font-size:11px;
+}
 
-    .nested-replies .send-reply-btn{
-        padding:5px 9px;
-        font-size:10px;
-    }
+.nested-replies .send-reply-btn{
+    padding:5px 9px;
+    font-size:10px;
+}
 
-    .nested-replies .nested-replies{
-        margin-left:0;
-        padding-left:0;
-        width:100%;
-    }
+/* Never create deeper indentation */
+.nested-replies .nested-replies{
+    margin:0;
+    padding:0;
+    width:100%;
+}
+
    }
