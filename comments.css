@@ -475,8 +475,200 @@ transform:scale(.95);
 }
 
 /* ================================
-ALL REPLIES
-KEEP EVERYTHING ON ONE VERTICAL
-LEVEL UNDER THE ORIGINAL COMMENT
+REPLIES
+ONE STRAIGHT VERTICAL COLUMN
 ================================ */
 
+.replies{
+    width:100%;
+    margin-top:8px;
+    padding:0;
+}
+
+/* Every reply has exactly
+   the same visual position */
+
+.reply-item{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    width:100%;
+    margin:10px 0 8px 0;
+    padding:0;
+}
+
+/* Reply avatar */
+
+.reply-avatar{
+    width:32px;
+    height:32px;
+    min-width:32px;
+    border-radius:50%;
+    object-fit:cover;
+    cursor:pointer;
+}
+
+/* Reply content */
+
+.reply-content{
+    flex:1;
+    min-width:0;
+    max-width:none;
+    padding:0;
+    margin:0;
+    background:transparent;
+}
+
+/* Reply username */
+
+.reply-username{
+    display:block;
+    font-size:13px;
+    font-weight:bold;
+    margin-bottom:3px;
+    cursor:pointer;
+}
+
+/* Reply text */
+
+.reply-text{
+    font-size:14px;
+    line-height:1.4;
+    word-break:break-word;
+    overflow-wrap:anywhere;
+}
+
+/* Reply buttons */
+
+.reply-actions{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:5px;
+}
+
+.reply-actions button{
+    border:none;
+    background:none;
+    padding:2px 0;
+    font-size:12px;
+    color:#65676b;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.reply-actions button:active{
+    transform:scale(.95);
+}
+
+
+/* ================================
+REPLY INPUT
+================================ */
+
+.reply-box{
+    display:none;
+    align-items:center;
+    gap:6px;
+    margin-top:7px;
+    width:100%;
+}
+
+.reply-input{
+    flex:1;
+    min-width:0;
+    height:34px;
+    border:1px solid #ddd;
+    border-radius:18px;
+    outline:none;
+    padding:0 11px;
+    font-size:13px;
+    background:#fff;
+}
+
+.send-reply-btn{
+    border:none;
+    background:#1877f2;
+    color:#fff;
+    border-radius:18px;
+    padding:7px 12px;
+    font-size:12px;
+    cursor:pointer;
+}
+
+.send-reply-btn:active{
+    transform:scale(.95);
+}
+
+
+/* ================================
+MOBILE REPLIES
+================================ */
+
+@media(max-width:600px){
+
+    .replies{
+        width:100%;
+        margin-top:8px;
+        padding:0;
+    }
+
+    .reply-item{
+        display:flex;
+        align-items:flex-start;
+        gap:6px;
+        width:100%;
+        margin:8px 0;
+        padding:0;
+    }
+
+    .reply-avatar{
+        width:27px;
+        height:27px;
+        min-width:27px;
+    }
+
+    .reply-content{
+        flex:1;
+        min-width:0;
+        max-width:none;
+        padding:0;
+        margin:0;
+    }
+
+    .reply-username{
+        font-size:11px;
+        margin-bottom:3px;
+    }
+
+    .reply-text{
+        font-size:12px;
+        line-height:1.4;
+    }
+
+    .reply-actions{
+        gap:9px;
+        margin-top:4px;
+    }
+
+    .reply-actions button{
+        font-size:10px;
+    }
+
+    .reply-box{
+        gap:5px;
+        margin-top:6px;
+    }
+
+    .reply-input{
+        height:30px;
+        font-size:11px;
+        padding:0 9px;
+    }
+
+    .send-reply-btn{
+        padding:5px 9px;
+        font-size:10px;
+    }
+
+}
