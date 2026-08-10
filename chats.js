@@ -207,8 +207,14 @@ if(conversations.length===0){
 
 
 
-conversations.sort((a,b)=>{
+conversations.sort((a, b) => {
 
+    // Pinned chats always come first
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+
+    // If both are pinned (or both are not pinned),
+    // sort by latest message time.
     const timeA = a.time?.seconds || 0;
     const timeB = b.time?.seconds || 0;
 
@@ -244,7 +250,7 @@ src="${chat.photo}">
 <div class="chat-top">
 
 <p class="chat-name">
-${chat.name}
+${chat.pinned ? "📌 " : ""}${chat.name}
 </p>
 
 
