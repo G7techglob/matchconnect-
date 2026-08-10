@@ -11,6 +11,28 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 const params = new URLSearchParams(window.location.search);
 const receiverUid = params.get("uid");
+const pinChatText = document.getElementById("pinChatText");
+
+async function updatePinButton() {
+
+    const user = auth.currentUser;
+
+    if (!user) return;
+
+    const settingsSnap = await getDoc(
+        doc(db, "chatSettings", user.uid + "_" + receiverUid)
+    );
+
+    if (
+        settingsSnap.exists() &&
+        settingsSnap.data().pinned === true
+    ) {
+        pinChatText.textContent = "Unpin Chat";
+    } else {
+        pinChatText.textContent = "Pin Chat";
+    }
+
+}
 
 document.getElementById("backBtn").onclick = () => {
     history.back();
@@ -67,7 +89,7 @@ document.getElementById("pinChat").onclick = async () => {
 
     alert(!pinned ? "Chat pinned successfully." : "Chat unpinned successfully.");
 };
-
+await updatePinButton();
 
 document.getElementById("clearChat").onclick = async () => {
 
@@ -167,3 +189,7 @@ document.getElementById("reportUser").onclick = async () => {
 
     alert("Thank you. Your report has been submitted.");
 };
+
+window.addEventListener("load", () => {
+    updatePinButton();
+});
