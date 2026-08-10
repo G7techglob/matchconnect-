@@ -101,7 +101,7 @@ document.getElementById("pinChat").onclick = async () => {
     );
 };
 
-await updatePinButton();
+
 
 document.getElementById("clearChat").onclick = async () => {
 
@@ -201,7 +201,3 @@ document.getElementById("reportUser").onclick = async () => {
 
     alert("Thank you. Your report has been submitted.");
 };
-
-window.addEventListener("load", () => {
-    updatePinButton();
-});
