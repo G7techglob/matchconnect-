@@ -630,14 +630,20 @@ async function handleDeletePost(postId) {
 }
 
 /**
- * Handle share post to WhatsApp
+ * Handle Share Post
  */
 function handleSharePost(postId) {
-  const postLink = `https://g7techglob.github.io/matchconnect-/post.html?id=${postId}`;
-  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(postLink)}`;
-  window.open(whatsappUrl, "_blank");
-}
 
+  if (!postId) {
+    console.error("No post ID found for sharing");
+    return;
+  }
+
+  // Open the MatchConnect Share Post page
+  window.location.href =
+    `share-post.html?id=${encodeURIComponent(postId)}`;
+
+}
 /**
  * Handle like post action
  */
