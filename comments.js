@@ -384,49 +384,22 @@ async function createCommentElement(
   return div;
 
 }
-
-
 // ================================
-// LOAD REPLIES RECURSIVELY
+// LOAD REPLIES
+// FLAT VISUAL LAYOUT
 // ================================
 
-function loadReplies(
-  commentId,
-  container,
-  parentReplyId = null
-) {
+function loadReplies(commentId, container) {
 
-  let repliesRef;
-
-
-  if (!parentReplyId) {
-
-    repliesRef =
-      collection(
-        db,
-        "posts",
-        postId,
-        "comments",
-        commentId,
-        "replies"
-      );
-
-  } else {
-
-    repliesRef =
-      collection(
-        db,
-        "posts",
-        postId,
-        "comments",
-        commentId,
-        "replies",
-        parentReplyId,
-        "replies"
-      );
-
-  }
-
+  const repliesRef =
+    collection(
+      db,
+      "posts",
+      postId,
+      "comments",
+      commentId,
+      "replies"
+    );
 
   const q =
     query(
@@ -434,48 +407,26 @@ function loadReplies(
       orderBy("createdAt", "asc")
     );
 
-
   onSnapshot(
     q,
     async (snapshot) => {
 
       container.innerHTML = "";
 
-
-      for (
-        const replyDoc
-        of snapshot.docs
-      ) {
+      /*
+       * First-level replies
+       */
+      for (const replyDoc of snapshot.docs) {
 
         const reply =
           replyDoc.data();
 
-
-        const replyDiv =
-  await createReplyElement(
-    commentId,
-    replyDoc.id,
-    reply,
-    parentReplyId
-  );
-
-        container.appendChild(
-          replyDiv
-        );
-
-
-        const nestedReplies =
-          replyDiv.querySelector(
-            ".nested-replies"
-          );
-
-
-        // Load replies to this reply
-
-        loadReplies(
+        await renderReplyTree(
           commentId,
-          nestedReplies,
-          replyDoc.id
+          replyDoc.id,
+          reply,
+          container,
+          null
         );
 
       }
@@ -495,7 +446,137 @@ function loadReplies(
 
 
 // ================================
-// CREATE REPLY
+// RENDER REPLY TREE
+// FLATTEN VISUAL DISPLAY
+// ================================
+
+async function renderReplyTree(
+  commentId,
+  replyId,
+  reply,
+  container,
+  parentReplyId = null
+) {
+
+  /*
+   * Create this reply.
+   */
+  const replyDiv =
+    await createReplyElement(
+      commentId,
+      replyId,
+      reply,
+      parentReplyId
+    );
+
+
+  /*
+   * IMPORTANT:
+   *
+   * Every reply goes directly into
+   * the SAME .replies container.
+   *
+   * No reply is visually placed
+   * inside another reply.
+   */
+  container.appendChild(
+    replyDiv
+  );
+
+
+  /*
+   * Find replies to this reply
+   * in Firestore.
+   */
+  const childRepliesRef =
+    collection(
+      db,
+      "posts",
+      postId,
+      "comments",
+      commentId,
+      "replies",
+      replyId,
+      "replies"
+    );
+
+
+  const childQuery =
+    query(
+      childRepliesRef,
+      orderBy("createdAt", "asc")
+    );
+
+
+  /*
+   * Load the child replies once.
+   */
+  const childSnapshot =
+    await new Promise(
+      (resolve, reject) => {
+
+        let unsubscribe;
+
+        unsubscribe =
+          onSnapshot(
+            childQuery,
+            (snap) => {
+
+              unsubscribe();
+
+              resolve(snap);
+
+            },
+            (error) => {
+
+              reject(error);
+
+            }
+          );
+
+      }
+    );
+
+
+  /*
+   * IMPORTANT:
+   *
+   * Child replies are also added
+   * directly to the SAME container.
+   *
+   * This creates:
+   *
+   * Reply 1
+   * Reply 2
+   * Reply 3
+   * Reply 4
+   *
+   * all in ONE straight column.
+   */
+
+  for (
+    const childDoc
+    of childSnapshot.docs
+  ) {
+
+    const childReply =
+      childDoc.data();
+
+    await renderReplyTree(
+      commentId,
+      childDoc.id,
+      childReply,
+      container,
+      replyId
+    );
+
+  }
+
+}
+
+
+// ================================
+// CREATE REPLY ELEMENT
 // ================================
 
 async function createReplyElement(
@@ -519,8 +600,13 @@ async function createReplyElement(
 
       const userSnap =
         await getDoc(
-          doc(db, "users", reply.userId)
+          doc(
+            db,
+            "users",
+            reply.userId
+          )
         );
+
 
       if (userSnap.exists()) {
 
@@ -550,9 +636,20 @@ async function createReplyElement(
   const div =
     document.createElement("div");
 
+
   div.className =
     "reply-item";
 
+
+  /*
+   * IMPORTANT:
+   *
+   * There is NO .nested-replies
+   * inside this reply.
+   *
+   * This prevents replies from
+   * bending to the right.
+   */
 
   div.innerHTML = `
 
@@ -589,13 +686,13 @@ async function createReplyElement(
         </button>
 
         <button
-  class="like-reply-btn"
-  data-comment="${commentId}"
-  data-id="${replyId}"
-  data-parent-reply="${parentReplyId || ""}"
->
-  ❤️ ${reply.likes || 0}
-</button>
+          class="like-reply-btn"
+          data-comment="${commentId}"
+          data-id="${replyId}"
+          data-parent-reply="${parentReplyId || ""}"
+        >
+          ❤️ ${reply.likes || 0}
+        </button>
 
       </div>
 
@@ -621,8 +718,6 @@ async function createReplyElement(
 
       </div>
 
-      <div class="nested-replies"></div>
-
     </div>
 
   `;
@@ -630,9 +725,7 @@ async function createReplyElement(
 
   return div;
 
-}
-
-
+    }
 // ================================
 // CURRENT USER PHOTO
 // ================================
