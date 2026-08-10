@@ -519,6 +519,6 @@ const inboxSettingsBtn = document.getElementById("inboxSettingsBtn");
 
 if (inboxSettingsBtn) {
     inboxSettingsBtn.addEventListener("click", () => {
-        window.location.href = "inbox-settings.html";
+        window.location.href = `inbox-settings.html?uid=${receiverUid}`;
     });
 }
