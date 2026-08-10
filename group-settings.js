@@ -1,9 +1,11 @@
 import { auth, db, storage } from "./firebase.js";
+
 import {
     doc,
     getDoc,
     setDoc,
     updateDoc,
+    arrayUnion,
     arrayRemove,
     addDoc,
     collection,
@@ -21,92 +23,129 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 
-// Elements
+// =========================
+// ELEMENTS
+// =========================
 
 const groupName =
-document.getElementById("groupName");
+    document.getElementById("groupName");
 
 const groupPhoto =
-document.getElementById("groupPhoto");
-
+    document.getElementById("groupPhoto");
 
 const addMembersBtn =
-document.getElementById("addMembersBtn");
-
+    document.getElementById("addMembersBtn");
 
 const viewMembersBtn =
-document.getElementById("viewMembersBtn");
-
+    document.getElementById("viewMembersBtn");
 
 const reportGroupBtn =
-document.getElementById("reportGroupBtn");
-
+    document.getElementById("reportGroupBtn");
 
 const leaveGroupBtn =
-document.getElementById("leaveGroupBtn");
+    document.getElementById("leaveGroupBtn");
 
 const pinGroupBtn =
-document.getElementById("pinGroupBtn");
+    document.getElementById("pinGroupBtn");
 
 const pinGroupText =
-document.getElementById("pinGroupText");
+    document.getElementById("pinGroupText");
 
 const changePhotoBtn =
-document.getElementById("changePhotoBtn");
+    document.getElementById("changePhotoBtn");
 
 const groupPhotoInput =
-document.getElementById("groupPhotoInput");
+    document.getElementById("groupPhotoInput");
 
-// Get group ID from URL
+const changeNameBtn =
+    document.getElementById("changeNameBtn");
+
+
+// =========================
+// MUTE
+// =========================
+
+const muteGroupBtn =
+    document.getElementById("muteGroupBtn");
+
+const muteGroupText =
+    document.getElementById("muteGroupText");
+
+
+// =========================
+// JOIN GROUP
+// =========================
+
+const joinGroupBtn =
+    document.getElementById("joinGroupBtn");
+
+
+// =========================
+// URL
+// =========================
 
 const params =
-new URLSearchParams(window.location.search);
-
+    new URLSearchParams(window.location.search);
 
 const groupId =
-params.get("groupId");
+    params.get("groupId");
 
 
+// =========================
+// CURRENT USER
+// =========================
 
 let currentUser;
 
 
+// =========================
+// GROUP SETTINGS DOCUMENT
+// =========================
 
-onAuthStateChanged(auth, async(user)=>{
+function getSettingsRef() {
+
+    return doc(
+        db,
+        "groupSettings",
+        currentUser.uid + "_" + groupId
+    );
+
+}
 
 
-    if(!user){
+// =========================
+// AUTH
+// =========================
 
-        location.href="login.html";
+onAuthStateChanged(auth, async (user) => {
+
+    if (!user) {
+
+        location.href = "login.html";
+        return;
+
+    }
+
+    currentUser = user;
+
+
+    if (!groupId) {
+
+        alert("Group not found");
         return;
 
     }
 
 
-    currentUser = user;
-
-if(!groupId){
-
-    alert("Group not found");
-    return;
-
-}
-
-await updatePinGroupButton();
-
-
-
     const groupRef =
-    doc(db,"groups",groupId);
-
+        doc(db, "groups", groupId);
 
 
     const groupSnap =
-    await getDoc(groupRef);
+        await getDoc(groupRef);
 
 
-
-    if(!groupSnap.exists()){
+    if (!groupSnap.exists()) {
 
         alert("Group does not exist");
         return;
@@ -114,56 +153,79 @@ await updatePinGroupButton();
     }
 
 
-
     const group =
-    groupSnap.data();
+        groupSnap.data();
 
 
+    // =========================
+    // GROUP NAME
+    // =========================
 
-    if(groupName){
+    if (groupName) {
 
         groupName.textContent =
-        group.name;
+            group.name || "Group";
 
     }
 
 
+    // =========================
+    // GROUP PHOTO
+    // =========================
 
-    if(groupPhoto){
+    if (groupPhoto) {
 
         groupPhoto.src =
-        group.photoURL ||
-        "images/default-avatar.png";
+            group.photoURL ||
+            "images/default-avatar.png";
 
     }
 
 
+    // =========================
+    // UPDATE SETTINGS
+    // =========================
+
+    await updatePinGroupButton();
+
+    await updateMuteGroupButton();
+
+    await updateJoinGroupButton();
 
 });
 
 
-// =========================
+// =====================================================
 // PIN GROUP
-// =========================
+// =====================================================
 
 async function updatePinGroupButton() {
 
-    const settingsRef = doc(
-        db,
-        "groupSettings",
-        currentUser.uid + "_" + groupId
-    );
+    if (!currentUser || !groupId) return;
 
-    const settingsSnap = await getDoc(settingsRef);
+
+    const settingsRef =
+        getSettingsRef();
+
+
+    const settingsSnap =
+        await getDoc(settingsRef);
+
 
     const pinned =
         settingsSnap.exists() &&
         settingsSnap.data().pinned === true;
 
+
     if (pinGroupText) {
+
         pinGroupText.textContent =
-            pinned ? "Unpin Group" : "Pin Group";
+            pinned
+                ? "Unpin Group"
+                : "Pin Group";
+
     }
+
 }
 
 
@@ -173,230 +235,562 @@ if (pinGroupBtn) {
 
         if (!currentUser) return;
 
-        const settingsRef = doc(
-            db,
-            "groupSettings",
-            currentUser.uid + "_" + groupId
-        );
 
-        const settingsSnap = await getDoc(settingsRef);
+        try {
 
-        const currentlyPinned =
-            settingsSnap.exists() &&
-            settingsSnap.data().pinned === true;
+            const settingsRef =
+                getSettingsRef();
 
-        const newPinnedState = !currentlyPinned;
 
-        await setDoc(
-    settingsRef,
-    {
-        pinned: newPinnedState
-    },
-    { merge: true }
-);
+            const settingsSnap =
+                await getDoc(settingsRef);
 
-        if (pinGroupText) {
-            pinGroupText.textContent =
-                newPinnedState
-                    ? "Unpin Group"
-                    : "Pin Group";
-        }
 
-        alert(
-            newPinnedState
-                ? "Group pinned successfully."
-                : "Group unpinned successfully."
-        );
-    };
+            const currentlyPinned =
+                settingsSnap.exists() &&
+                settingsSnap.data().pinned === true;
+
+
+            const newPinnedState =
+                !currentlyPinned;
+
+
+            await setDoc(
+                settingsRef,
+                {
+                    pinned: newPinnedState
+                },
+                {
+                    merge: true
+                }
+            );
+
+
+            if (pinGroupText) {
+
+                pinGroupText.textContent =
+                    newPinnedState
+                        ? "Unpin Group"
+                        : "Pin Group";
 
             }
 
-// ADD MEMBERS
 
-if(addMembersBtn){
-
-
-addMembersBtn.onclick = ()=>{
-
-
-    location.href =
-    `add-group-members.html?groupId=${groupId}`;
+            alert(
+                newPinnedState
+                    ? "Group pinned successfully."
+                    : "Group unpinned successfully."
+            );
 
 
-};
+        } catch (error) {
 
+            console.error(
+                "Pin group error:",
+                error
+            );
 
-}
-
-
-
-
-// VIEW MEMBERS
-
-if(viewMembersBtn){
-
-
-viewMembersBtn.onclick = ()=>{
-
-
-    location.href =
-    `group-members.html?groupId=${groupId}`;
-
-
-};
-
-
-}
-
-
-
-
-
-// REPORT GROUP
-
-if(reportGroupBtn){
-
-
-reportGroupBtn.onclick = async()=>{
-
-
-    const reason =
-    prompt(
-    "Why are you reporting this group?"
-    );
-
-
-
-    if(!reason) return;
-
-
-
-    await addDoc(
-        collection(db,"reports"),
-        {
-
-            type:"group",
-
-            groupId:groupId,
-
-            reporterId:
-            currentUser.uid,
-
-            reason:reason,
-
-            createdAt:
-            serverTimestamp()
+            alert(
+                "Unable to update group pin."
+            );
 
         }
-    );
 
-
-
-    alert(
-    "Group reported successfully"
-    );
-
-
-};
-
+    };
 
 }
 
 
+// =====================================================
+// MUTE NOTIFICATIONS
+// =====================================================
+
+async function updateMuteGroupButton() {
+
+    if (!currentUser || !groupId) return;
 
 
-
-// LEAVE GROUP
-
-if(leaveGroupBtn){
+    const settingsRef =
+        getSettingsRef();
 
 
-leaveGroupBtn.onclick = async()=>{
+    const settingsSnap =
+        await getDoc(settingsRef);
 
 
-    const confirmLeave =
-    confirm(
-    "Are you sure you want to leave this group?"
-    );
+    const muted =
+        settingsSnap.exists() &&
+        settingsSnap.data().muted === true;
 
 
+    if (muteGroupText) {
 
-    if(!confirmLeave) return;
+        muteGroupText.textContent =
+            muted
+                ? "Unmute Notifications"
+                : "Mute Notifications";
 
+    }
+
+}
+
+
+if (muteGroupBtn) {
+
+    muteGroupBtn.onclick = async () => {
+
+        if (!currentUser) return;
+
+
+        try {
+
+            const settingsRef =
+                getSettingsRef();
+
+
+            const settingsSnap =
+                await getDoc(settingsRef);
+
+
+            const currentlyMuted =
+                settingsSnap.exists() &&
+                settingsSnap.data().muted === true;
+
+
+            const newMutedState =
+                !currentlyMuted;
+
+
+            await setDoc(
+                settingsRef,
+                {
+                    muted: newMutedState
+                },
+                {
+                    merge: true
+                }
+            );
+
+
+            if (muteGroupText) {
+
+                muteGroupText.textContent =
+                    newMutedState
+                        ? "Unmute Notifications"
+                        : "Mute Notifications";
+
+            }
+
+
+            alert(
+                newMutedState
+                    ? "Group notifications muted 🔕"
+                    : "Group notifications unmuted 🔔"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Mute group error:",
+                error
+            );
+
+            alert(
+                "Unable to change notification settings."
+            );
+
+        }
+
+    };
+
+}
+
+
+// =====================================================
+// JOIN GROUP
+// =====================================================
+
+async function updateJoinGroupButton() {
+
+    if (!currentUser || !groupId) return;
 
 
     const groupRef =
-    doc(db,"groups",groupId);
+        doc(db, "groups", groupId);
 
 
-
-    await updateDoc(
-        groupRef,
-        {
-
-            members:
-            arrayRemove(
-            currentUser.uid
-            )
-
-        }
-    );
+    const groupSnap =
+        await getDoc(groupRef);
 
 
-
-    alert(
-    "You left the group"
-    );
+    if (!groupSnap.exists()) return;
 
 
-
-    location.href="chats.html";
-
-
-};
+    const group =
+        groupSnap.data();
 
 
-      }
-
-const changeNameBtn =
-document.getElementById("changeNameBtn");
-
-
-
-if(changeNameBtn){
-
-    changeNameBtn.onclick = async()=>{
+    const members =
+        Array.isArray(group.members)
+            ? group.members
+            : [];
 
 
-        const newName =
-        prompt("Enter new group name");
+    const alreadyMember =
+        members.includes(currentUser.uid);
 
 
-        if(!newName || newName.trim() === ""){
-            return;
-        }
+    if (joinGroupBtn) {
+
+        const span =
+            joinGroupBtn.querySelector("span");
 
 
-        await updateDoc(
-            doc(db,"groups",groupId),
-            {
-                name:newName.trim()
+        if (alreadyMember) {
+
+            if (span) {
+                span.textContent =
+                    "Joined Group";
             }
-        );
+
+            joinGroupBtn.disabled = true;
+
+            joinGroupBtn.style.opacity = "0.6";
+
+        } else {
+
+            if (span) {
+                span.textContent =
+                    "Join Group";
+            }
+
+            joinGroupBtn.disabled = false;
+
+            joinGroupBtn.style.opacity = "1";
+
+        }
+
+    }
+
+}
 
 
-        alert("Group name updated ✅");
+if (joinGroupBtn) {
+
+    joinGroupBtn.onclick = async () => {
+
+        if (!currentUser) {
+
+            alert("Please login first.");
+            return;
+
+        }
 
 
-        location.reload();
+        try {
+
+            const groupRef =
+                doc(db, "groups", groupId);
+
+
+            const groupSnap =
+                await getDoc(groupRef);
+
+
+            if (!groupSnap.exists()) {
+
+                alert("Group does not exist.");
+                return;
+
+            }
+
+
+            const group =
+                groupSnap.data();
+
+
+            const members =
+                Array.isArray(group.members)
+                    ? group.members
+                    : [];
+
+
+            // Already a member
+            if (members.includes(currentUser.uid)) {
+
+                alert("You are already a member of this group.");
+
+                await updateJoinGroupButton();
+
+                return;
+
+            }
+
+
+            // Add current user
+            await updateDoc(
+                groupRef,
+                {
+                    members:
+                        arrayUnion(currentUser.uid)
+                }
+            );
+
+
+            alert(
+                "You joined the group successfully! 🎉"
+            );
+
+
+            await updateJoinGroupButton();
+
+
+        } catch (error) {
+
+            console.error(
+                "Join group error:",
+                error
+            );
+
+
+            alert(
+                "Unable to join group. Please try again."
+            );
+
+        }
 
     };
 
 }
 
-if(changePhotoBtn){
 
-    changePhotoBtn.onclick = ()=>{
+// =====================================================
+// ADD MEMBERS
+// =====================================================
+
+if (addMembersBtn) {
+
+    addMembersBtn.onclick = () => {
+
+        location.href =
+            `add-group-members.html?groupId=${groupId}`;
+
+    };
+
+}
+
+
+// =====================================================
+// VIEW MEMBERS
+// =====================================================
+
+if (viewMembersBtn) {
+
+    viewMembersBtn.onclick = () => {
+
+        location.href =
+            `group-members.html?groupId=${groupId}`;
+
+    };
+
+}
+
+
+// =====================================================
+// REPORT GROUP
+// =====================================================
+
+if (reportGroupBtn) {
+
+    reportGroupBtn.onclick = async () => {
+
+        const reason =
+            prompt(
+                "Why are you reporting this group?"
+            );
+
+
+        if (!reason) return;
+
+
+        try {
+
+            await addDoc(
+                collection(db, "reports"),
+                {
+
+                    type: "group",
+
+                    groupId: groupId,
+
+                    reporterId:
+                        currentUser.uid,
+
+                    reason:
+                        reason.trim(),
+
+                    createdAt:
+                        serverTimestamp()
+
+                }
+            );
+
+
+            alert(
+                "Group reported successfully"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Report group error:",
+                error
+            );
+
+            alert(
+                "Unable to report group."
+            );
+
+        }
+
+    };
+
+}
+
+
+// =====================================================
+// LEAVE GROUP
+// =====================================================
+
+if (leaveGroupBtn) {
+
+    leaveGroupBtn.onclick = async () => {
+
+        const confirmLeave =
+            confirm(
+                "Are you sure you want to leave this group?"
+            );
+
+
+        if (!confirmLeave) return;
+
+
+        try {
+
+            const groupRef =
+                doc(db, "groups", groupId);
+
+
+            await updateDoc(
+                groupRef,
+                {
+
+                    members:
+                        arrayRemove(
+                            currentUser.uid
+                        )
+
+                }
+            );
+
+
+            alert(
+                "You left the group"
+            );
+
+
+            location.href =
+                "chats.html";
+
+
+        } catch (error) {
+
+            console.error(
+                "Leave group error:",
+                error
+            );
+
+            alert(
+                "Unable to leave group."
+            );
+
+        }
+
+    };
+
+}
+
+
+// =====================================================
+// CHANGE GROUP NAME
+// =====================================================
+
+if (changeNameBtn) {
+
+    changeNameBtn.onclick = async () => {
+
+        const newName =
+            prompt(
+                "Enter new group name"
+            );
+
+
+        if (
+            !newName ||
+            newName.trim() === ""
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+            await updateDoc(
+                doc(db, "groups", groupId),
+                {
+                    name:
+                        newName.trim()
+                }
+            );
+
+
+            alert(
+                "Group name updated ✅"
+            );
+
+
+            location.reload();
+
+
+        } catch (error) {
+
+            console.error(
+                "Change name error:",
+                error
+            );
+
+            alert(
+                "Unable to change group name."
+            );
+
+        }
+
+    };
+
+}
+
+
+// =====================================================
+// CHANGE GROUP PHOTO
+// =====================================================
+
+if (changePhotoBtn) {
+
+    changePhotoBtn.onclick = () => {
 
         groupPhotoInput.click();
 
@@ -405,65 +799,81 @@ if(changePhotoBtn){
 }
 
 
-if(groupPhotoInput){
+if (groupPhotoInput) {
 
-    groupPhotoInput.onchange = async (event)=>{
+    groupPhotoInput.onchange =
+        async (event) => {
 
-
-        const file = event.target.files[0];
-
-
-        if(!file){
-            return;
-        }
+            const file =
+                event.target.files[0];
 
 
-        try{
+            if (!file) return;
 
 
-            const imageRef = ref(
-                storage,
-                "groupPhotos/" + groupId
-            );
+            try {
+
+                const imageRef =
+                    ref(
+                        storage,
+                        "groupPhotos/" +
+                        groupId
+                    );
 
 
-            await uploadBytes(
-                imageRef,
-                file
-            );
+                await uploadBytes(
+                    imageRef,
+                    file
+                );
 
 
-            const photoURL =
-            await getDownloadURL(imageRef);
+                const photoURL =
+                    await getDownloadURL(
+                        imageRef
+                    );
 
 
-            console.log(
-                "Uploaded:",
-                photoURL
-            );
-
-            await updateDoc(
-    doc(db,"groups",groupId),
-    {
-        photoURL: photoURL
-    }
-);
-            
-alert("Group photo updated ✅");
-
-location.reload();
-            
-        }catch(error){
-
-            console.log(error);
-
-            alert(
-            "Photo upload failed"
-            );
-
-        }
+                console.log(
+                    "Uploaded:",
+                    photoURL
+                );
 
 
-    };
+                await updateDoc(
+                    doc(
+                        db,
+                        "groups",
+                        groupId
+                    ),
+                    {
+                        photoURL:
+                            photoURL
+                    }
+                );
+
+
+                alert(
+                    "Group photo updated ✅"
+                );
+
+
+                location.reload();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Photo upload error:",
+                    error
+                );
+
+
+                alert(
+                    "Photo upload failed"
+                );
+
+            }
+
+        };
 
 }
