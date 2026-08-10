@@ -68,66 +68,172 @@ const usersSnap = await getDocs(
 
 
 let conversations=[];
-    
-    
+
 // =========================
 // LOAD GROUPS
 // =========================
 
-const groupsSnap = await getDocs(
+const activeGroupsSnap = await getDocs(
     query(
         collection(db, "groups"),
         where("members", "array-contains", user.uid)
     )
 );
 
-for (const groupDoc of groupsSnap.docs) {
+
+const formerGroupsSnap = await getDocs(
+    query(
+        collection(db, "groups"),
+        where("formerMembers", "array-contains", user.uid)
+    )
+);
+
+
+// Combine active and former groups
+const groupDocsMap = new Map();
+
+
+// Active groups
+activeGroupsSnap.docs.forEach(groupDoc => {
+
+    groupDocsMap.set(
+        groupDoc.id,
+        {
+            groupDoc,
+            isMember: true
+        }
+    );
+
+});
+
+
+// Groups the user previously left
+formerGroupsSnap.docs.forEach(groupDoc => {
+
+    // Don't overwrite active membership
+    if (!groupDocsMap.has(groupDoc.id)) {
+
+        groupDocsMap.set(
+            groupDoc.id,
+            {
+                groupDoc,
+                isMember: false
+            }
+        );
+
+    }
+
+});
+
+
+// Load every group
+for (const {
+    groupDoc,
+    isMember
+} of groupDocsMap.values()) {
 
     const group = groupDoc.data();
 
-    // Get the latest message in the group
+
+    // =========================
+    // GET LAST MESSAGE
+    // =========================
+
     const lastMessageQuery = query(
-        collection(db, "groups", groupDoc.id, "messages"),
+        collection(
+            db,
+            "groups",
+            groupDoc.id,
+            "messages"
+        ),
         orderBy("time", "desc"),
         limit(1)
     );
 
-    const lastMessageSnap = await getDocs(lastMessageQuery);
+
+    const lastMessageSnap =
+        await getDocs(lastMessageQuery);
+
 
     let message = "Group created";
     let time = null;
 
+
     if (!lastMessageSnap.empty) {
-        const last = lastMessageSnap.docs[0].data();
-        message = last.text || "📷 Image";
-        time = last.time;
+
+        const last =
+            lastMessageSnap.docs[0].data();
+
+
+        message =
+            last.text ||
+            "📷 Image";
+
+
+        time =
+            last.time;
+
     }
 
-    // Check whether this group is pinned by the current user
-const groupSettingsSnap = await getDoc(
-    doc(
-        db,
-        "groupSettings",
-        user.uid + "_" + groupDoc.id
-    )
-);
 
-const groupPinned =
-    groupSettingsSnap.exists() &&
-    groupSettingsSnap.data().pinned === true;
+    // =========================
+    // GROUP SETTINGS
+    // =========================
+
+    const groupSettingsSnap =
+        await getDoc(
+            doc(
+                db,
+                "groupSettings",
+                user.uid + "_" + groupDoc.id
+            )
+        );
+
+
+    const groupPinned =
+        groupSettingsSnap.exists() &&
+        groupSettingsSnap.data().pinned === true;
+
+
+    // =========================
+    // ADD GROUP TO CONVERSATIONS
+    // =========================
 
     conversations.push({
-    isGroup: true,
-    groupId: groupDoc.id,
-    pinned: groupPinned,
-    name: group.name,
-    photo: group.photoURL || "images/default-avatar.png",
-    online: false,
-    message,
-    time,
-    unread: false
-});
-}
+
+        isGroup: true,
+
+        groupId:
+            groupDoc.id,
+
+        pinned:
+            groupPinned,
+
+        name:
+            group.name ||
+            "Group",
+
+        photo:
+            group.photoURL ||
+            "images/default-avatar.png",
+
+        online: false,
+
+        message:
+            message,
+
+        time:
+            time,
+
+        unread: false,
+
+        // NEW
+        isMember:
+            isMember
+
+    });
+
+        }
 
 
 for(const userDoc of usersSnap.docs){
