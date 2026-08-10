@@ -2,6 +2,7 @@ import { auth, db, storage } from "./firebase.js";
 import {
     doc,
     getDoc,
+    setDoc,
     updateDoc,
     arrayRemove,
     addDoc,
@@ -43,6 +44,12 @@ document.getElementById("reportGroupBtn");
 
 const leaveGroupBtn =
 document.getElementById("leaveGroupBtn");
+
+const pinGroupBtn =
+document.getElementById("pinGroupBtn");
+
+const pinGroupText =
+document.getElementById("pinGroupText");
 
 const changePhotoBtn =
 document.getElementById("changePhotoBtn");
@@ -135,7 +142,74 @@ onAuthStateChanged(auth, async(user)=>{
 });
 
 
+// =========================
+// PIN GROUP
+// =========================
 
+async function updatePinGroupButton() {
+
+    const settingsRef = doc(
+        db,
+        "groupSettings",
+        currentUser.uid + "_" + groupId
+    );
+
+    const settingsSnap = await getDoc(settingsRef);
+
+    const pinned =
+        settingsSnap.exists() &&
+        settingsSnap.data().pinned === true;
+
+    if (pinGroupText) {
+        pinGroupText.textContent =
+            pinned ? "Unpin Group" : "Pin Group";
+    }
+}
+
+
+if (pinGroupBtn) {
+
+    pinGroupBtn.onclick = async () => {
+
+        if (!currentUser) return;
+
+        const settingsRef = doc(
+            db,
+            "groupSettings",
+            currentUser.uid + "_" + groupId
+        );
+
+        const settingsSnap = await getDoc(settingsRef);
+
+        const currentlyPinned =
+            settingsSnap.exists() &&
+            settingsSnap.data().pinned === true;
+
+        const newPinnedState = !currentlyPinned;
+
+        await setDoc(
+    settingsRef,
+    {
+        pinned: newPinnedState
+    },
+    { merge: true }
+);
+
+        if (pinGroupText) {
+            pinGroupText.textContent =
+                newPinnedState
+                    ? "Unpin Group"
+                    : "Pin Group";
+        }
+
+        alert(
+            newPinnedState
+                ? "Group pinned successfully."
+                : "Group unpinned successfully."
+        );
+    };
+
+            }
 
 // ADD MEMBERS
 
