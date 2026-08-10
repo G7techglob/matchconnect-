@@ -84,16 +84,15 @@ onAuthStateChanged(auth, async(user)=>{
 
 
     currentUser = user;
-    await updatePinGroupButton();
 
+if(!groupId){
 
+    alert("Group not found");
+    return;
 
-    if(!groupId){
+}
 
-        alert("Group not found");
-        return;
-
-    }
+await updatePinGroupButton();
 
 
 
