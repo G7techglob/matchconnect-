@@ -370,7 +370,9 @@ src="${chat.photo}">
 <div class="chat-top">
 
 <p class="chat-name">
-${chat.pinned ? "📌 " : ""}${chat.name}
+${chat.pinned ? "📌 " : ""}
+${chat.name}
+${chat.isGroup && !chat.isMember ? " • Left" : ""}
 </p>
 
 
