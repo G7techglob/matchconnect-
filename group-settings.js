@@ -84,6 +84,7 @@ onAuthStateChanged(auth, async(user)=>{
 
 
     currentUser = user;
+    await updatePinGroupButton();
 
 
 
