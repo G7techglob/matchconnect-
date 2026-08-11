@@ -86,7 +86,7 @@ body {
   flex-shrink: 0;
 
   border: none;
-  background: transparent;
+  background: #f2f2f2;
 
   display: flex;
   align-items: center;
@@ -95,8 +95,12 @@ body {
   padding: 0;
   margin-left: 10px;
 
-  font-size: 22px;
-  color: #555;
+  font-family: Arial, sans-serif;
+  font-size: 30px;
+  font-weight: bold;
+  line-height: 1;
+
+  color: #333;
 
   cursor: pointer;
 
@@ -108,11 +112,11 @@ body {
 }
 
 .post-options-btn:hover {
-  background: #f0f0f0;
+  background: #e5e5e5;
 }
 
 .post-options-btn:active {
-  background: #e5e5e5;
+  background: #d8d8d8;
   transform: scale(0.92);
 }
 
