@@ -347,120 +347,140 @@ if (!uid) {
       }
 
       // ===============================
-      // POSTS CONTAINER
-      // ===============================
+// POSTS CONTAINER
+// ===============================
 
-      const postsContainer =
-        document.getElementById(
-          "userPosts"
-        );
+const postsContainer =
+  document.getElementById("userPosts");
 
-      if (postsContainer) {
+if (postsContainer) {
 
-        postsContainer.innerHTML = "";
+  postsContainer.innerHTML = "";
 
-        if (postsSnapshot.empty) {
+  if (postsSnapshot.empty) {
 
-          postsContainer.innerHTML =
-            "<p>No posts yet.</p>";
+    postsContainer.innerHTML =
+      `<p class="no-posts">No posts yet.</p>`;
 
-        } else {
+  } else {
 
-          for (
-            const postDoc
-            of postsSnapshot.docs
-          ) {
+    for (const postDoc of postsSnapshot.docs) {
 
-            const post =
-              postDoc.data();
+      const post = postDoc.data();
 
-            const div =
-              document.createElement("div");
+      const div =
+        document.createElement("div");
 
-            div.className =
-              "post";
+      // Use the same post container
+      // structure as the main profile posts
+      div.className = "post-container";
 
-            div.innerHTML = `
+      div.setAttribute(
+        "data-post-id",
+        postDoc.id
+      );
 
-              <div class="post-header">
+      const photoURL =
+        post.photoURL ||
+        "images/default-avatar.png";
 
-                <img
-                  src="${
-                    post.photoURL ||
-                    "images/default-avatar.png"
-                  }"
-                  class="post-avatar view-profile"
-                  data-uid="${post.userId}"
-                  alt="Profile"
-                >
+      const username =
+        post.username || "User";
 
-                <span
-                  class="post-user view-profile"
-                  data-uid="${post.userId}"
-                >
-                  ${
-                    post.username ||
-                    "User"
-                  }
-                </span>
+      const content =
+        post.content || "";
 
-              </div>
+      const createdAt =
+        post.createdAt?.seconds
+          ? new Date(
+              post.createdAt.seconds * 1000
+            ).toLocaleString()
+          : "";
 
-              <p class="post-content">
-                ${
-                  post.content || ""
-                }
-              </p>
+      div.innerHTML = `
 
-              <div class="post-actions">
+        <div class="post-header">
 
-                <button
-                  class="like-btn"
-                  data-id="${postDoc.id}"
-                >
-                  ❤️
-                  ${
-                    post.likes || 0
-                  }
-                </button>
+          <img
+            src="${photoURL}"
+            class="post-avatar view-profile"
+            data-uid="${post.userId}"
+            width="40"
+            alt="User avatar"
+            onerror="this.src='images/default-avatar.png'"
+          >
 
-                <button
-                  class="comment-btn"
-                  data-id="${postDoc.id}"
-                >
-                  💬
-                  ${
-                    post.comments || 0
-                  }
-                </button>
+          <div>
 
-                <button
-                  class="share-btn"
-                  data-id="${postDoc.id}"
-                >
-                  <i class="fa-solid fa-share"></i>
-                </button>
+            <strong
+              class="post-user view-profile"
+              data-uid="${post.userId}"
+            >
+              ${username}
+            </strong>
 
-              </div>
+            <br>
 
-            `;
+            <small>
+              ${createdAt}
+            </small>
 
-            postsContainer.appendChild(div);
-          }
+          </div>
+
+        </div>
+
+        <p class="post-content">
+          ${content}
+        </p>
+
+        ${
+          post.imageURL
+            ? `
+              <img
+                src="${post.imageURL}"
+                class="post-image"
+                alt="Post image"
+              >
+            `
+            : ""
         }
-      }
+
+        <div class="post-actions">
+
+          <button
+            class="like-btn"
+            data-id="${postDoc.id}"
+          >
+            ❤️
+            <span class="like-count">
+              ${post.likes || 0}
+            </span>
+          </button>
+
+          <button
+            class="comment-btn"
+            data-id="${postDoc.id}"
+          >
+            💬
+            <span class="comment-count">
+              ${post.comments || 0}
+            </span>
+          </button>
+
+          <button
+            class="share-btn"
+            data-id="${postDoc.id}"
+            title="Share"
+          >
+            <i class="fa-solid fa-share"></i>
+          </button>
+
+        </div>
+
+      `;
+
+      postsContainer.appendChild(div);
     }
-
-  } catch (error) {
-
-    console.error(
-      "Error loading user profile:",
-      error
-    );
-
-    showError(
-      "Error loading user profile"
-    );
   }
 }
 
