@@ -427,13 +427,13 @@ async function renderPost(postDoc) {
       >
         🔄
       </button>
-
-      <button
-        class="delete-btn"
+      
+         <button
+        class="post-options-btn"
         data-id="${postDoc.id}"
-        title="Delete"
+        title="Post Options"
       >
-        🗑
+        ⋯
       </button>
 
     </div>
@@ -468,19 +468,6 @@ document.addEventListener("click", async (e) => {
     return;
   }
 
-
-  // ====================
-  // DELETE POST
-  // ====================
-
-  if (target.classList.contains("delete-btn")) {
-
-    await handleDeletePost(postId);
-
-    return;
-  }
-
-
   // ====================
   // SHARE POST
   // ====================
@@ -508,21 +495,6 @@ document.addEventListener("click", async (e) => {
 
 // ==================== POST ACTIONS ====================
 
-/**
- * Handle delete post action
- */
-async function handleDeletePost(postId) {
-  if (!confirm("Delete this post?")) return;
-
-  try {
-    await deleteDoc(doc(db, "posts", postId));
-    showNotification("Post deleted");
-    await loadMyPosts();
-  } catch (error) {
-    console.error("Error deleting post:", error);
-    showNotification("Error deleting post: " + error.message, true);
-  }
-}
 
 /**
  * Handle Share Post
