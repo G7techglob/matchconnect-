@@ -167,7 +167,7 @@ async function loadPost(user) {
         >
 
           <span class="option-icon">
-            ✏️
+            
           </span>
 
           <span>
@@ -184,7 +184,7 @@ async function loadPost(user) {
         >
 
           <span class="option-icon">
-            🗑️
+            
           </span>
 
           <span>
@@ -209,40 +209,39 @@ async function loadPost(user) {
 
       optionsList.innerHTML = `
 
-        <button
-          class="option-btn"
-          id="copyLinkBtn"
-          type="button"
-        >
+        optionsList.innerHTML = `
 
-          <span class="option-icon">
-            🔗
-          </span>
+<button class="option-btn" id="copyTextBtn" type="button">
+  <span class="option-icon"></span>
+  <span>Copy Post Text</span>
+</button>
 
-          <span>
-            Copy Post Link
-          </span>
+<button class="option-btn" id="savePostBtn" type="button">
+  <span class="option-icon"></span>
+  <span>Save Post</span>
+</button>
 
-        </button>
+<button class="option-btn" id="favoriteBtn" type="button">
+  <span class="option-icon"></span>
+  <span>Add to Favorites</span>
+</button>
 
+<button class="option-btn" id="downloadBtn" type="button">
+  <span class="option-icon"></span>
+  <span>Download Image</span>
+</button>
 
-        <button
-          class="option-btn option-danger"
-          id="reportPostBtn"
-          type="button"
-        >
+<button class="option-btn" id="hidePostBtn" type="button">
+  <span class="option-icon"></span>
+  <span>Hide Post</span>
+</button>
 
-          <span class="option-icon">
-            🚩
-          </span>
+<button class="option-btn option-danger" id="reportPostBtn" type="button">
+  <span class="option-icon"></span>
+  <span>Report Post</span>
+</button>
 
-          <span>
-            Report Post
-          </span>
-
-        </button>
-
-      `;
+`;
 
 
       setupOtherButtons();
