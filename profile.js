@@ -485,7 +485,7 @@ document.addEventListener("click", async (e) => {
   if (target.classList.contains("post-options-btn")) {
 
     window.location.href =
-      `post-option.html?postId=${encodeURIComponent(postId)}`;
+      `post-options.html?postId=${encodeURIComponent(postId)}`;
 
     return;
   }
