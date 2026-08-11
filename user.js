@@ -483,7 +483,20 @@ if (postsContainer) {
     }
   }
 }
+    }
 
+  } catch (error) {
+
+    console.error(
+      "Error loading user profile:",
+      error
+    );
+
+    showError(
+      "Error loading user profile"
+    );
+  }
+}
 // ===============================
 // LIKE POST
 // ===============================
