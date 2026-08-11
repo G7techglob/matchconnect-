@@ -497,6 +497,21 @@ e.target.textContent = "Following ";
 
 });
 
+// =====================================================
+// POST OPTIONS
+// =====================================================
+
+document.addEventListener("click", (e) => {
+
+  if (!e.target.classList.contains("post-options-btn")) return;
+
+  const postId = e.target.dataset.id;
+
+  window.location.href =
+    `post-options.html?id=${encodeURIComponent(postId)}`;
+
+});
+
 // SECURITY
 function escapeHTML(str) {
 
