@@ -1,171 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Share Post</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Share Post</title>
 
-    <link rel="stylesheet" href="share-post.css">
+<link rel="stylesheet" href="share-post.css">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-</head>
-<body>
+<!-- Font Awesome -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+>
 
-    <!-- Background Overlay -->
-    <div class="overlay" id="overlay"></div>
+</head><body><!-- Background Overlay -->
+<div class="overlay" id="overlay"></div>
 
-    <!-- Share Bottom Sheet -->
-    <div class="share-sheet" id="shareSheet">
+<!-- Share Bottom Sheet -->
+<div class="share-sheet" id="shareSheet">
 
-        <!-- Handle -->
-        <div class="sheet-handle"></div>
+    <!-- Handle -->
+    <div class="sheet-handle"></div>
 
-        <!-- Header -->
-        <div class="sheet-header">
-            <h2>Share Post</h2>
-        </div>
-
-        <!-- ========================= -->
-        <!-- Share Outside MatchConnect -->
-        <!-- ========================= -->
-
-        <div class="section-title">
-            Share Outside MatchConnect
-        </div>
-
-        <button class="share-option" id="whatsappBtn">
-            <i class="fab fa-whatsapp"></i>
-            <span>Share to WhatsApp</span>
-        </button>
-
-        <button class="share-option" id="facebookBtn">
-            <i class="fab fa-facebook"></i>
-            <span>Share to Facebook</span>
-        </button>
-
-        <button class="share-option" id="telegramBtn">
-            <i class="fab fa-telegram"></i>
-            <span>Share to Telegram</span>
-        </button>
-
-        <button class="share-option" id="messengerBtn">
-            <i class="fab fa-facebook-messenger"></i>
-            <span>Share to Messenger</span>
-        </button>
-
-        <button class="share-option" id="emailBtn">
-            <i class="fas fa-envelope"></i>
-            <span>Share by Email</span>
-        </button>
-
-        <hr>
-
-        <!-- ========================= -->
-        <!-- Inside MatchConnect -->
-        <!-- ========================= -->
-
-        <div class="section-title">
-            Share Inside MatchConnect
-        </div>
-
-        <button class="share-option" id="groupBtn">
-            <i class="fas fa-users"></i>
-            <span>Share to MatchConnect Group</span>
-        </button>
-
-        <button class="share-option" id="chatBtn">
-            <i class="fas fa-comments"></i>
-            <span>Send to MatchConnect Chat</span>
-        </button>
-
-        <button class="share-option" id="repostBtn">
-            <i class="fas fa-retweet"></i>
-            <span>Repost</span>
-        </button>
-
-        <hr>
-
-        <!-- ========================= -->
-        <!-- Copy -->
-        <!-- ========================= -->
-
-        <div class="section-title">
-            Copy
-        </div>
-
-        <button class="share-option" id="copyLinkBtn">
-            <i class="fas fa-link"></i>
-            <span>Copy Link</span>
-        </button>
-
-        <button class="share-option" id="copyTextBtn">
-            <i class="fas fa-copy"></i>
-            <span>Copy Post Text</span>
-        </button>
-
-        <hr>
-
-        <!-- ========================= -->
-        <!-- Personal -->
-        <!-- ========================= -->
-
-        <div class="section-title">
-            Personal
-        </div>
-
-        <button class="share-option" id="saveBtn">
-            <i class="fas fa-bookmark"></i>
-            <span>Save Post</span>
-        </button>
-
-        <button class="share-option" id="pinBtn">
-            <i class="fas fa-thumbtack"></i>
-            <span>Pin to Profile</span>
-        </button>
-
-        <button class="share-option" id="favoriteBtn">
-            <i class="fas fa-heart"></i>
-            <span>Add to Favorites</span>
-        </button>
-
-        <hr>
-
-        <!-- ========================= -->
-        <!-- Actions -->
-        <!-- ========================= -->
-
-        <div class="section-title">
-            Actions
-        </div>
-
-        <button class="share-option" id="downloadBtn">
-            <i class="fas fa-download"></i>
-            <span>Download Image</span>
-        </button>
-
-        <button class="share-option" id="hideBtn">
-            <i class="fas fa-eye-slash"></i>
-            <span>Hide Post</span>
-        </button>
-
-        <button class="share-option danger" id="reportBtn">
-            <i class="fas fa-flag"></i>
-            <span>Report Post</span>
-        </button>
-
-        <hr>
-
-        <!-- Cancel -->
-
-        <button class="cancel-btn" id="cancelBtn">
-            Cancel
-        </button>
-
+    <!-- Header -->
+    <div class="sheet-header">
+        <h2>Share Post</h2>
     </div>
 
-    <script type="module" src="share-post.js"></script>
+
+    <!-- ========================= -->
+    <!-- Share Outside MatchConnect -->
+    <!-- ========================= -->
+
+    <div class="section-title">
+        Share Outside MatchConnect
+    </div>
+
+    <button class="share-option" id="whatsappBtn" type="button">
+        <i class="fab fa-whatsapp"></i>
+        <span>Share to WhatsApp</span>
+    </button>
+
+    <button class="share-option" id="facebookBtn" type="button">
+        <i class="fab fa-facebook"></i>
+        <span>Share to Facebook</span>
+    </button>
+
+    <button class="share-option" id="telegramBtn" type="button">
+        <i class="fab fa-telegram"></i>
+        <span>Share to Telegram</span>
+    </button>
+
+    <button class="share-option" id="messengerBtn" type="button">
+        <i class="fab fa-facebook-messenger"></i>
+        <span>Share to Messenger</span>
+    </button>
+
+    <button class="share-option" id="emailBtn" type="button">
+        <i class="fas fa-envelope"></i>
+        <span>Share by Email</span>
+    </button>
+
+
+    <hr>
+
+
+    <!-- ========================= -->
+    <!-- Share Inside MatchConnect -->
+    <!-- ========================= -->
+
+    <div class="section-title">
+        Share Inside MatchConnect
+    </div>
+
+    <button class="share-option" id="groupBtn" type="button">
+        <i class="fas fa-users"></i>
+        <span>Share to MatchConnect Group</span>
+    </button>
+
+    <button class="share-option" id="chatBtn" type="button">
+        <i class="fas fa-comments"></i>
+        <span>Send to MatchConnect Chat</span>
+    </button>
+
+    <button class="share-option" id="repostBtn" type="button">
+        <i class="fas fa-retweet"></i>
+        <span>Repost</span>
+    </button>
+
+
+    <hr>
+
+
+    <!-- ========================= -->
+    <!-- Copy -->
+    <!-- ========================= -->
+
+    <div class="section-title">
+        Copy
+    </div>
+
+    <button class="share-option" id="copyLinkBtn" type="button">
+        <i class="fas fa-link"></i>
+        <span>Copy Link</span>
+    </button>
+
+
+    <hr>
+
+
+    <!-- ========================= -->
+    <!-- Cancel -->
+    <!-- ========================= -->
+
+    <button class="cancel-btn" id="cancelBtn" type="button">
+        Cancel
+    </button>
+
+</div>
+
+
+<script type="module" src="share-post.js"></script>
 
 </body>
-          </html>
+</html>
