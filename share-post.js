@@ -36,15 +36,6 @@ const chatBtn = document.getElementById("chatBtn");
 const repostBtn = document.getElementById("repostBtn");
 
 const copyLinkBtn = document.getElementById("copyLinkBtn");
-const copyTextBtn = document.getElementById("copyTextBtn");
-
-const saveBtn = document.getElementById("saveBtn");
-const pinBtn = document.getElementById("pinBtn");
-const favoriteBtn = document.getElementById("favoriteBtn");
-
-const downloadBtn = document.getElementById("downloadBtn");
-const hideBtn = document.getElementById("hideBtn");
-const reportBtn = document.getElementById("reportBtn");
 
 const cancelBtn = document.getElementById("cancelBtn");
 
