@@ -478,7 +478,17 @@ document.addEventListener("click", async (e) => {
 
   if (!postId) return;
 
+// ====================
+  // OPEN POST OPTIONS
+  // ====================
 
+  if (target.classList.contains("post-options-btn")) {
+
+    window.location.href =
+      `post-option.html?postId=${encodeURIComponent(postId)}`;
+
+    return;
+  }
   // ====================
   // OPEN COMMENTS PAGE
   // ====================
