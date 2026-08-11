@@ -129,9 +129,18 @@ ${isFollowing ? "Following " : "Follow"}
 : ""
 }
 
+<button
+  class="post-options-btn"
+  data-id="${postDoc.id}"
+  type="button"
+  aria-label="Post options">
+  ⋮
+</button>
+
 </div>
 
 <p>
+
   ${escapeHTML(post.content || "")}
 </p>
 
@@ -151,20 +160,6 @@ ${isFollowing ? "Following " : "Follow"}
   data-id="${postDoc.id}">
     🔄
   </button>
-
-  ${
-    auth.currentUser &&
-    auth.currentUser.uid === post.userId
-    ?
-    `
-    <button class="delete-btn"
-    data-id="${postDoc.id}">
-      🗑
-    </button>
-    `
-    :
-    ""
-  }
 
 </div>
 `;   
