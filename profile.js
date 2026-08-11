@@ -323,7 +323,6 @@ async function loadMyPosts(user) {
   }
 }
 
-
 /**
  * Render a single post
  */
@@ -335,12 +334,12 @@ async function renderPost(postDoc) {
 
   const post = postDoc.data();
 
+  // Only display the logged-in user's posts
   if (post.userId !== auth.currentUser?.uid) return;
 
   const div = document.createElement("div");
 
   div.className = "post-container";
-
   div.setAttribute("data-post-id", postDoc.id);
 
   const sanitizedUsername =
@@ -354,49 +353,65 @@ async function renderPost(postDoc) {
 
   div.innerHTML = `
 
+    <!-- =========================
+         POST HEADER
+    ========================== -->
+
     <div class="post-header">
 
       <img
         src="${photoURL}"
         class="post-avatar"
         width="40"
+        height="40"
         alt="User avatar"
         onerror="this.src='images/default-avatar.png'"
       >
 
-      <strong>
-        ${sanitizedUsername}
-      </strong>
+      <div class="post-user-info">
 
-      <br>
+        <strong class="post-user">
+          ${sanitizedUsername}
+        </strong>
 
-      <small>
-        ${
-          post.createdAt?.seconds
-            ? new Date(
-                post.createdAt.seconds * 1000
-              ).toLocaleString()
-            : ""
-        }
-      </small>
+        <small class="post-time">
+          ${
+            post.createdAt?.seconds
+              ? new Date(
+                  post.createdAt.seconds * 1000
+                ).toLocaleString()
+              : ""
+          }
+        </small>
+
+      </div>
+
+      <!-- THREE DOT POST OPTIONS -->
+
+      <button
+        class="post-options-btn"
+        data-id="${postDoc.id}"
+        title="Post options"
+        aria-label="Post options"
+      >
+        ⋮
+      </button>
 
     </div>
 
-</div>
 
-  <button
-    class="post-options-btn"
-    data-id="${postDoc.id}"
-    title="Post options"
-    aria-label="Post options"
-  >
-    ⋮
-  </button>
+    <!-- =========================
+         POST CONTENT
+    ========================== -->
 
-</div>
     <p class="post-content">
       ${sanitizedContent}
     </p>
+
+
+    <!-- =========================
+         POST IMAGE
+    ========================== -->
 
     ${
       post.imageURL
@@ -409,6 +424,11 @@ async function renderPost(postDoc) {
         `
         : ""
     }
+
+
+    <!-- =========================
+         POST ACTIONS
+    ========================== -->
 
     <div class="post-actions">
 
@@ -446,7 +466,6 @@ async function renderPost(postDoc) {
 
   myPosts.appendChild(div);
 }
-
 // ==================== EVENT DELEGATOR ====================
 
 document.addEventListener("click", async (e) => {
