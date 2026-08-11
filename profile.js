@@ -382,6 +382,18 @@ async function renderPost(postDoc) {
 
     </div>
 
+</div>
+
+  <button
+    class="post-options-btn"
+    data-id="${postDoc.id}"
+    title="Post options"
+    aria-label="Post options"
+  >
+    ⋮
+  </button>
+
+</div>
     <p class="post-content">
       ${sanitizedContent}
     </p>
@@ -426,14 +438,6 @@ async function renderPost(postDoc) {
         title="Share"
       >
         🔄
-      </button>
-      
-         <button
-        class="post-options-btn"
-        data-id="${postDoc.id}"
-        title="Post Options"
-      >
-        ⋯
       </button>
 
     </div>
