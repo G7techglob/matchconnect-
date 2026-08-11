@@ -589,7 +589,6 @@ hr {
 .profile-info p {
   text-align: center;
 }
-
 /* =========================
    POST HEADER
 ========================= */
@@ -597,42 +596,50 @@ hr {
 .post-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     width: 100%;
     margin-bottom: 10px;
-}
-
-.post-user-info {
-    display: flex;
-    align-items: center;
     gap: 10px;
-    min-width: 0;
+    box-sizing: border-box;
 }
 
-.post-user-details {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.post-user-details strong {
-    font-size: 15px;
-    font-weight: 600;
-    color: #333;
-}
-
-.post-user-details small {
-    font-size: 11px;
-    color: #777;
-    margin-top: 2px;
-}
+/* Profile picture */
 
 .post-avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
-    flex-shrink: 0;
+    flex: 0 0 40px;
+    margin: 0 !important;
+}
+
+/* Username + date */
+
+.post-user-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+
+/* Username */
+
+.post-user {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    line-height: 18px;
+    white-space: nowrap;
+}
+
+/* Date/time */
+
+.post-time {
+    font-size: 11px;
+    font-weight: 400;
+    color: #888;
+    line-height: 15px;
+    margin-top: 1px;
 }
 
 
@@ -641,8 +648,12 @@ hr {
 ========================= */
 
 .post-options-btn {
-    width: 32px !important;
-    height: 40px !important;
+    margin-left: auto !important;
+
+    width: 24px !important;
+    height: 32px !important;
+
+    padding: 0 !important;
 
     display: flex !important;
     align-items: center !important;
@@ -652,21 +663,18 @@ hr {
     border: none !important;
     box-shadow: none !important;
 
-    color: #333 !important;
+    color: #777 !important;
 
-    font-size: 26px !important;
-    font-weight: bold !important;
+    font-size: 21px !important;
+    font-weight: 400 !important;
     line-height: 1 !important;
 
-    padding: 0 !important;
-    margin: 0 !important;
-
     cursor: pointer;
-    flex-shrink: 0;
+
+    flex: 0 0 24px !important;
 }
 
 .post-options-btn:hover {
-    background: #f2f2f2 !important;
-    color: #000 !important;
-    border-radius: 50%;
+    background: transparent !important;
+    color: #333 !important;
 }
