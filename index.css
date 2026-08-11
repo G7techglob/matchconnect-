@@ -601,7 +601,7 @@ a[href="#main-content"]:focus{
 }
 
 .follow-btn{
-    margin-left:auto;
+    margin-left:0;
     padding:0;
     border:none;
     background:transparent;
@@ -720,4 +720,28 @@ button#postBtn{
 button#postBtn:hover{
     background:transparent !important;
     color:#0d65d9 !important;
+}
+
+/* =========================
+   POST OPTIONS BUTTON
+========================= */
+
+.post-options-btn{
+    margin-left:auto;
+    width:36px;
+    height:36px;
+    border:none;
+    background:transparent;
+    color:#262626;
+    font-size:24px;
+    font-weight:bold;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
+
+.post-options-btn:hover{
+    opacity:.7;
 }
