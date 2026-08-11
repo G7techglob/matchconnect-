@@ -216,22 +216,6 @@ async function loadPost() {
           🔄 Share
         </button>
 
-        ${
-          auth.currentUser &&
-          auth.currentUser.uid === post.userId
-          ?
-          `
-          <button
-            class="action-btn delete-btn"
-            data-id="${postId}"
-          >
-            🗑 Delete
-          </button>
-          `
-          :
-          ""
-        }
-
       </div>
 
 
@@ -531,68 +515,35 @@ document.addEventListener(
 
   }
 );
-
-
 // =====================================================
-// DELETE POST
+// POST OPTIONS
 // =====================================================
 
 document.addEventListener(
   "click",
-  async (e) => {
+  (e) => {
 
-    if (
-      !e.target.classList.contains(
-        "delete-btn"
-      )
-    ) return;
+    const optionsBtn =
+      e.target.closest(".post-options-btn");
 
+    if (!optionsBtn) return;
 
     const postId =
-      e.target.dataset.id;
+      optionsBtn.dataset.id;
 
-
-    const confirmed =
-      confirm(
-        "Are you sure you want to delete this post?"
-      );
-
-
-    if (!confirmed) return;
-
-
-    try {
-
-      await deleteDoc(
-        doc(
-          db,
-          "posts",
-          postId
-        )
-      );
-
-
-      alert(
-        "Post deleted successfully."
-      );
-
-
-      window.location.href =
-        "index.html";
-
-
-    } catch (error) {
+    if (!postId) {
 
       console.error(
-        "Delete error:",
-        error
+        "No post ID found for options."
       );
 
-      alert(
-        "Unable to delete post."
-      );
-
+      return;
     }
+
+    window.location.href =
+      `post-options.html?id=${encodeURIComponent(
+        postId
+      )}`;
 
   }
 );
