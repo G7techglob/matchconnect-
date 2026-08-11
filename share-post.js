@@ -8,10 +8,6 @@ import { auth, db } from "./firebase.js";
 import {
     doc,
     getDoc,
-    setDoc,
-    updateDoc,
-    arrayUnion,
-    arrayRemove,
     addDoc,
     collection,
     serverTimestamp
@@ -22,31 +18,54 @@ import {
    GET ELEMENTS
 ===================================================== */
 
-const overlay = document.getElementById("overlay");
-const shareSheet = document.getElementById("shareSheet");
+const overlay =
+    document.getElementById("overlay");
 
-const whatsappBtn = document.getElementById("whatsappBtn");
-const facebookBtn = document.getElementById("facebookBtn");
-const telegramBtn = document.getElementById("telegramBtn");
-const messengerBtn = document.getElementById("messengerBtn");
-const emailBtn = document.getElementById("emailBtn");
+const shareSheet =
+    document.getElementById("shareSheet");
 
-const groupBtn = document.getElementById("groupBtn");
-const chatBtn = document.getElementById("chatBtn");
-const repostBtn = document.getElementById("repostBtn");
+const whatsappBtn =
+    document.getElementById("whatsappBtn");
 
-const copyLinkBtn = document.getElementById("copyLinkBtn");
+const facebookBtn =
+    document.getElementById("facebookBtn");
 
-const cancelBtn = document.getElementById("cancelBtn");
+const telegramBtn =
+    document.getElementById("telegramBtn");
+
+const messengerBtn =
+    document.getElementById("messengerBtn");
+
+const emailBtn =
+    document.getElementById("emailBtn");
+
+const groupBtn =
+    document.getElementById("groupBtn");
+
+const chatBtn =
+    document.getElementById("chatBtn");
+
+const repostBtn =
+    document.getElementById("repostBtn");
+
+const copyLinkBtn =
+    document.getElementById("copyLinkBtn");
+
+const cancelBtn =
+    document.getElementById("cancelBtn");
 
 
 /* =====================================================
-   GET POST ID FROM URL
+   GET POST ID
 ===================================================== */
 
-const params = new URLSearchParams(window.location.search);
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
 
-const postId = params.get("id");
+const postId =
+    params.get("id");
 
 
 /* =====================================================
@@ -63,39 +82,77 @@ let postData = null;
 async function loadPost() {
 
     if (!postId) {
-        console.error("No post ID found.");
-        showMessage("Post not found.");
+
+        console.error(
+            "No post ID found."
+        );
+
+        showMessage(
+            "Post not found."
+        );
+
         return;
     }
 
+
     try {
 
-        const postRef = doc(db, "posts", postId);
+        const postRef =
+            doc(
+                db,
+                "posts",
+                postId
+            );
 
-        const postSnap = await getDoc(postRef);
+
+        const postSnap =
+            await getDoc(
+                postRef
+            );
+
 
         if (!postSnap.exists()) {
-            console.error("Post does not exist.");
-            showMessage("This post no longer exists.");
+
+            console.error(
+                "Post does not exist."
+            );
+
+            showMessage(
+                "This post no longer exists."
+            );
+
             return;
         }
 
+
         postData = {
+
             id: postSnap.id,
+
             ...postSnap.data()
+
         };
 
-        console.log("Post loaded:", postData);
 
-        updateButtonStates();
+        console.log(
+            "Post loaded:",
+            postData
+        );
+
 
     } catch (error) {
 
-        console.error("Error loading post:", error);
+        console.error(
+            "Error loading post:",
+            error
+        );
 
-        showMessage("Unable to load this post.");
+        showMessage(
+            "Unable to load this post."
+        );
 
     }
+
 }
 
 
@@ -105,7 +162,11 @@ async function loadPost() {
 
 function getPostUrl() {
 
-    return `${window.location.origin}/matchconnect-/post.html?id=${postId}`;
+    return (
+        `${window.location.origin}` +
+        `/matchconnect-/post.html?id=` +
+        encodeURIComponent(postId)
+    );
 
 }
 
@@ -117,10 +178,17 @@ function getPostUrl() {
 function getPostText() {
 
     if (!postData) {
+
         return "";
+
     }
 
-    return postData.content || postData.text || "";
+
+    return (
+        postData.content ||
+        postData.text ||
+        ""
+    );
 
 }
 
@@ -131,9 +199,12 @@ function getPostText() {
 
 function getShareText() {
 
-    const text = getPostText();
+    const text =
+        getPostText();
 
-    const url = getPostUrl();
+    const url =
+        getPostUrl();
+
 
     return text
         ? `${text}\n\n${url}`
@@ -146,602 +217,398 @@ function getShareText() {
    WHATSAPP
 ===================================================== */
 
-whatsappBtn.addEventListener("click", () => {
+if (whatsappBtn) {
 
-    const text = encodeURIComponent(getShareText());
+    whatsappBtn.addEventListener(
+        "click",
+        () => {
 
-    const url = `https://wa.me/?text=${text}`;
+            const text =
+                encodeURIComponent(
+                    getShareText()
+                );
 
-    window.open(url, "_blank");
 
-});
+            const url =
+                `https://wa.me/?text=${text}`;
+
+
+            window.open(
+                url,
+                "_blank"
+            );
+
+        }
+    );
+
+}
 
 
 /* =====================================================
    FACEBOOK
 ===================================================== */
 
-facebookBtn.addEventListener("click", () => {
+if (facebookBtn) {
 
-    const url = encodeURIComponent(getPostUrl());
+    facebookBtn.addEventListener(
+        "click",
+        () => {
 
-    const shareUrl =
-        `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+            const url =
+                encodeURIComponent(
+                    getPostUrl()
+                );
 
-    window.open(
-        shareUrl,
-        "_blank",
-        "width=600,height=500"
+
+            const shareUrl =
+                `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+
+
+            window.open(
+                shareUrl,
+                "_blank",
+                "width=600,height=500"
+            );
+
+        }
     );
 
-});
+}
 
 
 /* =====================================================
    TELEGRAM
 ===================================================== */
 
-telegramBtn.addEventListener("click", () => {
+if (telegramBtn) {
 
-    const url = encodeURIComponent(getPostUrl());
+    telegramBtn.addEventListener(
+        "click",
+        () => {
 
-    const text = encodeURIComponent(getPostText());
+            const url =
+                encodeURIComponent(
+                    getPostUrl()
+                );
 
-    const shareUrl =
-        `https://t.me/share/url?url=${url}&text=${text}`;
 
-    window.open(shareUrl, "_blank");
+            const text =
+                encodeURIComponent(
+                    getPostText()
+                );
 
-});
+
+            const shareUrl =
+                `https://t.me/share/url?url=${url}&text=${text}`;
+
+
+            window.open(
+                shareUrl,
+                "_blank"
+            );
+
+        }
+    );
+
+}
 
 
 /* =====================================================
    MESSENGER
 ===================================================== */
 
-messengerBtn.addEventListener("click", () => {
+if (messengerBtn) {
 
-    const url = encodeURIComponent(getPostUrl());
+    messengerBtn.addEventListener(
+        "click",
+        () => {
 
-    const shareUrl =
-        `https://www.facebook.com/dialog/send?link=${url}&app_id=YOUR_FACEBOOK_APP_ID`;
+            const url =
+                encodeURIComponent(
+                    getPostUrl()
+                );
 
-    window.open(
-        shareUrl,
-        "_blank",
-        "width=600,height=600"
+
+            /*
+             * Facebook Messenger sharing
+             * may require a configured
+             * Facebook App ID.
+             */
+
+            const shareUrl =
+                `https://www.facebook.com/dialog/send?link=${url}&app_id=YOUR_FACEBOOK_APP_ID`;
+
+
+            window.open(
+                shareUrl,
+                "_blank",
+                "width=600,height=600"
+            );
+
+        }
     );
 
-});
+}
 
 
 /* =====================================================
    EMAIL
 ===================================================== */
 
-emailBtn.addEventListener("click", () => {
+if (emailBtn) {
 
-    const subject = encodeURIComponent(
-        "Check out this MatchConnect post"
+    emailBtn.addEventListener(
+        "click",
+        () => {
+
+            const subject =
+                encodeURIComponent(
+                    "Check out this MatchConnect post"
+                );
+
+
+            const body =
+                encodeURIComponent(
+                    getShareText()
+                );
+
+
+            window.location.href =
+                `mailto:?subject=${subject}&body=${body}`;
+
+        }
     );
 
-    const body = encodeURIComponent(
-        getShareText()
-    );
-
-    window.location.href =
-        `mailto:?subject=${subject}&body=${body}`;
-
-});
+}
 
 
 /* =====================================================
-   COPY LINK
+   COPY POST LINK
 ===================================================== */
 
-copyLinkBtn.addEventListener("click", async () => {
+if (copyLinkBtn) {
 
-    try {
+    copyLinkBtn.addEventListener(
+        "click",
+        async () => {
 
-        await navigator.clipboard.writeText(
-            getPostUrl()
-        );
+            try {
 
-        showMessage("Post link copied!");
-
-    } catch (error) {
-
-        console.error(error);
-
-        showMessage("Unable to copy link.");
-
-    }
-
-});
+                await navigator.clipboard.writeText(
+                    getPostUrl()
+                );
 
 
-/* =====================================================
-   COPY POST TEXT
-===================================================== */
+                showMessage(
+                    "Post link copied!"
+                );
 
-copyTextBtn.addEventListener("click", async () => {
 
-    const text = getPostText();
+            } catch (error) {
 
-    if (!text) {
+                console.error(
+                    "Copy link error:",
+                    error
+                );
 
-        showMessage("This post has no text.");
 
-        return;
-    }
+                showMessage(
+                    "Unable to copy link."
+                );
 
-    try {
+            }
 
-        await navigator.clipboard.writeText(text);
+        }
+    );
 
-        showMessage("Post text copied!");
-
-    } catch (error) {
-
-        console.error(error);
-
-        showMessage("Unable to copy text.");
-
-    }
-
-});
+}
 
 
 /* =====================================================
    SHARE TO MATCHCONNECT GROUP
 ===================================================== */
 
-groupBtn.addEventListener("click", () => {
+if (groupBtn) {
 
-    if (!postId) {
-        return;
-    }
+    groupBtn.addEventListener(
+        "click",
+        () => {
 
-    window.location.href =
-        `groups.html?sharePost=${encodeURIComponent(postId)}`;
+            if (!postId) {
 
-});
+                showMessage(
+                    "Post not found."
+                );
+
+                return;
+            }
+
+
+            window.location.href =
+                `groups.html?sharePost=${encodeURIComponent(postId)}`;
+
+        }
+    );
+
+}
 
 
 /* =====================================================
    SEND TO MATCHCONNECT CHAT
 ===================================================== */
 
-chatBtn.addEventListener("click", () => {
+if (chatBtn) {
 
-    if (!postId) {
-        return;
-    }
+    chatBtn.addEventListener(
+        "click",
+        () => {
 
-    window.location.href =
-        `chats.html?sharePost=${encodeURIComponent(postId)}`;
+            if (!postId) {
 
-});
+                showMessage(
+                    "Post not found."
+                );
+
+                return;
+            }
+
+
+            window.location.href =
+                `chats.html?sharePost=${encodeURIComponent(postId)}`;
+
+        }
+    );
+
+}
 
 
 /* =====================================================
    REPOST
 ===================================================== */
 
-repostBtn.addEventListener("click", async () => {
+if (repostBtn) {
 
-    const user = auth.currentUser;
+    repostBtn.addEventListener(
+        "click",
+        async () => {
 
-    if (!user) {
+            const user =
+                auth.currentUser;
 
-        showMessage("Please log in first.");
 
-        return;
-    }
+            if (!user) {
 
-    if (!postData) {
+                showMessage(
+                    "Please log in first."
+                );
 
-        showMessage("Post is still loading.");
+                return;
+            }
 
-        return;
-    }
 
-    try {
+            if (!postData) {
 
-        await addDoc(collection(db, "posts"), {
+                showMessage(
+                    "Post is still loading."
+                );
 
-            content: postData.content || "",
+                return;
+            }
 
-            userId: user.uid,
 
-            username:
-                user.displayName ||
-                user.email ||
-                "MatchConnect User",
+            try {
 
-            photoURL:
-                user.photoURL || "",
+                await addDoc(
+                    collection(
+                        db,
+                        "posts"
+                    ),
+                    {
 
-            repostOf: postId,
+                        content:
+                            postData.content || "",
 
-            originalPostId: postId,
+                        userId:
+                            user.uid,
 
-            createdAt: serverTimestamp(),
+                        username:
+                            user.displayName ||
+                            user.email ||
+                            "MatchConnect User",
 
-            likes: [],
+                        photoURL:
+                            user.photoURL || "",
 
-            comments: 0,
+                        repostOf:
+                            postId,
 
-            isRepost: true
+                        originalPostId:
+                            postId,
 
-        });
+                        createdAt:
+                            serverTimestamp(),
 
-        showMessage("Post reposted successfully!");
+                        likes: [],
 
-    } catch (error) {
+                        comments: 0,
 
-        console.error("Repost error:", error);
+                        isRepost: true
 
-        showMessage("Unable to repost this post.");
+                    }
+                );
 
-    }
 
-});
+                showMessage(
+                    "Post reposted successfully!"
+                );
 
 
-/* =====================================================
-   SAVE POST
-===================================================== */
+            } catch (error) {
 
-saveBtn.addEventListener("click", async () => {
+                console.error(
+                    "Repost error:",
+                    error
+                );
 
-    const user = auth.currentUser;
 
-    if (!user) {
-
-        showMessage("Please log in first.");
-
-        return;
-    }
-
-    try {
-
-        const userRef =
-            doc(db, "users", user.uid);
-
-        await updateDoc(userRef, {
-
-            savedPosts: arrayUnion(postId)
-
-        });
-
-        showMessage("Post saved!");
-
-        saveBtn.querySelector("span").textContent =
-            "Post Saved";
-
-    } catch (error) {
-
-        console.error("Save error:", error);
-
-        showMessage("Unable to save post.");
-
-    }
-
-});
-
-
-/* =====================================================
-   PIN TO PROFILE
-===================================================== */
-
-pinBtn.addEventListener("click", async () => {
-
-    const user = auth.currentUser;
-
-    if (!user) {
-
-        showMessage("Please log in first.");
-
-        return;
-    }
-
-    if (!postData) {
-
-        showMessage("Post is still loading.");
-
-        return;
-    }
-
-    if (postData.userId !== user.uid) {
-
-        showMessage(
-            "You can only pin your own posts."
-        );
-
-        return;
-    }
-
-    try {
-
-        const userRef =
-            doc(db, "users", user.uid);
-
-        await updateDoc(userRef, {
-
-            pinnedPost: postId
-
-        });
-
-        showMessage("Post pinned to your profile!");
-
-    } catch (error) {
-
-        console.error("Pin error:", error);
-
-        showMessage("Unable to pin post.");
-
-    }
-
-});
-
-
-/* =====================================================
-   ADD TO FAVORITES
-===================================================== */
-
-favoriteBtn.addEventListener("click", async () => {
-
-    const user = auth.currentUser;
-
-    if (!user) {
-
-        showMessage("Please log in first.");
-
-        return;
-    }
-
-    try {
-
-        const userRef =
-            doc(db, "users", user.uid);
-
-        await updateDoc(userRef, {
-
-            favoritePosts: arrayUnion(postId)
-
-        });
-
-        showMessage("Added to favorites!");
-
-    } catch (error) {
-
-        console.error(
-            "Favorite error:",
-            error
-        );
-
-        showMessage(
-            "Unable to add to favorites."
-        );
-
-    }
-
-});
-
-
-/* =====================================================
-   DOWNLOAD IMAGE
-===================================================== */
-
-downloadBtn.addEventListener("click", async () => {
-
-    if (!postData) {
-
-        showMessage("Post is still loading.");
-
-        return;
-    }
-
-    const imageUrl =
-        postData.imageURL ||
-        postData.imageUrl ||
-        postData.photoURL ||
-        postData.image;
-
-    if (!imageUrl) {
-
-        showMessage(
-            "This post does not contain an image."
-        );
-
-        return;
-    }
-
-    try {
-
-        const response =
-            await fetch(imageUrl);
-
-        const blob =
-            await response.blob();
-
-        const blobUrl =
-            URL.createObjectURL(blob);
-
-        const link =
-            document.createElement("a");
-
-        link.href = blobUrl;
-
-        link.download =
-            `matchconnect-post-${postId}.jpg`;
-
-        document.body.appendChild(link);
-
-        link.click();
-
-        link.remove();
-
-        URL.revokeObjectURL(blobUrl);
-
-        showMessage("Image download started.");
-
-    } catch (error) {
-
-        console.error(
-            "Download error:",
-            error
-        );
-
-        /*
-         * If Firebase Storage/CORS prevents
-         * direct downloading, open the image instead.
-         */
-
-        window.open(imageUrl, "_blank");
-
-    }
-
-});
-
-
-/* =====================================================
-   HIDE POST
-===================================================== */
-
-hideBtn.addEventListener("click", async () => {
-
-    const user = auth.currentUser;
-
-    if (!user) {
-
-        showMessage("Please log in first.");
-
-        return;
-    }
-
-    try {
-
-        const userRef =
-            doc(db, "users", user.uid);
-
-        await updateDoc(userRef, {
-
-            hiddenPosts: arrayUnion(postId)
-
-        });
-
-        showMessage("Post hidden from your feed.");
-
-        setTimeout(() => {
-
-            closeShareSheet();
-
-        }, 700);
-
-    } catch (error) {
-
-        console.error(
-            "Hide post error:",
-            error
-        );
-
-        showMessage(
-            "Unable to hide this post."
-        );
-
-    }
-
-});
-
-
-/* =====================================================
-   REPORT POST
-===================================================== */
-
-reportBtn.addEventListener("click", async () => {
-
-    const user = auth.currentUser;
-
-    if (!user) {
-
-        showMessage("Please log in first.");
-
-        return;
-    }
-
-    if (!postId) {
-        return;
-    }
-
-    const reason =
-        prompt(
-            "Why are you reporting this post?"
-        );
-
-    if (!reason) {
-        return;
-    }
-
-    try {
-
-        await addDoc(
-            collection(db, "reports"),
-            {
-
-                postId: postId,
-
-                reportedBy: user.uid,
-
-                reason: reason,
-
-                createdAt:
-                    serverTimestamp(),
-
-                status: "pending"
+                showMessage(
+                    "Unable to repost this post."
+                );
 
             }
-        );
 
-        showMessage(
-            "Thank you. Your report has been submitted."
-        );
+        }
+    );
 
-    } catch (error) {
-
-        console.error(
-            "Report error:",
-            error
-        );
-
-        showMessage(
-            "Unable to submit report."
-        );
-
-    }
-
-});
+}
 
 
 /* =====================================================
    CANCEL
 ===================================================== */
 
-cancelBtn.addEventListener(
-    "click",
-    closeShareSheet
-);
+if (cancelBtn) {
+
+    cancelBtn.addEventListener(
+        "click",
+        closeShareSheet
+    );
+
+}
 
 
 /* =====================================================
    OVERLAY CLICK
 ===================================================== */
 
-overlay.addEventListener(
-    "click",
-    closeShareSheet
-);
+if (overlay) {
+
+    overlay.addEventListener(
+        "click",
+        closeShareSheet
+    );
+
+}
 
 
 /* =====================================================
@@ -750,26 +617,41 @@ overlay.addEventListener(
 
 function closeShareSheet() {
 
-    shareSheet.style.animation =
-        "shareSheetDown 0.25s ease-in forwards";
+    if (shareSheet) {
 
-    overlay.style.opacity = "0";
+        shareSheet.style.animation =
+            "shareSheetDown 0.25s ease-in forwards";
 
-    setTimeout(() => {
+    }
 
-        window.history.back();
 
-    }, 230);
+    if (overlay) {
+
+        overlay.style.opacity =
+            "0";
+
+    }
+
+
+    setTimeout(
+        () => {
+
+            window.history.back();
+
+        },
+        230
+    );
 
 }
 
 
 /* =====================================================
-   ADD CLOSE ANIMATION
+   CLOSE ANIMATION
 ===================================================== */
 
 const closeAnimationStyle =
     document.createElement("style");
+
 
 closeAnimationStyle.textContent = `
 
@@ -787,84 +669,14 @@ closeAnimationStyle.textContent = `
 
 `;
 
+
 document.head.appendChild(
     closeAnimationStyle
 );
 
 
 /* =====================================================
-   BUTTON STATE
-===================================================== */
-
-async function updateButtonStates() {
-
-    const user = auth.currentUser;
-
-    if (!user || !postData) {
-        return;
-    }
-
-    /*
-     * Pin is only available for the
-     * owner's own post.
-     */
-
-    if (postData.userId !== user.uid) {
-
-        pinBtn.style.display = "none";
-
-    }
-
-    try {
-
-        const userSnap =
-            await getDoc(
-                doc(db, "users", user.uid)
-            );
-
-        if (!userSnap.exists()) {
-            return;
-        }
-
-        const userData =
-            userSnap.data();
-
-        const savedPosts =
-            userData.savedPosts || [];
-
-        const favoritePosts =
-            userData.favoritePosts || [];
-
-        if (savedPosts.includes(postId)) {
-
-            saveBtn.querySelector(
-                "span"
-            ).textContent = "Post Saved";
-
-        }
-
-        if (favoritePosts.includes(postId)) {
-
-            favoriteBtn.querySelector(
-                "span"
-            ).textContent = "In Favorites";
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Button state error:",
-            error
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   MESSAGE / TOAST
+   TOAST MESSAGE
 ===================================================== */
 
 function showMessage(message) {
@@ -874,23 +686,36 @@ function showMessage(message) {
             "shareToast"
         );
 
+
     if (!toast) {
 
         toast =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
-        toast.id = "shareToast";
 
-        toast.style.position = "fixed";
-        toast.style.left = "50%";
-        toast.style.bottom = "30px";
+        toast.id =
+            "shareToast";
+
+
+        toast.style.position =
+            "fixed";
+
+        toast.style.left =
+            "50%";
+
+        toast.style.bottom =
+            "30px";
+
         toast.style.transform =
             "translateX(-50%)";
 
         toast.style.background =
             "rgba(0,0,0,0.85)";
 
-        toast.style.color = "#fff";
+        toast.style.color =
+            "#fff";
 
         toast.style.padding =
             "11px 18px";
@@ -910,27 +735,37 @@ function showMessage(message) {
         toast.style.textAlign =
             "center";
 
+
         document.body.appendChild(
             toast
         );
 
     }
 
-    toast.textContent = message;
 
-    toast.style.display = "block";
+    toast.textContent =
+        message;
+
+
+    toast.style.display =
+        "block";
+
 
     clearTimeout(
         toast.hideTimer
     );
 
+
     toast.hideTimer =
-        setTimeout(() => {
+        setTimeout(
+            () => {
 
-            toast.style.display =
-                "none";
+                toast.style.display =
+                    "none";
 
-        }, 2500);
+            },
+            2500
+        );
 
 }
 
