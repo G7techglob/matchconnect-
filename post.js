@@ -171,13 +171,13 @@ async function loadPost() {
   </div>
 
   <button
-    class="post-options-btn"
-    data-id="${postId}"
-    type="button"
-    aria-label="Post options"
-  >
-    <i class="fa-solid fa-ellipsis-vertical"></i>
-  </button>
+  class="post-options-btn"
+  data-id="${postId}"
+  type="button"
+  aria-label="Post options"
+>
+  ⋮
+</button>
 
 </div>
 
