@@ -5,11 +5,8 @@ import {
   getDoc,
   collection,
   getDocs,
-  deleteDoc,
   updateDoc,
-  increment,
-  addDoc,
-  serverTimestamp
+  increment
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 
