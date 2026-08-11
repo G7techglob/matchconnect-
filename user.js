@@ -566,6 +566,8 @@ document.addEventListener(
   }
 );
 
+
+
 // ===============================
 // SHARE POST
 // ===============================
@@ -583,13 +585,22 @@ document.addEventListener(
       shareBtn.dataset.id;
 
     if (!postId) {
-      console.error("No post ID found for sharing");
+      console.error("No post ID found for share button");
       return;
     }
 
-    // Open MatchConnect Share Post options
-    window.location.href =
-      `share-post.html?id=${encodeURIComponent(postId)}`;
+    // Direct link to the specific post
+    const postLink =
+      `https://g7techglob.github.io/matchconnect-/post.html?id=${postId}`;
+
+    // Share through WhatsApp
+    const whatsappUrl =
+      `https://wa.me/?text=${encodeURIComponent(postLink)}`;
+
+    window.open(
+      whatsappUrl,
+      "_blank"
+    );
   }
 );
 
