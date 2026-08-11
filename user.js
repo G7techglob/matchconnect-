@@ -586,43 +586,79 @@ document.addEventListener(
   }
 );
 
-
-
 // ===============================
 // SHARE POST
 // ===============================
 
-document.addEventListener(
-  "click",
-  (e) => {
+document.addEventListener("click", async (e) => {
 
-    const shareBtn =
-      e.target.closest(".share-btn");
+  const shareBtn = e.target.closest(".share-btn");
 
-    if (!shareBtn) return;
+  if (!shareBtn) return;
 
-    const postId =
-      shareBtn.dataset.id;
+  const postId = shareBtn.dataset.id;
 
-    if (!postId) {
-      console.error("No post ID found for share button");
+  if (!postId) {
+    console.error("No post ID found for share button");
+    return;
+  }
+
+  // Create direct link to this exact post
+  const postLink =
+    `${window.location.origin}/matchconnect-/post.html?id=${postId}`;
+
+  try {
+
+    // ===============================
+    // USE PHONE'S NATIVE SHARE MENU
+    // ===============================
+
+    if (navigator.share) {
+
+      await navigator.share({
+        title: "MatchConnect",
+        text: "Check out this post on MatchConnect",
+        url: postLink
+      });
+
       return;
     }
 
-    // Direct link to the specific post
-    const postLink =
-      `https://g7techglob.github.io/matchconnect-/post.html?id=${postId}`;
+    // ===============================
+    // FALLBACK: COPY LINK
+    // ===============================
 
-    // Share through WhatsApp
-    const whatsappUrl =
-      `https://wa.me/?text=${encodeURIComponent(postLink)}`;
+    await navigator.clipboard.writeText(postLink);
 
-    window.open(
-      whatsappUrl,
-      "_blank"
-    );
+    alert("Post link copied. You can now share it.");
+
+  } catch (error) {
+
+    // User simply closed the share menu
+    if (error.name === "AbortError") {
+      return;
+    }
+
+    console.error("Share error:", error);
+
+    // Try copying if native sharing fails
+    try {
+
+      await navigator.clipboard.writeText(postLink);
+
+      alert("Post link copied. You can now share it.");
+
+    } catch (copyError) {
+
+      console.error(
+        "Unable to copy post link:",
+        copyError
+      );
+
+      alert("Unable to share this post.");
+    }
   }
-);
+});
 
 // ===============================
 // MESSAGE BUTTON
