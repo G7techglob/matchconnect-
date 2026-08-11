@@ -148,25 +148,38 @@ async function loadPost() {
 
       <div class="post-header">
 
-        <img
-          src="${escapeHTML(photoURL)}"
-          class="post-avatar view-profile"
-          data-uid="${post.userId || ""}"
-          alt="${escapeHTML(username)}"
-        >
+  <div class="post-user-info">
 
-        <div>
+    <img
+      src="${escapeHTML(photoURL)}"
+      class="post-avatar view-profile"
+      data-uid="${post.userId || ""}"
+      alt="${escapeHTML(username)}"
+    >
 
-          <h3
-            class="post-user view-profile"
-            data-uid="${post.userId || ""}"
-          >
-            ${escapeHTML(username)}
-          </h3>
+    <div>
 
-        </div>
+      <h3
+        class="post-user view-profile"
+        data-uid="${post.userId || ""}"
+      >
+        ${escapeHTML(username)}
+      </h3>
 
-      </div>
+    </div>
+
+  </div>
+
+  <button
+    class="post-options-btn"
+    data-id="${postId}"
+    type="button"
+    aria-label="Post options"
+  >
+    <i class="fa-solid fa-ellipsis-vertical"></i>
+  </button>
+
+</div>
 
 
       <div class="post-content">
