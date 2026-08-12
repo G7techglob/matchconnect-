@@ -683,11 +683,16 @@ hr {
    CREATE POST MEDIA BUTTON
 =========================== */
 
-.post-content-area{
+.post-text-area{
     position:relative;
     width:100%;
 }
 
+#profilePostContent{
+    width:100%;
+    box-sizing:border-box;
+    padding-right:45px;
+}
 
 /* Photo / Video button */
 
