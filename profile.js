@@ -613,3 +613,49 @@ document.addEventListener("click", (e) => {
     profileMenu.classList.remove("show");
   }
 });
+
+// ===========================
+// PHOTO / VIDEO SELECTOR
+// ===========================
+
+const createPostBtn = document.getElementById("createPostBtn");
+const mediaPostInput = document.getElementById("mediaPostInput");
+
+if (createPostBtn && mediaPostInput) {
+
+    createPostBtn.addEventListener("click", () => {
+
+        mediaPostInput.click();
+
+    });
+
+}
+
+if (mediaPostInput) {
+
+    mediaPostInput.addEventListener("change", (event) => {
+
+        const files = Array.from(event.target.files);
+
+        if (files.length === 0) {
+            return;
+        }
+
+        console.log("Selected files:", files);
+
+        files.forEach(file => {
+
+            console.log(
+                "Name:",
+                file.name,
+                "Type:",
+                file.type,
+                "Size:",
+                file.size
+            );
+
+        });
+
+    });
+
+}
