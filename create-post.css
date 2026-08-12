@@ -36,8 +36,8 @@
     cursor: pointer;
 
     padding: 0;
-
     margin-top: 2px;
 
-    margin-left: calc(75% - 35px);
+    width: 75%;
+    text-align: right;
 }
