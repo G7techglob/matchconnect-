@@ -95,6 +95,16 @@ if (
   isFollowing = followingSnap.exists();
 
 }
+      const createdAt =
+  post.createdAt?.seconds
+    ? new Date(
+        post.createdAt.seconds * 1000
+      ).toLocaleDateString("en-US", {
+        month: "short",
+        day: "2-digit",
+        year: "numeric"
+      }).replace(/ /g, ":").replace(",", "")
+    : "";
 
       const div = document.createElement("div");
       div.className = "post";
@@ -109,13 +119,22 @@ class="post-avatar view-profile"
 data-uid="${post.userId}"
 >
 
-<span
-class="post-user view-profile"
-data-uid="${post.userId}"
->
-${profileName}
-</span>
+<div class="post-user-info">
 
+  <span
+    class="post-user view-profile"
+    data-uid="${post.userId}"
+  >
+    ${profileName}
+  </span>
+
+  <br>
+
+  <small class="post-time">
+    ${createdAt}
+  </small>
+
+</div>
 ${
 auth.currentUser &&
 auth.currentUser.uid !== post.userId
