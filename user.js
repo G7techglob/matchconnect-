@@ -507,6 +507,27 @@ if (postsContainer) {
     );
   }
 }
+
+// ===============================
+// POST OPTIONS
+// ===============================
+
+document.addEventListener("click", (e) => {
+
+  const optionsBtn =
+    e.target.closest(".post-options-btn");
+
+  if (!optionsBtn) return;
+
+  const postId =
+    optionsBtn.dataset.id;
+
+  if (!postId) return;
+
+  window.location.href =
+    `post-options.html?id=${encodeURIComponent(postId)}`;
+
+});
 // ===============================
 // LIKE POST
 // ===============================
