@@ -77,48 +77,8 @@
 
 <section id="mediaContainer"></section>
 
-    <!-- Photo / Video Post Button -->
-
-<section class="create-post" aria-labelledby="createPostTitle">
-
-  <h3 id="createPostTitle">Create Post</h3>
-
-  <div class="post-text-area">
-    <label for="profilePostContent" class="sr-only">
-      Write your post
-    </label>
-
-    <textarea
-      id="profilePostContent"
-      placeholder="What's on your mind?"
-      rows="4"
-      maxlength="500"
-    ></textarea>
-
-    <button
-      id="createPostBtn"
-      class="create-post-btn"
-      type="button"
-      aria-label="Select photos or videos"
-    >🔘</button>
-
-  </div>
-
-  <input
-    type="file"
-    id="mediaPostInput"
-    accept="image/*,video/*"
-    multiple
-    hidden
-  >
-
-  <button id="profilePostBtn" type="button">
-    Post
-  </button>
-
-</section>
+<div id="create-post-container"></div>
     
-
     <section class="my-posts" aria-labelledby="myPostsTitle">
       <h3 id="myPostsTitle">My Posts</h3>
       <div id="myPosts" aria-live="polite"></div>
