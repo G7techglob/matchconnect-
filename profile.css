@@ -678,3 +678,25 @@ hr {
     background: transparent !important;
     color: #333 !important;
 }
+
+/* ===========================
+   PHOTO / VIDEO POST BUTTON
+=========================== */
+
+.create-post-btn{
+    display:block;
+    width:50px;
+    height:50px;
+    margin:12px auto;
+    padding:0;
+    border:none;
+    border-radius:50%;
+    background:#1877f2;
+    color:#fff;
+    font-size:24px;
+    cursor:pointer;
+}
+
+.create-post-btn:active{
+    transform:scale(0.95);
+}
