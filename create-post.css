@@ -31,4 +31,8 @@
     border: none;
     color: #0095f6;
     cursor: pointer;
+
+    margin-top: 2px;
+    margin-left: 0;
+    padding: 0;
 }
