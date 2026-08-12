@@ -684,21 +684,27 @@ hr {
 =========================== */
 
 .create-post-btn{
-    display:block;
-    width:36px;
-    height:36px;
-    margin:8px 12px 8px auto;
+    width:auto;
+    height:auto;
+    margin:0;
     padding:0;
-    border:1px solid rgba(0,0,0,0.12);
-    border-radius:50%;
+    border:none;
+    outline:none;
+    border-radius:0;
     background:transparent;
+    box-shadow:none;
     color:#555;
-    font-size:18px;
-    line-height:36px;
-    text-align:center;
+    font-size:19px;
+    line-height:1;
     cursor:pointer;
+    appearance:none;
+    -webkit-appearance:none;
 }
 
+.create-post-btn:focus,
 .create-post-btn:active{
-    transform:scale(0.92);
+    border:none;
+    outline:none;
+    box-shadow:none;
+    background:transparent;
 }
