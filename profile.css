@@ -680,31 +680,51 @@ hr {
 }
 
 /* ===========================
-   PHOTO / VIDEO POST BUTTON
+   CREATE POST MEDIA BUTTON
 =========================== */
 
+.post-content-area{
+    position:relative;
+    width:100%;
+}
+
+
+/* Photo / Video button */
+
 .create-post-btn{
-    width:auto;
-    height:auto;
-    margin:0;
+    position:absolute;
+    top:10px;
+    right:10px;
+
+    width:32px;
+    height:32px;
+
     padding:0;
+    margin:0;
+
     border:none;
     outline:none;
     border-radius:0;
+
     background:transparent;
     box-shadow:none;
+
     color:#555;
-    font-size:19px;
-    line-height:1;
+
+    font-size:18px;
+    line-height:32px;
+
     cursor:pointer;
+
     appearance:none;
     -webkit-appearance:none;
 }
 
+.create-post-btn:hover,
 .create-post-btn:focus,
 .create-post-btn:active{
+    background:transparent;
     border:none;
     outline:none;
     box-shadow:none;
-    background:transparent;
 }
