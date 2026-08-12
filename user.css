@@ -435,3 +435,26 @@ body {
     background: none;
     color: #ff4d6d;
 }
+
+.post-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.post-user-info{
+    flex:1;
+}
+
+.post-options-btn{
+    border:none;
+    background:none;
+    font-size:22px;
+    cursor:pointer;
+    padding:6px;
+    color:#555;
+}
+
+.post-options-btn:hover{
+    color:#000;
+}
