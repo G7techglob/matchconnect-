@@ -479,10 +479,9 @@ if (postsContainer) {
           <button
   class="share-btn"
   data-id="${postDoc.id}"
-  type="button"
-  aria-label="Share post"
+  title="Share"
 >
-  <i class="fa-solid fa-share"></i>
+  🔄
 </button>
 
         </div>
