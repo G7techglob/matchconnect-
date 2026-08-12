@@ -24,7 +24,7 @@
 .create-post-btn {
     position: absolute;
     top: 8px;
-    left: calc(75% + 8px);
+    left: calc(75% + 20px);
 
     background: transparent;
     border: none;
