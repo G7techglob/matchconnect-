@@ -315,7 +315,10 @@ POSTS - NO CARDS
     padding:0 15px;
     margin:5px 0 10px;
 }
-
+.post-time{
+    font-size:12px;
+    opacity:0.6;
+}
 .post-actions{
     display:flex;
     align-items:center;
