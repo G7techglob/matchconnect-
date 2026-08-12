@@ -34,5 +34,8 @@
 
     margin-top: 2px;
     margin-left: 0;
+
     padding: 0;
+    position: relative;
+    left: 0;
 }
