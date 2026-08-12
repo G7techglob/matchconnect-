@@ -210,48 +210,6 @@ if (saveBtn) {
   });
 }
 
-// ==================== CREATE POST HANDLER ====================
-
-const profilePostBtn = document.getElementById("profilePostBtn");
-if (profilePostBtn) {
-  profilePostBtn.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    if (!user) {
-      showNotification("Please login", true);
-      return;
-    }
-
-    const content = document.getElementById("profilePostContent")?.value.trim() || "";
-    if (!content) {
-      showNotification("Write something first", true);
-      return;
-    }
-
-    try {
-      const userSnap = await getDoc(doc(db, "users", user.uid));
-      const profileData = userSnap.data() || {};
-
-      await addDoc(collection(db, "posts"), {
-        content,
-        userId: user.uid,
-        username: profileData.name || user.email || "User",
-        photoURL: safeImageUrl(profileData.photoURL),
-        likes: 0,
-        comments: 0,
-        createdAt: serverTimestamp()
-      });
-
-      showNotification("Post created!");
-      const postContent = document.getElementById("profilePostContent");
-      if (postContent) postContent.value = "";
-      await loadMyPosts(user);
-    } catch (error) {
-      console.error("Error creating post:", error);
-      showNotification("Error creating post: " + error.message, true);
-    }
-  });
-}
-
 // ==================== LOAD POST COUNT ====================
 async function loadPostCount(user) {
   const postCount = document.getElementById("postCount");
@@ -613,53 +571,6 @@ document.addEventListener("click", (e) => {
     profileMenu.classList.remove("show");
   }
 });
-
-// ===========================
-// PHOTO / VIDEO SELECTOR
-// ===========================
-
-const createPostBtn = document.getElementById("createPostBtn");
-const mediaPostInput = document.getElementById("mediaPostInput");
-
-if (createPostBtn && mediaPostInput) {
-
-    createPostBtn.addEventListener("click", () => {
-
-        mediaPostInput.click();
-
-    });
-
-}
-
-if (mediaPostInput) {
-
-    mediaPostInput.addEventListener("change", (event) => {
-
-        const files = Array.from(event.target.files);
-
-        if (files.length === 0) {
-            return;
-        }
-
-        console.log("Selected files:", files);
-
-        files.forEach(file => {
-
-            console.log(
-                "Name:",
-                file.name,
-                "Type:",
-                file.type,
-                "Size:",
-                file.size
-            );
-
-        });
-
-    });
-
-}
-
 
 // ===============================
 // LOAD CREATE POST SECTION
