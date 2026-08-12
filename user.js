@@ -401,33 +401,42 @@ if (postsContainer) {
 
         <div class="post-header">
 
-          <img
-            src="${photoURL}"
-            class="post-avatar view-profile"
-            data-uid="${post.userId}"
-            width="40"
-            alt="User avatar"
-            onerror="this.src='images/default-avatar.png'"
-          >
+  <img
+    src="${photoURL}"
+    class="post-avatar view-profile"
+    data-uid="${post.userId}"
+    width="40"
+    alt="User avatar"
+    onerror="this.src='images/default-avatar.png'"
+  >
 
-          <div>
+  <div class="post-user-info">
 
-            <strong
-              class="post-user view-profile"
-              data-uid="${post.userId}"
-            >
-              ${username}
-            </strong>
+    <strong
+      class="post-user view-profile"
+      data-uid="${post.userId}"
+    >
+      ${username}
+    </strong>
 
-            <br>
+    <br>
 
-            <small>
-              ${createdAt}
-            </small>
+    <small>
+      ${createdAt}
+    </small>
 
-          </div>
+  </div>
 
-        </div>
+  <button
+    class="post-options-btn"
+    data-id="${postDoc.id}"
+    title="Post options"
+    aria-label="Post options"
+  >
+    ⋮
+  </button>
+
+</div>
 
         <p class="post-content">
           ${content}
