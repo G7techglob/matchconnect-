@@ -77,7 +77,6 @@ a:hover {
   margin: 10px 5px 10px 0;
   font-size: 14px;
 }
-#profilePostBtn,
 #followersBtn,
 #followingBtn{
     background:transparent;
@@ -91,16 +90,13 @@ a:hover {
     font-weight:600;
 }
 
-#profilePostBtn:hover,
 #followersBtn:hover,
 #followingBtn:hover{
-    color:#0077cc;
 }
 
 
 .profile-menu button:hover,
-#saveProfileBtn:hover,
-#profilePostBtn:hover {
+#saveProfileBtn:hover {
   background-color: #e63955;
 }
 
@@ -473,12 +469,6 @@ hr {
     color:#0095f6 !important;
 }
 
-#profilePostBtn {
-    background: transparent !important;
-    color: #0095f6 !important;
-    border: none !important;
-}
-
 #followersLink,
 #followingLink {
     color: #0095f6 !important;
@@ -696,77 +686,3 @@ hr {
     resize:none;
 }
 
-/* Photo / Video button */
-
-.create-post-btn{
-    position:absolute;
-    top:10px;
-    right:10px;
-
-    width:32px;
-    height:32px;
-
-    padding:0;
-    margin:0;
-
-    border:none;
-    outline:none;
-    border-radius:0;
-
-    background:transparent;
-    box-shadow:none;
-
-    color:#555;
-
-    font-size:18px;
-    line-height:32px;
-
-    cursor:pointer;
-
-    appearance:none;
-    -webkit-appearance:none;
-}
-
-.create-post-btn:hover,
-.create-post-btn:focus,
-.create-post-btn:active{
-    background:transparent;
-    border:none;
-    outline:none;
-    box-shadow:none;
-}
-
-/* ===========================
-   TEXT POST BUTTON
-=========================== */
-#profilePostBtn{
-    display:block !important;
-
-    width:auto !important;
-
-    margin:4px 0 0 auto !important;
-
-    padding:0 !important;
-
-    background:transparent !important;
-    color:#0095f6 !important;
-
-    border:none !important;
-    border-radius:0 !important;
-    box-shadow:none !important;
-
-    font-size:14px;
-    font-weight:600;
-
-    cursor:pointer;
-}
-
-#profilePostBtn:hover,
-#profilePostBtn:focus,
-#profilePostBtn:active{
-    background:transparent !important;
-    color:#0077cc !important;
-    border:none !important;
-    outline:none !important;
-    box-shadow:none !important;
-}
