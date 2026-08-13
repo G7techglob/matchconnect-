@@ -8,7 +8,6 @@ import {
 }
 from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-
 const firebaseConfig = {
   apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
   authDomain: "matchconnect-44a3e.firebaseapp.com",
@@ -18,153 +17,105 @@ const firebaseConfig = {
   appId: "1:283382943870:web:ee1d08c65bcbac400cc82f"
 };
 
-
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
 
+const searchInput = document.getElementById("searchInput");
+const searchResults = document.getElementById("searchResults");
 
-const searchInput =
-document.getElementById("searchInput");
+searchInput.addEventListener("input", async () => {
 
+    const searchText = searchInput.value
+        .trim()
+        .toLowerCase();
 
-const searchResults =
-document.getElementById("searchResults");
+    searchResults.innerHTML = "";
 
+    if (!searchText) return;
 
+    let found = false;
 
-searchInput.addEventListener("input", async()=>{
+    // ==========================
+    // SEARCH USERS
+    // ==========================
 
+    const usersSnapshot = await getDocs(collection(db, "users"));
 
-const searchText =
-searchInput.value
-.toLowerCase()
-.trim();
+    usersSnapshot.forEach((userDoc) => {
 
+        const user = userDoc.data();
 
-searchResults.innerHTML = "";
+        const username = (user.username || "").toLowerCase();
+        const name = (user.name || "").toLowerCase();
 
+        if (
+            username.includes(searchText) ||
+            name.includes(searchText)
+        ) {
 
-if(!searchText) return;
+            found = true;
 
+            const div = document.createElement("div");
+            div.className = "search-result";
 
+            div.innerHTML = `
+                <a href="profile.html?uid=${userDoc.id}">
+                    <i class="fa-solid fa-user"></i>
+                    <strong>${user.username || user.name || "User"}</strong>
+                </a>
+            `;
 
-// ======================
-// SEARCH USERS
-// ======================
+            searchResults.appendChild(div);
+        }
 
-const usersSnapshot =
-await getDocs(
-collection(db,"users")
-);
+    });
 
+    // ==========================
+    // SEARCH POSTS
+    // ==========================
 
-usersSnapshot.forEach((userDoc)=>{
+    const postsSnapshot = await getDocs(collection(db, "posts"));
 
+    postsSnapshot.forEach((postDoc) => {
 
-const user = userDoc.data();
+        const post = postDoc.data();
 
+        const content = (post.content || "").toLowerCase();
 
-const username =
-(user.username || "")
-.toLowerCase();
+        if (content.includes(searchText)) {
 
+            found = true;
 
+            const div = document.createElement("div");
+            div.className = "search-result";
 
-if(username.includes(searchText)){
+            const preview =
+                post.content.length > 100
+                    ? post.content.substring(0, 100) + "..."
+                    : post.content;
 
+            div.innerHTML = `
+                <a href="post.html?id=${postDoc.id}">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <p>${preview}</p>
+                    <small>by ${post.username || "User"}</small>
+                </a>
+            `;
 
-const div =
-document.createElement("div");
+            searchResults.appendChild(div);
+        }
 
+    });
 
-div.className="search-result";
+    if (!found) {
 
+        searchResults.innerHTML = `
+            <div class="search-result">
+                <i class="fa-solid fa-circle-info"></i>
+                No users or posts found.
+            </div>
+        `;
 
-div.innerHTML = `
-
-<a href="user.html?uid=${userDoc.id}">
-
-<i class="fa-solid fa-user"></i>
-
-${user.username || "User"}
-
-</a>
-
-`;
-
-
-searchResults.appendChild(div);
-
-
-}
-
-
-});
-
-
-
-
-// ======================
-// SEARCH POSTS
-// ======================
-
-
-const postsSnapshot =
-await getDocs(
-collection(db,"posts")
-);
-
-
-postsSnapshot.forEach((postDoc)=>{
-
-
-const post =
-postDoc.data();
-
-
-const content =
-(post.content || "")
-.toLowerCase();
-
-
-
-if(content.includes(searchText)){
-
-
-const div =
-document.createElement("div");
-
-
-div.className="search-result";
-
-
-div.innerHTML = `
-
-<div>
-
-<i class="fa-solid fa-file-lines"></i>
-
-<p>
-${post.content}
-</p>
-
-<small>
-by ${post.username || "User"}
-</small>
-
-</div>
-
-`;
-
-
-searchResults.appendChild(div);
-
-
-}
-
-
-});
-
+    }
 
 });
