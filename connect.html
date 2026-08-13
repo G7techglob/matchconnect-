@@ -1,95 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Connect | Meet & Connect People</title>
-<meta name="description" content="Connect is a platform to meet people, chat, and build relationships.">
+    <meta charset="UTF-8">
 
-<link rel="stylesheet" href="connect.css">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>MatchConnect</title>
+
+    <link
+        rel="stylesheet"
+        href="connect.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
 </head>
 
 <body>
 
-<!-- TOP BAR / HEADER -->
 <header class="header">
 
-    <div class="logo">
-        <img src="images/logo4.png" alt="Connect Logo">
-        <span>match Connect</span>
+    <button
+        class="back-btn"
+        onclick="history.back()"
+    >
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <div class="header-text">
+
+        <h1>MatchConnect</h1>
+
+        <p>
+            Welcome to MatchConnect — your all-in-one social and business
+            platform. Discover businesses, shop products, find jobs,
+            promote your services, connect with professionals, explore
+            opportunities, and grow your network every day.
+        </p>
+
     </div>
-
-    <button class="menu-btn" id="menuBtn" aria-label="Open Menu">☰</button>
-
-    <nav class="nav" id="nav">
-        <a href="index.html">Home</a>
-        <a href="#">People</a>
-        <a href="#">Messages</a>
-        <a href="#">Profile</a>
-        <a href="#">Settings</a>
-    </nav>
 
 </header>
 
-<!-- HERO SECTION -->
-<section class="hero">
-    <div class="hero-content">
-        <h1>Meet & Connect With People</h1>
-        <p>
-            A modern platform to build friendships, relationships,
-            and professional connections safely and easily.
-        </p>
-    </div>
-</section>
-
-<!-- MAIN CONTENT -->
 <main class="container">
 
-    <!-- IMAGE SECTION -->
-    <section class="block">
-        <h2>Community</h2>
+    <a
+        href="marketplace.html"
+        class="card"
+    >
+        <i class="fas fa-store"></i>
+        <h3>Marketplace</h3>
+        <p>Buy & Sell Products</p>
+    </a>
 
-        <img src="images/love1.png" alt="People connecting" class="media">
+    <a
+        href="jobs.html"
+        class="card"
+    >
+        <i class="fas fa-briefcase"></i>
+        <h3>Jobs</h3>
+        <p>Find Jobs & Hire</p>
+    </a>
 
-        <p class="text">
-            Connect brings together people from different backgrounds
-            to interact, share ideas, and build meaningful relationships.
-        </p>
-    </section>
+    <a
+        href="services.html"
+        class="card"
+    >
+        <i class="fas fa-tools"></i>
+        <h3>Services</h3>
+        <p>Professional Services</p>
+    </a>
 
-    <!-- VIDEO SECTION -->
-    <section class="block">
-        <h2>How It Works</h2>
+    <a
+        href="real-estate.html"
+        class="card"
+    >
+        <i class="fas fa-house"></i>
+        <h3>Real Estate</h3>
+        <p>Homes & Land</p>
+    </a>
 
-        <video class="media" controls>
-            <source src="videos/lov2.mp4" type="video/mp4">
-        </video>
+    <a
+        href="vehicles.html"
+        class="card"
+    >
+        <i class="fas fa-car"></i>
+        <h3>Vehicles</h3>
+        <p>Cars & Motorcycles</p>
+    </a>
 
-        <p class="text">
-            Watch how users engage and connect through conversations,
-            messaging, and community interaction.
-        </p>
-    </section>
+    <a
+        href="business-directory.html"
+        class="card"
+    >
+        <i class="fas fa-building"></i>
+        <h3>Businesses</h3>
+        <p>Business Directory</p>
+    </a>
+
+    <a
+        href="stores.html"
+        class="card"
+    >
+        <i class="fas fa-shop"></i>
+        <h3>Stores</h3>
+        <p>Official Stores</p>
+    </a>
+
+    <a
+        href="wallet.html"
+        class="card"
+    >
+        <i class="fas fa-wallet"></i>
+        <h3>Wallet</h3>
+        <p>Payments</p>
+    </a>
+
+    <a
+        href="orders.html"
+        class="card"
+    >
+        <i class="fas fa-box"></i>
+        <h3>Orders</h3>
+        <p>Track Purchases</p>
+    </a>
+
+    <a
+        href="advertising.html"
+        class="card"
+    >
+        <i class="fas fa-bullhorn"></i>
+        <h3>Advertising</h3>
+        <p>Promote Your Business</p>
+    </a>
+
+    <a
+        href="bookings.html"
+        class="card"
+    >
+        <i class="fas fa-calendar-check"></i>
+        <h3>Bookings</h3>
+        <p>Appointments</p>
+    </a>
 
 </main>
 
-<!-- FOOTER -->
-<footer class="footer">
-
-    <div class="footer-links">
-        <a href="#">Facebook</a>
-        <a href="#">Instagram</a>
-        <a href="#">TikTok</a>
-        <a href="#">YouTube</a>
-        <a href="#">X</a>
-        <a href="#">Telegram</a>
-    </div>
-
-    <p>© 2026 Connect. All rights reserved.</p>
-
-</footer>
-
 <script src="connect.js"></script>
+
 </body>
+
 </html>
