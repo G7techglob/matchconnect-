@@ -13,9 +13,9 @@ body {
 .header {
     background: linear-gradient(135deg, #1877f2, #0d5fd8);
     color: white;
-    padding: 20px;
+    padding: 12px 15px;
     display: flex;
-    gap: 15px;
+    gap: 10px;
     align-items: flex-start;
 }
 
@@ -23,9 +23,9 @@ body {
     background: none;
     border: none;
     color: white;
-    font-size: 22px;
+    font-size: 19px;
     cursor: pointer;
-    margin-top: 3px;
+    margin-top: 1px;
 }
 
 .header-text {
@@ -33,13 +33,13 @@ body {
 }
 
 .header-text h1 {
-    font-size: 30px;
-    margin-bottom: 10px;
+    font-size: 21px;
+    margin-bottom: 4px;
 }
 
 .header-text p {
-    font-size: 15px;
-    line-height: 1.6;
+    font-size: 12px;
+    line-height: 1.35;
     opacity: .95;
 }
 
