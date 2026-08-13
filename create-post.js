@@ -325,7 +325,17 @@ function initializeCreatePost() {
 
 
 // =====================================================
-// START
+// START CREATE POST
 // =====================================================
 
-initializeCreatePost();
+if (document.getElementById("createPostBtn")) {
+
+    initializeCreatePost();
+
+} else {
+
+    console.error(
+        "Create Post HTML is not ready yet."
+    );
+
+}
