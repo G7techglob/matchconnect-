@@ -669,31 +669,24 @@ hr {
     color: #333 !important;
 }
 
-.connect-link {
-    display: flex;
+.connect-icon {
+    display: inline-flex;
     align-items: center;
-    gap: 12px;
-    padding: 10px 0;
-
+    justify-content: center;
+    text-decoration: none;
     background: transparent;
     border: none;
-    color: inherit;
-    text-decoration: none;
-
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
+    padding: 0;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
 }
 
-.connect-link i {
+.connect-icon i {
+    font-size: 22px;
     color: #1877f2;
-    font-size: 18px;
-    width: 22px;
-    text-align: center;
 }
 
-.connect-link:hover,
-.connect-link:focus {
-    background: transparent;
-    color: inherit;
+.connect-icon:hover,
+.connect-icon:focus {
+    opacity: 1;
 }
