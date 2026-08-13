@@ -4,15 +4,19 @@ import {
     doc,
     getDoc,
     updateDoc,
+    setDoc,
+    collection,
+    addDoc,
+    onSnapshot,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 
-console.log("✅ Live JS loaded");
+console.log("✅ Live WebRTC JS loaded");
 
 
 // =====================================================
-// GET STREAM ID
+// STREAM ID
 // =====================================================
 
 const params = new URLSearchParams(
@@ -23,7 +27,7 @@ const streamId = params.get("streamId");
 
 
 // =====================================================
-// UI ELEMENTS
+// ELEMENTS
 // =====================================================
 
 const localVideo =
@@ -69,7 +73,30 @@ let microphoneEnabled = true;
 
 let cameraEnabled = true;
 
+let peerConnections = {};
+
 let isEnding = false;
+
+
+// =====================================================
+// WEBRTC CONFIG
+// =====================================================
+
+const rtcConfig = {
+
+    iceServers: [
+
+        {
+            urls: "stun:stun.l.google.com:19302"
+        },
+
+        {
+            urls: "stun:stun1.l.google.com:19302"
+        }
+
+    ]
+
+};
 
 
 // =====================================================
@@ -80,33 +107,40 @@ if (!streamId) {
 
     alert("Live stream not found.");
 
-    window.location.href = "stream.html";
+    window.location.href =
+        "stream.html";
+
 }
 
 
 // =====================================================
-// CHECK USER
+// AUTH
 // =====================================================
 
-auth.onAuthStateChanged(async (user) => {
+auth.onAuthStateChanged(
+    async (user) => {
 
-    if (!user) {
+        if (!user) {
 
-        alert(
-            "Please log in before starting a live stream."
-        );
+            alert(
+                "Please log in before going live."
+            );
 
-        window.location.href = "stream.html";
+            window.location.href =
+                "stream.html";
 
-        return;
+            return;
+        }
+
+
+        await loadStream();
+
+        await startCamera();
+
+        startSignaling();
+
     }
-
-
-    await loadStream();
-
-    await startCamera();
-
-});
+);
 
 
 // =====================================================
@@ -118,7 +152,12 @@ async function loadStream() {
     try {
 
         const streamRef =
-            doc(db, "liveStreams", streamId);
+            doc(
+                db,
+                "liveStreams",
+                streamId
+            );
+
 
         const streamSnap =
             await getDoc(streamRef);
@@ -141,9 +180,6 @@ async function loadStream() {
             streamSnap.data();
 
 
-        // Make sure the stream belongs
-        // to the logged-in user.
-
         if (
             stream.hostId !==
             auth.currentUser.uid
@@ -160,14 +196,12 @@ async function loadStream() {
         }
 
 
-        // Check if already ended
-
         if (
             stream.status !== "live"
         ) {
 
             alert(
-                "This live stream has already ended."
+                "This stream has already ended."
             );
 
             window.location.href =
@@ -176,8 +210,6 @@ async function loadStream() {
             return;
         }
 
-
-        // Display information
 
         const streamName =
             stream.title ||
@@ -201,12 +233,8 @@ async function loadStream() {
     } catch (error) {
 
         console.error(
-            "Error loading stream:",
+            "Load stream error:",
             error
-        );
-
-        alert(
-            "Unable to load your live stream."
         );
 
     }
@@ -215,14 +243,12 @@ async function loadStream() {
 
 
 // =====================================================
-// START CAMERA
+// CAMERA
 // =====================================================
 
 async function startCamera() {
 
     try {
-
-        // Stop previous camera first
 
         if (localStream) {
 
@@ -255,7 +281,7 @@ async function startCamera() {
 
 
         console.log(
-            "✅ Camera and microphone started"
+            "✅ Camera and microphone ready"
         );
 
 
@@ -266,9 +292,8 @@ async function startCamera() {
             error
         );
 
-
         alert(
-            "Camera or microphone permission was denied."
+            "Camera or microphone permission is required."
         );
 
     }
@@ -277,7 +302,258 @@ async function startCamera() {
 
 
 // =====================================================
-// MICROPHONE BUTTON
+// WEBRTC SIGNALING
+// =====================================================
+
+function startSignaling() {
+
+    console.log(
+        "📡 WebRTC signaling started"
+    );
+
+
+    const offersRef =
+        collection(
+            db,
+            "liveStreams",
+            streamId,
+            "offers"
+        );
+
+
+    onSnapshot(
+        offersRef,
+        async (snapshot) => {
+
+            for (
+                const change of snapshot.docChanges()
+            ) {
+
+                if (
+                    change.type !== "added"
+                ) {
+                    continue;
+                }
+
+
+                const viewerId =
+                    change.doc.id;
+
+
+                if (
+                    peerConnections[viewerId]
+                ) {
+                    continue;
+                }
+
+
+                console.log(
+                    "👤 New viewer:",
+                    viewerId
+                );
+
+
+                await createViewerConnection(
+                    viewerId,
+                    change.doc.data()
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+// =====================================================
+// CREATE VIEWER CONNECTION
+// =====================================================
+
+async function createViewerConnection(
+    viewerId,
+    offerData
+) {
+
+    try {
+
+        const pc =
+            new RTCPeerConnection(
+                rtcConfig
+            );
+
+
+        peerConnections[viewerId] =
+            pc;
+
+
+        // Add host camera tracks
+
+        if (localStream) {
+
+            localStream
+                .getTracks()
+                .forEach(track => {
+
+                    pc.addTrack(
+                        track,
+                        localStream
+                    );
+
+                });
+
+        }
+
+
+        // ICE candidates
+
+        pc.onicecandidate =
+            async (event) => {
+
+                if (!event.candidate) {
+                    return;
+                }
+
+
+                await addDoc(
+
+                    collection(
+                        db,
+                        "liveStreams",
+                        streamId,
+                        "viewers",
+                        viewerId,
+                        "hostCandidates"
+                    ),
+
+                    event.candidate.toJSON()
+
+                );
+
+            };
+
+
+        // Viewer answer
+
+        const answerRef =
+            doc(
+                db,
+                "liveStreams",
+                streamId,
+                "viewers",
+                viewerId
+            );
+
+
+        await setDoc(
+            answerRef,
+            {
+                answer: null
+            }
+        );
+
+
+        await pc.setRemoteDescription({
+
+            type: "offer",
+
+            sdp: offerData.sdp
+
+        });
+
+
+        const answer =
+            await pc.createAnswer();
+
+
+        await pc.setLocalDescription(
+            answer
+        );
+
+
+        await updateDoc(
+            answerRef,
+            {
+                answer: {
+                    type: answer.type,
+                    sdp: answer.sdp
+                }
+            }
+        );
+
+
+        // Listen for viewer ICE candidates
+
+        const viewerCandidatesRef =
+            collection(
+                db,
+                "liveStreams",
+                streamId,
+                "viewers",
+                viewerId,
+                "viewerCandidates"
+            );
+
+
+        onSnapshot(
+            viewerCandidatesRef,
+            snapshot => {
+
+                snapshot.docChanges()
+                    .forEach(
+                        async change => {
+
+                            if (
+                                change.type !== "added"
+                            ) {
+                                return;
+                            }
+
+
+                            try {
+
+                                await pc.addIceCandidate(
+                                    new RTCIceCandidate(
+                                        change.doc.data()
+                                    )
+                                );
+
+                            } catch (error) {
+
+                                console.error(
+                                    "ICE candidate error:",
+                                    error
+                                );
+
+                            }
+
+                        }
+                    );
+
+            }
+        );
+
+
+        console.log(
+            "✅ Connection created for viewer:",
+            viewerId
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Viewer connection error:",
+            error
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// MICROPHONE
 // =====================================================
 
 micBtn.addEventListener(
@@ -289,19 +565,17 @@ micBtn.addEventListener(
         }
 
 
-        const audioTracks =
-            localStream.getAudioTracks();
+        localStream
+            .getAudioTracks()
+            .forEach(track => {
 
+                track.enabled =
+                    !track.enabled;
 
-        audioTracks.forEach(track => {
+                microphoneEnabled =
+                    track.enabled;
 
-            track.enabled =
-                !track.enabled;
-
-            microphoneEnabled =
-                track.enabled;
-
-        });
+            });
 
 
         micBtn.textContent =
@@ -314,7 +588,7 @@ micBtn.addEventListener(
 
 
 // =====================================================
-// CAMERA BUTTON
+// CAMERA
 // =====================================================
 
 cameraBtn.addEventListener(
@@ -326,19 +600,17 @@ cameraBtn.addEventListener(
         }
 
 
-        const videoTracks =
-            localStream.getVideoTracks();
+        localStream
+            .getVideoTracks()
+            .forEach(track => {
 
+                track.enabled =
+                    !track.enabled;
 
-        videoTracks.forEach(track => {
+                cameraEnabled =
+                    track.enabled;
 
-            track.enabled =
-                !track.enabled;
-
-            cameraEnabled =
-                track.enabled;
-
-        });
+            });
 
 
         cameraBtn.textContent =
@@ -364,6 +636,38 @@ switchCameraBtn.addEventListener(
 
         await startCamera();
 
+
+        // Replace video track in
+        // existing WebRTC connections
+
+        const newVideoTrack =
+            localStream.getVideoTracks()[0];
+
+
+        Object.values(
+            peerConnections
+        ).forEach(pc => {
+
+            const sender =
+                pc.getSenders()
+                    .find(
+                        s =>
+                            s.track &&
+                            s.track.kind ===
+                            "video"
+                    );
+
+
+            if (sender) {
+
+                sender.replaceTrack(
+                    newVideoTrack
+                );
+
+            }
+
+        });
+
     }
 );
 
@@ -375,11 +679,6 @@ switchCameraBtn.addEventListener(
 endLiveBtn.addEventListener(
     "click",
     async () => {
-
-        if (isEnding) {
-            return;
-        }
-
 
         const confirmEnd =
             confirm(
@@ -404,18 +703,23 @@ endLiveBtn.addEventListener(
 
 async function endLive() {
 
+    if (isEnding) {
+        return;
+    }
+
+
     try {
 
         isEnding = true;
 
+
         endLiveBtn.disabled =
             true;
+
 
         endLiveBtn.textContent =
             "Ending...";
 
-
-        // Stop camera
 
         if (localStream) {
 
@@ -428,7 +732,14 @@ async function endLive() {
         }
 
 
-        // Update Firestore
+        Object.values(
+            peerConnections
+        ).forEach(pc => {
+
+            pc.close();
+
+        });
+
 
         const streamRef =
             doc(
@@ -453,13 +764,6 @@ async function endLive() {
         );
 
 
-        console.log(
-            "✅ Live stream ended"
-        );
-
-
-        // Return to streaming page
-
         window.location.href =
             "stream.html";
 
@@ -467,7 +771,7 @@ async function endLive() {
     } catch (error) {
 
         console.error(
-            "Error ending live:",
+            "End live error:",
             error
         );
 
@@ -491,20 +795,20 @@ async function endLive() {
 
 
 // =====================================================
-// BACK BUTTON
+// BACK
 // =====================================================
 
 backBtn.addEventListener(
     "click",
     async () => {
 
-        const leave =
+        const confirmLeave =
             confirm(
-                "Your live stream is still running. Do you want to end it?"
+                "Your live stream is running. End it?"
             );
 
 
-        if (!leave) {
+        if (!confirmLeave) {
             return;
         }
 
@@ -516,7 +820,7 @@ backBtn.addEventListener(
 
 
 // =====================================================
-// CLEAN UP WHEN PAGE CLOSES
+// CLEANUP
 // =====================================================
 
 window.addEventListener(
@@ -532,6 +836,15 @@ window.addEventListener(
                 });
 
         }
+
+
+        Object.values(
+            peerConnections
+        ).forEach(pc => {
+
+            pc.close();
+
+        });
 
     }
 );
