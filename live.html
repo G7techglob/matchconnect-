@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>MatchConnect Live</title>
+
+    <link
+        rel="stylesheet"
+        href="live.css"
+    >
+
+</head>
+
+<body>
+
+<header class="live-header">
+
+    <button
+        id="backBtn"
+        type="button"
+    >
+        ←
+    </button>
+
+    <div class="live-status">
+        <span class="live-dot"></span>
+        LIVE
+    </div>
+
+    <div class="viewer-count">
+
+        👁
+
+        <span id="viewerCount">
+            0
+        </span>
+
+    </div>
+
+</header>
+
+
+<main class="live-container">
+
+    <!-- CAMERA -->
+
+    <section class="camera-section">
+
+        <video
+            id="localVideo"
+            autoplay
+            muted
+            playsinline
+        ></video>
+
+        <div class="camera-overlay">
+
+            <div id="streamTitle">
+                Loading...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- STREAM INFORMATION -->
+
+    <section class="stream-info">
+
+        <h2 id="title">
+            Loading...
+        </h2>
+
+        <p id="description"></p>
+
+    </section>
+
+
+    <!-- LIVE CHAT -->
+
+    <section class="live-chat">
+
+        <h3>
+            Live Chat
+        </h3>
+
+        <div
+            id="chatMessages"
+            class="chat-messages"
+        ></div>
+
+
+        <div class="chat-input">
+
+            <input
+                id="chatInput"
+                type="text"
+                placeholder="Say something..."
+            >
+
+            <button
+                id="sendChatBtn"
+                type="button"
+            >
+                Send
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- CONTROLS -->
+
+    <section class="live-controls">
+
+        <button
+            id="micBtn"
+            type="button"
+        >
+            🎤
+        </button>
+
+        <button
+            id="cameraBtn"
+            type="button"
+        >
+            📷
+        </button>
+
+        <button
+            id="switchCameraBtn"
+            type="button"
+        >
+            🔄
+        </button>
+
+        <button
+            id="endLiveBtn"
+            class="end-live-btn"
+            type="button"
+        >
+            🛑 End Live
+        </button>
+
+    </section>
+
+</main>
+
+
+<script
+    type="module"
+    src="live.js"
+></script>
+
+</body>
+
+</html>
