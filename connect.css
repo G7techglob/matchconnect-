@@ -98,3 +98,32 @@ body {
     }
 
 }
+
+/* =========================
+   ADVERTISEMENT BILLBOARD
+========================= */
+
+#adBoard{
+    width:100%;
+    position:sticky;
+    top:0;
+    z-index:997;
+    background:#fff;
+    text-align:center;
+    border-bottom:1px solid #eee;
+    margin:0;
+    padding:0;
+}
+
+#adBoard a{
+    display:block;
+    width:100%;
+}
+
+#adBoard img{
+    display:block;
+    width:100%;
+    height:auto;
+    max-height:160px;
+    object-fit:cover;
+}
