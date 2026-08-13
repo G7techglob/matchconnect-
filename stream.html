@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>MatchConnect Streaming</title>
+
+    <link rel="stylesheet" href="stream.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+<header class="stream-header">
+
+    <button
+        class="back-btn"
+        onclick="history.back()"
+    >
+        <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <h2>Streaming</h2>
+
+    <button
+        class="go-live-btn"
+        onclick="location.href='create-live.html'"
+    >
+        <i class="fa-solid fa-video"></i>
+        Go Live
+    </button>
+
+</header>
+
+
+<main class="stream-container">
+
+    <section class="stream-tabs">
+
+        <button
+            class="stream-tab active"
+            id="liveTab"
+        >
+            <i class="fa-solid fa-tower-broadcast"></i>
+            Live
+        </button>
+
+        <button
+            class="stream-tab"
+            id="videoTab"
+        >
+            <i class="fa-solid fa-play"></i>
+            Videos
+        </button>
+
+    </section>
+
+
+    <!-- LIVE STREAMS -->
+
+    <section id="liveSection">
+
+        <h3>Live Now</h3>
+
+        <div
+            id="liveStreams"
+            class="live-stream-grid"
+        >
+        </div>
+
+        <p
+            id="noLiveStreams"
+            class="empty-message"
+        >
+            Nobody is live right now.
+        </p>
+
+    </section>
+
+
+    <!-- VIDEOS -->
+
+    <section
+        id="videoSection"
+        style="display:none;"
+    >
+
+        <h3>Videos</h3>
+
+        <div
+            id="videoFeed"
+            class="video-grid"
+        >
+        </div>
+
+    </section>
+
+</main>
+
+
+<script type="module" src="stream.js"></script>
+
+</body>
+  </html>
