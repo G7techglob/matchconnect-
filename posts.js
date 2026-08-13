@@ -15,25 +15,39 @@ import {
   getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-// UI ELEMENTS
-let postBtn;
-let postContent;
+// =====================================================
+// POSTS FEED
+// =====================================================
+
 let postsContainer;
 
-// INIT AFTER PAGE LOAD
+
+// =====================================================
+// INIT FEED AFTER PAGE LOAD
+// =====================================================
+
 window.addEventListener("DOMContentLoaded", () => {
 
-  postBtn = document.getElementById("postBtn");
-  postContent = document.getElementById("postContent");
-  postsContainer = document.getElementById("postsContainer");
+  postsContainer =
+    document.getElementById("postsContainer");
 
-  if (!postBtn || !postContent || !postsContainer) {
-    console.error("Missing HTML elements for posts system");
+
+  if (!postsContainer) {
+
+    console.error(
+      "❌ Posts container not found."
+    );
+
     return;
   }
 
+
+  console.log(
+    "✅ Posts container connected."
+  );
+
+
   setupFeed();
-  setupPosting();
 
 });
 
@@ -207,52 +221,6 @@ document.addEventListener("click", (e) => {
   window.location.href = `comments.html?postId=${postId}`;
 
 });
-
-// CREATE POST
-function setupPosting() {
-
-  postBtn.addEventListener("click", async () => {
-
-    const content = postContent.value.trim();
-
-    if (!content) return;
-
-    try {
-
-      const user = auth.currentUser;
-
-      if (!user) {
-        alert("Please login first");
-        return;
-      }
-
-      const userProfile = await getDoc(
-  doc(db, "users", user.uid)
-);
-
-const profileData = userProfile.data();
-
-      await addDoc(collection(db, "posts"), {
-        content: content,
-        userId: user.uid,
-        username: profileData.name || user.email,
-        photoURL: profileData.photoURL || "images/default-avatar.png",
-        likes: 0,
-        comments: 0,
-        createdAt: serverTimestamp()
-      });
-
-      postContent.value = "";
-
-    } catch (error) {
-
-      console.error("Post error:", error);
-
-    }
-
-  });
-
-}
 
 document.addEventListener("click", async (e) => {
 
