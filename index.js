@@ -1,3 +1,11 @@
+import { auth } from "./firebase.js";
+
+import {
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+
 // =====================================================
 // LOAD CREATE POST COMPONENT
 // =====================================================
@@ -18,34 +26,43 @@ async function loadCreatePost() {
       return;
     }
 
+
     const response =
-      await fetch("create-post.html");
+      await fetch("./create-post.html");
+
 
     if (!response.ok) {
 
       throw new Error(
-        "Failed to load create-post.html"
+        `Failed to load create-post.html: ${response.status}`
       );
 
     }
 
+
     const html =
       await response.text();
 
+
     container.innerHTML = html;
+
 
     console.log(
       "✅ Create Post HTML loaded."
     );
 
 
-    // Load create-post.js AFTER the HTML is inserted
+    // =====================================================
+    // LOAD CREATE POST JAVASCRIPT
+    // =====================================================
 
     const script =
       document.createElement("script");
 
     script.type = "module";
-    script.src = "create-post.js";
+
+    script.src = "./create-post.js";
+
 
     document.body.appendChild(script);
 
@@ -62,28 +79,31 @@ async function loadCreatePost() {
 }
 
 
-// Start Create Post loader
+// Start Create Post
 
 loadCreatePost();
 
-import { auth } from "./firebase.js";
-import { signOut,
-       onAuthStateChanged
-       } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+// =====================================================
 // CHECK LOGIN STATUS
+// =====================================================
+
 onAuthStateChanged(auth, (user) => {
 
   if (!user) {
-    window.location.href = "login.html";
+
+    window.location.href =
+      "login.html";
+
     return;
   }
-
-  // Dashboard code starts below
 
 });
 
 
-/* MENU */
+// =====================================================
+// MENU
+// =====================================================
 
 const menuBtn =
   document.getElementById("menuBtn");
@@ -91,13 +111,17 @@ const menuBtn =
 const mobileNavbar =
   document.getElementById("mobileNavbar");
 
+
 if (menuBtn && mobileNavbar) {
 
   menuBtn.addEventListener("click", () => {
 
     mobileNavbar.classList.toggle("active");
 
-    if (mobileNavbar.classList.contains("active")) {
+
+    if (
+      mobileNavbar.classList.contains("active")
+    ) {
 
       history.pushState(
         { menu: true },
@@ -108,11 +132,16 @@ if (menuBtn && mobileNavbar) {
 
   });
 
-  /* BACK BUTTON */
+
+  // =====================================================
+  // BACK BUTTON
+  // =====================================================
 
   window.addEventListener("popstate", () => {
 
-    if (mobileNavbar.classList.contains("active")) {
+    if (
+      mobileNavbar.classList.contains("active")
+    ) {
 
       mobileNavbar.classList.remove("active");
 
@@ -120,7 +149,10 @@ if (menuBtn && mobileNavbar) {
 
   });
 
-  /* TAP SCREEN TO CLOSE */
+
+  // =====================================================
+  // TAP SCREEN TO CLOSE
+  // =====================================================
 
   document.addEventListener("click", (e) => {
 
@@ -137,84 +169,175 @@ if (menuBtn && mobileNavbar) {
 
 }
 
-/* START BUTTON */
+
+// =====================================================
+// START BUTTON
+// =====================================================
 
 const startBtn =
   document.getElementById("startBtn");
+
 
 if (startBtn) {
 
   startBtn.addEventListener("click", () => {
 
-    window.location.href = "connect.html";
+    window.location.href =
+      "connect.html";
 
   });
 
 }
 
-/* SETTINGS BUTTON */
 
-const settingsBtn = document.getElementById("settingsBtn");
+// =====================================================
+// SETTINGS BUTTON
+// =====================================================
+
+const settingsBtn =
+  document.getElementById("settingsBtn");
+
 
 if (settingsBtn) {
+
   settingsBtn.addEventListener("click", () => {
-    window.location.href = "settings.html";
+
+    window.location.href =
+      "settings.html";
+
   });
+
 }
 
-/* INITIAL LOAD */
 
-if (typeof loadProfiles === "function") {
-    loadProfiles();
+// =====================================================
+// INITIAL LOAD
+// =====================================================
+
+if (
+  typeof loadProfiles === "function"
+) {
+
+  loadProfiles();
+
 }
+
+
+// =====================================================
+// ADVERTISEMENT
+// =====================================================
+
+const ads = [
+
+  {
+    image:
+      "https://picsum.photos/800/200?random=1",
+
+    link:
+      "https://example.com/ad1"
+  },
+
+  {
+    image:
+      "https://picsum.photos/800/200?random=2",
+
+    link:
+      "https://example.com/ad2"
+  },
+
+  {
+    image:
+      "https://picsum.photos/800/200?random=3",
+
+    link:
+      "https://example.com/ad3"
+  }
+
+];
 
 
 let currentAd = 0;
 
+
 function loadAd() {
-  document.getElementById("adImage").src =
+
+  const adImage =
+    document.getElementById("adImage");
+
+  const adLink =
+    document.getElementById("adLink");
+
+
+  if (!adImage || !adLink) {
+
+    return;
+
+  }
+
+
+  adImage.src =
     ads[currentAd].image;
 
-  document.getElementById("adLink").href =
+
+  adLink.href =
     ads[currentAd].link;
+
 }
+
 
 loadAd();
 
+
 setInterval(() => {
+
   currentAd =
     (currentAd + 1) % ads.length;
 
+
   loadAd();
+
 }, 10000);
 
-const ads = [
-  {
-    image: "https://picsum.photos/800/200?random=1",
-    link: "https://example.com/ad1"
-  },
-  {
-    image: "https://picsum.photos/800/200?random=2",
-    link: "https://example.com/ad2"
-  },
-  {
-    image: "https://picsum.photos/800/200?random=3",
-    link: "https://example.com/ad3"
-  }
-];
 
-const logoutBtn = document.getElementById("desktopLogoutBtn");
+// =====================================================
+// LOGOUT
+// =====================================================
+
+const logoutBtn =
+  document.getElementById(
+    "desktopLogoutBtn"
+  );
+
+
 if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-        try {
-            await signOut(auth);
 
-            alert("Logged out successfully.");
+  logoutBtn.addEventListener(
+    "click",
+    async () => {
 
-            window.location.href = "login.html";
+      try {
 
-        } catch (error) {
-            alert(error.message);
-        }
-    });
+        await signOut(auth);
+
+
+        alert(
+          "Logged out successfully."
+        );
+
+
+        window.location.href =
+          "login.html";
+
+
+      } catch (error) {
+
+        alert(
+          error.message
+        );
+
+      }
+
+    }
+  );
+
 }
