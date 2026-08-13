@@ -32,10 +32,11 @@ function initializeCreatePost() {
         document.getElementById("mediaPostInput");
 
     const postBtn =
-    document.getElementById("postBtn");
+        document.getElementById("postBtn");
 
-const postContent =
-    document.getElementById("postContent");
+    const postContent =
+        document.getElementById("postContent");
+
 
     // =====================================================
     // CHECK ELEMENTS
@@ -44,18 +45,17 @@ const postContent =
     console.log("Create Post elements:", {
         createPostBtn,
         mediaPostInput,
-        profilePostBtn,
-        profilePostContent
+        postBtn,
+        postContent
     });
 
 
     if (
-    !createPostBtn ||
-    !mediaPostInput ||
-    !postBtn ||
-    !postContent
-)
-    {
+        !createPostBtn ||
+        !mediaPostInput ||
+        !postBtn ||
+        !postContent
+    ) {
 
         console.error(
             "❌ Create Post elements not found."
@@ -88,8 +88,8 @@ const postContent =
     // =====================================================
 
     postBtn.addEventListener(
-    "click",
-    async () => {
+        "click",
+        async () => {
 
             console.log("📝 Post button clicked");
 
@@ -116,8 +116,9 @@ const postContent =
             // GET TEXT
             // =====================================================
 
-        const text =
-    postContent.value.trim();
+            const text =
+                postContent.value.trim();
+
 
             // =====================================================
             // GET FILES
@@ -156,8 +157,8 @@ const postContent =
 
                 postBtn.disabled = true;
 
-postBtn.textContent =
-    "Posting...";
+                postBtn.textContent =
+                    "Posting...";
 
 
                 // =====================================================
@@ -275,7 +276,8 @@ postBtn.textContent =
 
                 postContent.value = "";
 
-mediaPostInput.value = "";
+                mediaPostInput.value = "";
+
 
                 // =====================================================
                 // SUCCESS
@@ -284,6 +286,7 @@ mediaPostInput.value = "";
                 alert(
                     "Post published successfully!"
                 );
+
 
             } catch (error) {
 
@@ -303,8 +306,9 @@ mediaPostInput.value = "";
 
                 postBtn.disabled = false;
 
-postBtn.textContent =
-    "Post";
+                postBtn.textContent =
+                    "Post";
+
             }
 
         }
@@ -327,4 +331,4 @@ if (document.getElementById("createPostBtn")) {
         "Create Post HTML is not ready yet."
     );
 
-}
+        }
