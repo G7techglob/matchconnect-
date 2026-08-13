@@ -498,9 +498,9 @@ hr {
 
 .edit-profile-btn {
     display: inline !important;
-    background: none !important;
-    background-color: transparent !important;
-    color: #0095f6 !important;
+    background: transparent !important;
+    color: silver !important;
+    opacity: 0.6;
     padding: 0 !important;
     margin: 0 !important;
     border: none !important;
@@ -509,11 +509,12 @@ hr {
     font-size: 14px !important;
     font-weight: 600 !important;
     text-decoration: none !important;
+    cursor: pointer;
 }
 
 .edit-profile-btn:hover {
-    background: none !important;
-    color: #0077cc !important;
+    color: silver !important;
+    opacity: 1;
 }
 /* =========================
    PROFILE PHOTO + FOLLOW STATS
