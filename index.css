@@ -139,36 +139,6 @@ MENU
 }
 
 /* =========================
-ADVERTISEMENT - EMBEDDED IN DASHBOARD
-========================= */
-
-#adBoard{
-    width:100%;
-    position:sticky;
-    top:60px;
-    z-index:997;
-    background:#fff;
-    text-align:center;
-    border-bottom:1px solid #eee;
-    margin:0;
-    padding:0;
-}
-
-main{
-    margin-top:60px;
-    padding:0 0 90px;
-    width:100%;
-}
-
-#adBoard img{
-    width:100%;
-    height:auto;
-    max-height:160px;
-    object-fit:cover;
-    border-radius:0;
-}
-
-/* =========================
 HERO
 ========================= */
 
