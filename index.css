@@ -97,7 +97,16 @@ header nav a:hover{
     display:flex;
     gap:15px;
 }
+/* =========================
+   SPACE BELOW TOP HEADER
+========================= */
 
+main{
+    margin-top:60px;
+    padding-top:20px;
+    padding-bottom:90px;
+    width:100%;
+}
 /* =========================
 MENU
 ========================= */
