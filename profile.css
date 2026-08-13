@@ -500,7 +500,7 @@ hr {
     display: inline !important;
     background: transparent !important;
     color: silver !important;
-    opacity: 0.6;
+    opacity: 0.85;
     padding: 0 !important;
     margin: 0 !important;
     border: none !important;
@@ -681,12 +681,13 @@ hr {
 }
 
 .connect-icon i {
+    color: silver !important;
+    opacity: 0.85;
     font-size: 22px;
-    color: rgba(192, 192, 192, 0.6); /* Transparent silver */
-    transition: color 0.2s ease;
+    transition: opacity 0.2s ease;
 }
 
 .connect-icon:hover i,
 .connect-icon:active i {
-    color: rgba(192, 192, 192, 1); /* Solid silver when tapped */
+    opacity: 1;
 }
