@@ -8,7 +8,7 @@ import {
 
 const searchInput = document.getElementById("searchInput");
 const searchResults = document.getElementById("searchResults");
-
+ 
 
 // =====================================================
 // ESCAPE HTML
