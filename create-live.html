@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Go Live</title>
+
+    <link rel="stylesheet" href="create-live.css">
+
+</head>
+
+<body>
+
+<div class="create-live-container">
+
+    <header>
+        <button onclick="history.back()">←</button>
+        <h2>Go Live</h2>
+    </header>
+
+
+    <video
+        id="cameraPreview"
+        autoplay
+        muted
+        playsinline
+    ></video>
+
+
+    <input
+        id="liveTitle"
+        type="text"
+        placeholder="What are you streaming?"
+        maxlength="100"
+    >
+
+
+    <textarea
+        id="liveDescription"
+        placeholder="Add a description..."
+        maxlength="500"
+    ></textarea>
+
+
+    <button
+        id="startLiveBtn"
+        class="start-live-btn"
+    >
+        🔴 Start Live
+    </button>
+
+</div>
+
+
+<script
+    type="module"
+    src="create-live.js"
+></script>
+
+</body>
+
+</html>
