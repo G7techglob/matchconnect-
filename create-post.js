@@ -16,88 +16,77 @@ import {
 console.log("Create Post JS is working");
 
 
-// ======================================
+// =====================================================
 // LOAD CREATE POST HTML
-// ======================================
+// =====================================================
 
-const createPostContainer =
-    document.getElementById("create-post-container");
+document.addEventListener("DOMContentLoaded", async () => {
 
-if (!createPostContainer) {
+    const container =
+        document.getElementById("create-post-container");
 
-    console.log(
-        "create-post-container not found on this page."
-    );
+    if (!container) {
+        console.error("create-post-container not found");
+        return;
+    }
 
-} else {
+    try {
 
-    fetch("create-post.html")
-        .then(response => {
+        const response =
+            await fetch("create-post.html");
 
-            if (!response.ok) {
-                throw new Error(
-                    "Failed to load create-post.html"
-                );
-            }
+        if (!response.ok) {
+            throw new Error("Failed to load create-post.html");
+        }
 
-            return response.text();
+        const html =
+            await response.text();
 
-        })
-
-        .then(html => {
-
-            // Insert Create Post HTML
-            createPostContainer.innerHTML = html;
+        container.innerHTML = html;
 
 
-            // ======================================
-            // LOAD CREATE POST CSS
-            // ======================================
+        // =====================================================
+        // LOAD CREATE POST CSS
+        // =====================================================
 
-            if (
-                !document.querySelector(
-                    'link[href="create-post.css"]'
-                )
-            ) {
+        if (!document.querySelector('link[href="create-post.css"]')) {
 
-                const style =
-                    document.createElement("link");
+            const css =
+                document.createElement("link");
 
-                style.rel = "stylesheet";
-                style.href = "create-post.css";
+            css.rel = "stylesheet";
+            css.href = "create-post.css";
 
-                document.head.appendChild(style);
-            }
+            document.head.appendChild(css);
+        }
 
 
-            // ======================================
-            // INITIALIZE CREATE POST
-            // ======================================
-
-            initializeCreatePost();
-
-        })
-
-        .catch(error => {
-
-            console.error(
-                "Create Post loading error:",
-                error
-            );
-
-        });
-}
+        console.log("Create Post HTML loaded");
 
 
-// ======================================
+        // =====================================================
+        // START CREATE POST FUNCTION
+        // =====================================================
+
+        initializeCreatePost();
+
+    } catch (error) {
+
+        console.error(
+            "Error loading Create Post:",
+            error
+        );
+
+    }
+
+});
+
+
+// =====================================================
 // CREATE POST FUNCTION
-// ======================================
+// =====================================================
 
 function initializeCreatePost() {
-
-    // ======================================
-    // UI ELEMENTS
-    // ======================================
 
     const createPostBtn =
         document.getElementById("createPostBtn");
@@ -112,70 +101,51 @@ function initializeCreatePost() {
         document.getElementById("profilePostContent");
 
 
-    // ======================================
+    // =====================================================
     // CHECK ELEMENTS
-    // ======================================
+    // =====================================================
 
-    if (!createPostBtn) {
-
-        console.error(
-            "createPostBtn not found."
-        );
-
-        return;
-    }
-
-    if (!mediaPostInput) {
+    if (
+        !createPostBtn ||
+        !mediaPostInput ||
+        !profilePostBtn ||
+        !profilePostContent
+    ) {
 
         console.error(
-            "mediaPostInput not found."
-        );
-
-        return;
-    }
-
-    if (!profilePostBtn) {
-
-        console.error(
-            "profilePostBtn not found."
-        );
-
-        return;
-    }
-
-    if (!profilePostContent) {
-
-        console.error(
-            "profilePostContent not found."
+            "Create Post elements not found"
         );
 
         return;
     }
 
 
-    // ======================================
-    // OPEN PHOTO / VIDEO SELECTOR
-    // ======================================
-
-    createPostBtn.addEventListener(
-        "click",
-        () => {
-
-            mediaPostInput.click();
-
-        }
+    console.log(
+        "All Create Post elements connected"
     );
 
 
-    // ======================================
-    // CREATE POST
-    // ======================================
+    // =====================================================
+    // PHOTO / VIDEO BUTTON
+    // =====================================================
+
+    createPostBtn.addEventListener("click", () => {
+
+        mediaPostInput.click();
+
+    });
+
+
+    // =====================================================
+    // POST BUTTON
+    // =====================================================
 
     profilePostBtn.addEventListener(
         "click",
         async () => {
 
             const user = auth.currentUser;
+
 
             if (!user) {
 
@@ -188,16 +158,18 @@ function initializeCreatePost() {
             const text =
                 profilePostContent.value.trim();
 
+
             const files =
                 Array.from(
                     mediaPostInput.files || []
                 );
 
 
-            if (
-                !text &&
-                files.length === 0
-            ) {
+            // =====================================================
+            // CHECK EMPTY POST
+            // =====================================================
+
+            if (!text && files.length === 0) {
 
                 alert(
                     "Please write something or select a photo/video."
@@ -209,16 +181,15 @@ function initializeCreatePost() {
 
             try {
 
-                // Prevent double clicks
                 profilePostBtn.disabled = true;
 
                 profilePostBtn.textContent =
                     "Posting...";
 
 
-                // ======================================
+                // =====================================================
                 // UPLOAD MEDIA
-                // ======================================
+                // =====================================================
 
                 const media = [];
 
@@ -228,11 +199,9 @@ function initializeCreatePost() {
                     const filePath =
                         `posts/${user.uid}/${Date.now()}_${file.name}`;
 
+
                     const storageRef =
-                        ref(
-                            storage,
-                            filePath
-                        );
+                        ref(storage, filePath);
 
 
                     await uploadBytes(
@@ -252,9 +221,7 @@ function initializeCreatePost() {
                         url: downloadURL,
 
                         type:
-                            file.type.startsWith(
-                                "video/"
-                            )
+                            file.type.startsWith("video/")
                                 ? "video"
                                 : "image"
 
@@ -263,9 +230,9 @@ function initializeCreatePost() {
                 }
 
 
-                // ======================================
-                // GET USER INFORMATION
-                // ======================================
+                // =====================================================
+                // USER INFORMATION
+                // =====================================================
 
                 const username =
                     user.displayName ||
@@ -277,37 +244,27 @@ function initializeCreatePost() {
                     user.photoURL || "";
 
 
-                // ======================================
+                // =====================================================
                 // SAVE POST
-                // ======================================
+                // =====================================================
 
                 await addDoc(
-                    collection(
-                        db,
-                        "posts"
-                    ),
+                    collection(db, "posts"),
                     {
 
-                        userId:
-                            user.uid,
+                        userId: user.uid,
 
-                        username:
-                            username,
+                        username: username,
 
-                        photoURL:
-                            photoURL,
+                        photoURL: photoURL,
 
-                        content:
-                            text,
+                        content: text,
 
-                        media:
-                            media,
+                        media: media,
 
-                        likes:
-                            0,
+                        likes: 0,
 
-                        comments:
-                            0,
+                        comments: 0,
 
                         createdAt:
                             serverTimestamp()
@@ -316,9 +273,9 @@ function initializeCreatePost() {
                 );
 
 
-                // ======================================
+                // =====================================================
                 // CLEAR FORM
-                // ======================================
+                // =====================================================
 
                 profilePostContent.value = "";
 
@@ -356,4 +313,4 @@ function initializeCreatePost() {
         }
     );
 
-        }
+}
