@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Watch Live</title>
+
+    <link
+        rel="stylesheet"
+        href="watch-live.css"
+    >
+
+</head>
+
+<body>
+
+<header class="watch-header">
+
+    <button onclick="history.back()">
+        ←
+    </button>
+
+    <div id="streamTitle">
+        Live Stream
+    </div>
+
+</header>
+
+
+<main>
+
+    <div class="video-container">
+
+        <video
+            id="remoteVideo"
+            autoplay
+            playsinline
+        ></video>
+
+        <div class="live-overlay">
+            <span>LIVE</span>
+
+            <span>
+                👁
+                <span id="viewerCount">
+                    0
+                </span>
+            </span>
+        </div>
+
+    </div>
+
+
+    <section class="stream-info">
+
+        <h2 id="title">
+            Loading...
+        </h2>
+
+        <div id="hostInfo"></div>
+
+        <div class="stream-actions">
+
+            <button id="likeBtn">
+                ❤️ Like
+            </button>
+
+            <button id="shareBtn">
+                📤 Share
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <section class="live-chat">
+
+        <h3>Live Chat</h3>
+
+        <div
+            id="chatMessages"
+            class="chat-messages"
+        ></div>
+
+
+        <div class="chat-input">
+
+            <input
+                id="chatInput"
+                type="text"
+                placeholder="Say something..."
+            >
+
+            <button id="sendChatBtn">
+                Send
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script
+    type="module"
+    src="watch-live.js"
+></script>
+
+</body>
+
+</html>
