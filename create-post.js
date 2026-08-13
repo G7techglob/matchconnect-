@@ -17,73 +17,7 @@ console.log("Create Post JS is working");
 
 
 // =====================================================
-// LOAD CREATE POST HTML
-// =====================================================
-
-document.addEventListener("DOMContentLoaded", async () => {
-
-    const container =
-        document.getElementById("create-post-container");
-
-    if (!container) {
-        console.error("create-post-container not found");
-        return;
-    }
-
-    try {
-
-        const response =
-            await fetch("create-post.html");
-
-        if (!response.ok) {
-            throw new Error("Failed to load create-post.html");
-        }
-
-        const html =
-            await response.text();
-
-        container.innerHTML = html;
-
-
-        // =====================================================
-        // LOAD CREATE POST CSS
-        // =====================================================
-
-        if (!document.querySelector('link[href="create-post.css"]')) {
-
-            const css =
-                document.createElement("link");
-
-            css.rel = "stylesheet";
-            css.href = "create-post.css";
-
-            document.head.appendChild(css);
-        }
-
-
-        console.log("Create Post HTML loaded");
-
-
-        // =====================================================
-        // START CREATE POST FUNCTION
-        // =====================================================
-
-        initializeCreatePost();
-
-    } catch (error) {
-
-        console.error(
-            "Error loading Create Post:",
-            error
-        );
-
-    }
-
-});
-
-
-// =====================================================
-// CREATE POST FUNCTION
+// WAIT FOR CREATE POST HTML
 // =====================================================
 
 function initializeCreatePost() {
@@ -314,3 +248,14 @@ function initializeCreatePost() {
     );
 
 }
+
+
+// =====================================================
+// START
+// =====================================================
+
+// profile.js loads create-post.html FIRST.
+// Then profile.js imports this file.
+// Therefore the HTML should already exist.
+
+initializeCreatePost();
