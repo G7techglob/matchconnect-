@@ -1,13 +1,35 @@
-const menuBtn = document.getElementById("menuBtn");
-const nav = document.getElementById("nav");
+// =====================================================
+// MATCHCONNECT HUB
+// =====================================================
 
-menuBtn.addEventListener("click", () => {
-    nav.classList.toggle("active");
+console.log("✅ MatchConnect Hub Loaded");
+
+// Optional welcome animation
+window.addEventListener("load", () => {
+
+    document.body.style.opacity = "0";
+
+    setTimeout(() => {
+        document.body.style.transition = "opacity .4s";
+        document.body.style.opacity = "1";
+    }, 100);
+
 });
 
-// close menu when clicking a link (better UX)
-document.querySelectorAll(".nav a").forEach(link => {
-    link.addEventListener("click", () => {
-        nav.classList.remove("active");
+// Highlight the selected card
+
+const cards = document.querySelectorAll(".card");
+
+cards.forEach(card => {
+
+    card.addEventListener("click", () => {
+
+        card.style.transform = "scale(.97)";
+
+        setTimeout(() => {
+            card.style.transform = "";
+        }, 150);
+
     });
+
 });
