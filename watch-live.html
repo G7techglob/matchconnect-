@@ -23,7 +23,10 @@
 
 <header class="watch-header">
 
-    <button onclick="history.back()">
+    <button
+        onclick="history.back()"
+        type="button"
+    >
         ←
     </button>
 
@@ -42,17 +45,25 @@
             id="remoteVideo"
             autoplay
             playsinline
+            controls
         ></video>
 
         <div class="live-overlay">
-            <span>LIVE</span>
 
             <span>
+                LIVE
+            </span>
+
+            <span>
+
                 👁
+
                 <span id="viewerCount">
                     0
                 </span>
+
             </span>
+
         </div>
 
     </div>
@@ -66,13 +77,20 @@
 
         <div id="hostInfo"></div>
 
+
         <div class="stream-actions">
 
-            <button id="likeBtn">
+            <button
+                id="likeBtn"
+                type="button"
+            >
                 ❤️ Like
             </button>
 
-            <button id="shareBtn">
+            <button
+                id="shareBtn"
+                type="button"
+            >
                 📤 Share
             </button>
 
@@ -83,7 +101,9 @@
 
     <section class="live-chat">
 
-        <h3>Live Chat</h3>
+        <h3>
+            Live Chat
+        </h3>
 
         <div
             id="chatMessages"
@@ -99,7 +119,10 @@
                 placeholder="Say something..."
             >
 
-            <button id="sendChatBtn">
+            <button
+                id="sendChatBtn"
+                type="button"
+            >
                 Send
             </button>
 
