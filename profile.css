@@ -673,20 +673,19 @@ hr {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    text-decoration: none;
     background: transparent;
     border: none;
+    text-decoration: none;
     padding: 0;
-    opacity: 0.6;
-    transition: opacity 0.2s ease;
 }
 
 .connect-icon i {
     font-size: 22px;
-    color: #1877f2;
+    color: rgba(192, 192, 192, 0.6); /* Transparent silver */
+    transition: color 0.2s ease;
 }
 
-.connect-icon:hover,
-.connect-icon:focus {
-    opacity: 1;
+.connect-icon:hover i,
+.connect-icon:active i {
+    color: rgba(192, 192, 192, 1); /* Solid silver when tapped */
 }
