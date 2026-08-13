@@ -31,12 +31,11 @@ function initializeCreatePost() {
     const mediaPostInput =
         document.getElementById("mediaPostInput");
 
-    const profilePostBtn =
-        document.getElementById("profilePostBtn");
+    const postBtn =
+    document.getElementById("postBtn");
 
-    const profilePostContent =
-        document.getElementById("profilePostContent");
-
+const postContent =
+    document.getElementById("postContent");
 
     // =====================================================
     // CHECK ELEMENTS
@@ -51,11 +50,12 @@ function initializeCreatePost() {
 
 
     if (
-        !createPostBtn ||
-        !mediaPostInput ||
-        !profilePostBtn ||
-        !profilePostContent
-    ) {
+    !createPostBtn ||
+    !mediaPostInput ||
+    !postBtn ||
+    !postContent
+)
+    {
 
         console.error(
             "❌ Create Post elements not found."
@@ -87,9 +87,9 @@ function initializeCreatePost() {
     // POST BUTTON
     // =====================================================
 
-    profilePostBtn.addEventListener(
-        "click",
-        async () => {
+    postBtn.addEventListener(
+    "click",
+    async () => {
 
             console.log("📝 Post button clicked");
 
@@ -116,9 +116,8 @@ function initializeCreatePost() {
             // GET TEXT
             // =====================================================
 
-            const text =
-                profilePostContent.value.trim();
-
+        const text =
+    postContent.value.trim();
 
             // =====================================================
             // GET FILES
@@ -155,10 +154,10 @@ function initializeCreatePost() {
                 // DISABLE POST BUTTON
                 // =====================================================
 
-                profilePostBtn.disabled = true;
+                postBtn.disabled = true;
 
-                profilePostBtn.textContent =
-                    "Posting...";
+postBtn.textContent =
+    "Posting...";
 
 
                 // =====================================================
@@ -274,10 +273,9 @@ function initializeCreatePost() {
                 // CLEAR FORM
                 // =====================================================
 
-                profilePostContent.value = "";
+                postContent.value = "";
 
-                mediaPostInput.value = "";
-
+mediaPostInput.value = "";
 
                 // =====================================================
                 // SUCCESS
@@ -286,14 +284,6 @@ function initializeCreatePost() {
                 alert(
                     "Post published successfully!"
                 );
-
-
-                // =====================================================
-                // RELOAD PROFILE
-                // =====================================================
-
-                window.location.reload();
-
 
             } catch (error) {
 
@@ -311,11 +301,10 @@ function initializeCreatePost() {
 
             } finally {
 
-                profilePostBtn.disabled = false;
+                postBtn.disabled = false;
 
-                profilePostBtn.textContent =
-                    "Post";
-
+postBtn.textContent =
+    "Post";
             }
 
         }
