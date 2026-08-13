@@ -13,14 +13,17 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
 
-console.log("Create Post JS is working");
+console.log("✅ Create Post JS is working");
 
 
 // =====================================================
-// WAIT FOR CREATE POST HTML
+// INITIALIZE CREATE POST
 // =====================================================
 
 function initializeCreatePost() {
+
+    console.log("🔄 Initializing Create Post...");
+
 
     const createPostBtn =
         document.getElementById("createPostBtn");
@@ -39,6 +42,14 @@ function initializeCreatePost() {
     // CHECK ELEMENTS
     // =====================================================
 
+    console.log("Create Post elements:", {
+        createPostBtn,
+        mediaPostInput,
+        profilePostBtn,
+        profilePostContent
+    });
+
+
     if (
         !createPostBtn ||
         !mediaPostInput ||
@@ -47,7 +58,7 @@ function initializeCreatePost() {
     ) {
 
         console.error(
-            "Create Post elements not found"
+            "❌ Create Post elements not found."
         );
 
         return;
@@ -55,7 +66,7 @@ function initializeCreatePost() {
 
 
     console.log(
-        "All Create Post elements connected"
+        "✅ All Create Post elements connected."
     );
 
 
@@ -64,6 +75,8 @@ function initializeCreatePost() {
     // =====================================================
 
     createPostBtn.addEventListener("click", () => {
+
+        console.log("📷 Photo/Video button clicked");
 
         mediaPostInput.click();
 
@@ -78,7 +91,17 @@ function initializeCreatePost() {
         "click",
         async () => {
 
+            console.log("📝 Post button clicked");
+
+
+            // =====================================================
+            // CHECK USER
+            // =====================================================
+
             const user = auth.currentUser;
+
+
+            console.log("Current user:", user);
 
 
             if (!user) {
@@ -89,14 +112,27 @@ function initializeCreatePost() {
             }
 
 
+            // =====================================================
+            // GET TEXT
+            // =====================================================
+
             const text =
                 profilePostContent.value.trim();
 
+
+            // =====================================================
+            // GET FILES
+            // =====================================================
 
             const files =
                 Array.from(
                     mediaPostInput.files || []
                 );
+
+
+            console.log("Post text:", text);
+
+            console.log("Selected files:", files);
 
 
             // =====================================================
@@ -115,6 +151,10 @@ function initializeCreatePost() {
 
             try {
 
+                // =====================================================
+                // DISABLE POST BUTTON
+                // =====================================================
+
                 profilePostBtn.disabled = true;
 
                 profilePostBtn.textContent =
@@ -129,6 +169,12 @@ function initializeCreatePost() {
 
 
                 for (const file of files) {
+
+                    console.log(
+                        "Uploading:",
+                        file.name
+                    );
+
 
                     const filePath =
                         `posts/${user.uid}/${Date.now()}_${file.name}`;
@@ -161,6 +207,12 @@ function initializeCreatePost() {
 
                     });
 
+
+                    console.log(
+                        "✅ File uploaded:",
+                        downloadURL
+                    );
+
                 }
 
 
@@ -182,7 +234,12 @@ function initializeCreatePost() {
                 // SAVE POST
                 // =====================================================
 
-                await addDoc(
+                console.log(
+                    "Saving post to Firestore..."
+                );
+
+
+                const postRef = await addDoc(
                     collection(db, "posts"),
                     {
 
@@ -207,6 +264,12 @@ function initializeCreatePost() {
                 );
 
 
+                console.log(
+                    "✅ Post saved:",
+                    postRef.id
+                );
+
+
                 // =====================================================
                 // CLEAR FORM
                 // =====================================================
@@ -216,15 +279,26 @@ function initializeCreatePost() {
                 mediaPostInput.value = "";
 
 
+                // =====================================================
+                // SUCCESS
+                // =====================================================
+
                 alert(
                     "Post published successfully!"
                 );
 
 
+                // =====================================================
+                // RELOAD PROFILE
+                // =====================================================
+
+                window.location.reload();
+
+
             } catch (error) {
 
                 console.error(
-                    "Create post error:",
+                    "❌ Create post error:",
                     error
                 );
 
@@ -253,9 +327,5 @@ function initializeCreatePost() {
 // =====================================================
 // START
 // =====================================================
-
-// profile.js loads create-post.html FIRST.
-// Then profile.js imports this file.
-// Therefore the HTML should already exist.
 
 initializeCreatePost();
