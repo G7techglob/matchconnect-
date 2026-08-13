@@ -1,3 +1,71 @@
+// =====================================================
+// LOAD CREATE POST COMPONENT
+// =====================================================
+
+async function loadCreatePost() {
+
+  try {
+
+    const container =
+      document.getElementById("create-post-container");
+
+    if (!container) {
+
+      console.error(
+        "❌ Create Post container not found."
+      );
+
+      return;
+    }
+
+    const response =
+      await fetch("create-post.html");
+
+    if (!response.ok) {
+
+      throw new Error(
+        "Failed to load create-post.html"
+      );
+
+    }
+
+    const html =
+      await response.text();
+
+    container.innerHTML = html;
+
+    console.log(
+      "✅ Create Post HTML loaded."
+    );
+
+
+    // Load create-post.js AFTER the HTML is inserted
+
+    const script =
+      document.createElement("script");
+
+    script.type = "module";
+    script.src = "create-post.js";
+
+    document.body.appendChild(script);
+
+
+  } catch (error) {
+
+    console.error(
+      "❌ Failed to load Create Post:",
+      error
+    );
+
+  }
+
+}
+
+
+// Start Create Post loader
+
+loadCreatePost();
+
 import { auth } from "./firebase.js";
 import { signOut,
        onAuthStateChanged
