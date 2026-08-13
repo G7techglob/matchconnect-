@@ -9,7 +9,7 @@
 
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background: #f4f4f4; /* everything blends into this */
+  background: #f4f4f4;
   color: #222;
   padding-bottom: 90px;
 }
@@ -19,68 +19,186 @@ body {
 ========================= */
 h2 {
   text-align: center;
-  margin-top: 20px;
+  margin-top: 18px;
+  margin-bottom: 15px;
   font-size: 22px;
+  font-weight: 600;
 }
 
 /* =========================
-   SEARCH INPUT (FLAT STYLE)
+   SEARCH BOX
 ========================= */
-#searchInput {
-  display: block;
-  width: 90%;
+.search-box {
+  width: 92%;
   max-width: 500px;
-  margin: 20px auto;
-  padding: 12px 15px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 16px;
-  outline: none;
+  height: 48px;
+  margin: 0 auto 18px;
+
+  display: flex;
+  align-items: center;
+
   background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 24px;
+
+  padding: 0 15px;
+
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.06);
+}
+
+.search-box i {
+  font-size: 16px;
+  color: #888;
+  margin-right: 10px;
+}
+
+#searchInput {
+  flex: 1;
+
+  width: 100%;
+  height: 100%;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  font-size: 16px;
+  color: #222;
+}
+
+#searchInput::placeholder {
+  color: #999;
 }
 
 /* =========================
-   RESULTS AREA (NO CARDS HERE)
+   RESULTS AREA
 ========================= */
 #searchResults {
-  width: 90%;
+  width: 92%;
   max-width: 500px;
-  margin: 10px auto;
+  margin: 0 auto;
 }
 
 /* =========================
-   ONLY BUTTONS LOOK LIKE CARDS
+   RESULT ITEM
 ========================= */
 .result-item {
+  width: 100%;
+  min-height: 65px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+
+  background: #fff;
+
+  padding: 10px 12px;
+  margin-bottom: 8px;
+
+  border-radius: 12px;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+
+  transition: transform 0.15s ease,
+              box-shadow 0.15s ease;
 }
 
-/* username stays flat (no card) */
+.result-item:active {
+  transform: scale(0.98);
+}
+
+/* =========================
+   RESULT USER INFORMATION
+========================= */
 .result-item span {
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
+  color: #222;
+
+  flex: 1;
+  margin-left: 10px;
 }
 
-/* ONLY BUTTON becomes card */
+/* =========================
+   RESULT BUTTON
+========================= */
 .result-item button {
+  flex-shrink: 0;
+
   padding: 8px 14px;
+
   border: none;
-  background: #fff;
-  border-radius: 12px;
+  border-radius: 18px;
+
+  background: #1877f2;
+  color: #fff;
+
+  font-size: 13px;
+  font-weight: 600;
+
   cursor: pointer;
 
-  /* card effect only on button */
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  font-size: 13px;
   transition: 0.2s ease;
 }
 
-.result-item button:hover {
-  transform: scale(1.05);
-  background: #f0f0f0;
+.result-item button:active {
+  transform: scale(0.95);
+}
+
+/* =========================
+   PROFILE IMAGE
+========================= */
+.result-item img {
+  width: 45px;
+  height: 45px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  flex-shrink: 0;
+
+  border: 1px solid #eee;
+}
+
+/* =========================
+   POST RESULT
+========================= */
+.result-post {
+  background: #fff;
+
+  padding: 13px;
+  margin-bottom: 10px;
+
+  border-radius: 12px;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.result-post .post-username {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.result-post .post-content {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #444;
+}
+
+/* =========================
+   NO RESULTS
+========================= */
+.no-results {
+  text-align: center;
+
+  margin-top: 30px;
+
+  color: #888;
+
+  font-size: 14px;
 }
 
 /* =========================
@@ -89,5 +207,46 @@ h2 {
 #navbar-container {
   position: fixed;
   bottom: 0;
+  left: 0;
+
   width: 100%;
+
+  z-index: 1000;
+}
+
+/* =========================
+   MOBILE
+========================= */
+@media (max-width: 600px) {
+
+  h2 {
+    font-size: 21px;
+  }
+
+  #searchResults {
+    width: 94%;
+  }
+
+  .search-box {
+    width: 94%;
+  }
+
+  .result-item {
+    min-height: 62px;
+    padding: 9px 10px;
+  }
+
+  .result-item img {
+    width: 42px;
+    height: 42px;
+  }
+
+  .result-item span {
+    font-size: 14px;
+  }
+
+  .result-item button {
+    padding: 7px 12px;
+    font-size: 12px;
+  }
 }
