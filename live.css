@@ -1,0 +1,153 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #000;
+    color: #fff;
+}
+
+.live-header {
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    background: #111;
+}
+
+.live-header button {
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 24px;
+}
+
+.live-status {
+    font-weight: bold;
+}
+
+.live-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    background: red;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.viewer-count {
+    font-size: 14px;
+}
+
+.live-container {
+    max-width: 900px;
+    margin: auto;
+}
+
+.camera-section {
+    position: relative;
+    width: 100%;
+    background: #111;
+}
+
+#localVideo {
+    display: block;
+    width: 100%;
+    max-height: 65vh;
+    object-fit: contain;
+    background: #000;
+}
+
+.camera-overlay {
+    position: absolute;
+    left: 15px;
+    bottom: 15px;
+    background: rgba(0, 0, 0, .65);
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+.stream-info {
+    padding: 15px;
+    background: #111;
+}
+
+.stream-info h2 {
+    margin: 0 0 8px;
+}
+
+.stream-info p {
+    margin: 0;
+    color: #bbb;
+}
+
+.live-chat {
+    padding: 15px;
+    background: #151515;
+}
+
+.chat-messages {
+    height: 180px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.chat-input {
+    display: flex;
+    gap: 8px;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+}
+
+.chat-input button {
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+}
+
+.live-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: #111;
+}
+
+.live-controls button {
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+}
+
+.live-controls .end-live-btn {
+    width: auto;
+    border-radius: 25px;
+    padding: 0 18px;
+    background: #e53935;
+    color: white;
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+
+    #localVideo {
+        height: 55vh;
+        object-fit: cover;
+    }
+
+    .live-controls {
+        gap: 8px;
+    }
+
+  }
