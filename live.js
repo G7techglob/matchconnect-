@@ -87,6 +87,10 @@ let peerConnections = {};
 
 let isEnding = false;
 
+let isHost = false;
+
+let viewerPeerConnection = null;
+
 
 // =====================================================
 // WEBRTC CONFIG
@@ -121,8 +125,6 @@ if (!streamId) {
         "stream.html";
 
 }
-
-
 // =====================================================
 // AUTH
 // =====================================================
@@ -133,7 +135,7 @@ auth.onAuthStateChanged(
         if (!user) {
 
             alert(
-                "Please log in before going live."
+                "Please log in before joining the live."
             );
 
             window.location.href =
@@ -143,15 +145,69 @@ auth.onAuthStateChanged(
         }
 
 
-        await loadStream();
+        const streamLoaded =
+            await loadStream();
 
-        await startCamera();
 
-        startSignaling();
+        if (!streamLoaded) {
+            return;
+        }
+
+
+        if (isHost) {
+
+            console.log(
+                "🎥 Current user is the HOST"
+            );
+
+            await startCamera();
+
+            startSignaling();
+
+        } else {
+
+            console.log(
+                "👀 Current user is a VIEWER"
+            );
+
+            /*
+             * Viewer does not need camera
+             * or microphone.
+             */
+
+            if (localVideo) {
+
+                localVideo.muted = false;
+
+            }
+
+            /*
+             * Hide host-only controls.
+             */
+
+            if (micBtn) {
+                micBtn.style.display = "none";
+            }
+
+            if (cameraBtn) {
+                cameraBtn.style.display = "none";
+            }
+
+            if (switchCameraBtn) {
+                switchCameraBtn.style.display = "none";
+            }
+
+            if (endLiveBtn) {
+                endLiveBtn.style.display = "none";
+            }
+
+
+            await startViewerSignaling();
+
+        }
 
     }
 );
-
 
 // =====================================================
 // LOAD STREAM
@@ -187,38 +243,11 @@ async function loadStream() {
 
 
         const stream =
-            streamSnap.data();
+    streamSnap.data();
 
 
-        if (
-            stream.hostId !==
-            auth.currentUser.uid
-        ) {
-
-            alert(
-                "You are not the owner of this live stream."
-            );
-
-            window.location.href =
-                "stream.html";
-
-            return;
-        }
-
-
-        if (
-            stream.status !== "live"
-        ) {
-
-            alert(
-                "This stream has already ended."
-            );
-
-            window.location.href =
-                "stream.html";
-
-            return;
-        }
+isHost =
+    stream.hostId === auth.currentUser.uid;
 
 
         const streamName =
@@ -238,6 +267,7 @@ async function loadStream() {
 
         viewerCount.textContent =
             stream.viewerCount || 0;
+        return true;
 
 
     } catch (error) {
@@ -1079,3 +1109,304 @@ chatInput.addEventListener(
 // =====================================================
 
 startLiveChat();
+
+// =====================================================
+// VIEWER WEBRTC
+// =====================================================
+
+async function startViewerSignaling() {
+
+    if (!streamId) {
+        return;
+    }
+
+
+    console.log(
+        "👀 Starting viewer WebRTC..."
+    );
+
+
+    try {
+
+        viewerPeerConnection =
+            new RTCPeerConnection(
+                rtcConfig
+            );
+
+
+        /*
+         * Receive host camera/audio.
+         */
+
+        viewerPeerConnection.ontrack =
+            (event) => {
+
+                console.log(
+                    "🎥 Host stream received"
+                );
+
+
+                if (
+                    event.streams &&
+                    event.streams[0]
+                ) {
+
+                    localVideo.srcObject =
+                        event.streams[0];
+
+                    localVideo
+                        .play()
+                        .catch(error => {
+
+                            console.log(
+                                "Video autoplay waiting for user interaction:",
+                                error
+                            );
+
+                        });
+
+                }
+
+            };
+
+
+        /*
+         * Send viewer ICE candidates
+         * to the host.
+         */
+
+        viewerPeerConnection.onicecandidate =
+            async (event) => {
+
+                if (
+                    !event.candidate
+                ) {
+                    return;
+                }
+
+
+                try {
+
+                    await addDoc(
+
+                        collection(
+                            db,
+                            "liveStreams",
+                            streamId,
+                            "viewers",
+                            auth.currentUser.uid,
+                            "viewerCandidates"
+                        ),
+
+                        event.candidate.toJSON()
+
+                    );
+
+                } catch (error) {
+
+                    console.error(
+                        "Viewer ICE error:",
+                        error
+                    );
+
+                }
+
+            };
+
+
+        /*
+         * Listen for the host's answer.
+         */
+
+        const answerRef =
+            doc(
+                db,
+                "liveStreams",
+                streamId,
+                "viewers",
+                auth.currentUser.uid
+            );
+
+
+        onSnapshot(
+            answerRef,
+            async (snapshot) => {
+
+                if (
+                    !snapshot.exists()
+                ) {
+                    return;
+                }
+
+
+                const data =
+                    snapshot.data();
+
+
+                if (
+                    !data.answer
+                ) {
+                    return;
+                }
+
+
+                if (
+                    viewerPeerConnection
+                        .currentRemoteDescription
+                ) {
+                    return;
+                }
+
+
+                try {
+
+                    await viewerPeerConnection
+                        .setRemoteDescription(
+                            new RTCSessionDescription(
+                                data.answer
+                            )
+                        );
+
+
+                    console.log(
+                        "✅ Host answer received"
+                    );
+
+                } catch (error) {
+
+                    console.error(
+                        "Unable to set host answer:",
+                        error
+                    );
+
+                }
+
+            }
+        );
+
+
+        /*
+         * Listen for ICE candidates
+         * generated by the host.
+         */
+
+        const hostCandidatesRef =
+            collection(
+                db,
+                "liveStreams",
+                streamId,
+                "viewers",
+                auth.currentUser.uid,
+                "hostCandidates"
+            );
+
+
+        onSnapshot(
+            hostCandidatesRef,
+            (snapshot) => {
+
+                snapshot.docChanges()
+                    .forEach(
+                        async (change) => {
+
+                            if (
+                                change.type !==
+                                "added"
+                            ) {
+                                return;
+                            }
+
+
+                            try {
+
+                                await viewerPeerConnection
+                                    .addIceCandidate(
+                                        new RTCIceCandidate(
+                                            change.doc.data()
+                                        )
+                                    );
+
+
+                            } catch (error) {
+
+                                console.error(
+                                    "Unable to add host ICE candidate:",
+                                    error
+                                );
+
+                            }
+
+                        }
+                    );
+
+            }
+        );
+
+
+        /*
+         * Create the viewer offer.
+         */
+
+        const offer =
+            await viewerPeerConnection
+                .createOffer();
+
+
+        await viewerPeerConnection
+            .setLocalDescription(
+                offer
+            );
+
+
+        /*
+         * Create the viewer offer document.
+         *
+         * The host is already listening to:
+         *
+         * liveStreams/{streamId}/offers
+         */
+
+        await setDoc(
+
+            doc(
+                db,
+                "liveStreams",
+                streamId,
+                "offers",
+                auth.currentUser.uid
+            ),
+
+            {
+
+                sdp:
+                    offer.sdp,
+
+                type:
+                    offer.type,
+
+                viewerId:
+                    auth.currentUser.uid,
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+
+        );
+
+
+        console.log(
+            "📡 Viewer offer sent to host"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "❌ Viewer WebRTC error:",
+            error
+        );
+
+    }
+
+            }
