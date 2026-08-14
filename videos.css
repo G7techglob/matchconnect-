@@ -50,3 +50,11 @@
     font-weight:700;
     font-size:15px;
 }
+
+.live-btn,
+.live-btn:link,
+.live-btn:visited,
+.live-btn:hover,
+.live-btn:active{
+    text-decoration:none !important;
+}
