@@ -61,6 +61,16 @@ const backBtn =
     document.getElementById("backBtn");
 
 
+const chatInput =
+    document.getElementById("chatInput");
+
+const sendChatBtn =
+    document.getElementById("sendChatBtn");
+
+const chatMessages =
+    document.getElementById("chatMessages");
+
+
 // =====================================================
 // VARIABLES
 // =====================================================
@@ -848,3 +858,225 @@ window.addEventListener(
 
     }
 );
+
+// =====================================================
+// LIVE CHAT
+// =====================================================
+
+function startLiveChat() {
+
+    if (!streamId) {
+        return;
+    }
+
+    const messagesRef =
+        collection(
+            db,
+            "liveStreams",
+            streamId,
+            "messages"
+        );
+
+    onSnapshot(
+        messagesRef,
+        (snapshot) => {
+
+            const messages = [];
+
+            snapshot.forEach(messageDoc => {
+
+                messages.push({
+                    id: messageDoc.id,
+                    ...messageDoc.data()
+                });
+
+            });
+
+            messages.sort((a, b) => {
+
+                const timeA =
+                    a.createdAt?.toMillis?.() || 0;
+
+                const timeB =
+                    b.createdAt?.toMillis?.() || 0;
+
+                return timeA - timeB;
+
+            });
+
+            chatMessages.innerHTML = "";
+
+            messages.forEach(message => {
+
+                const messageDiv =
+                    document.createElement("div");
+
+                messageDiv.className =
+                    "live-chat-message";
+
+                const username =
+                    document.createElement("strong");
+
+                username.textContent =
+                    message.username ||
+                    "User";
+
+                const text =
+                    document.createElement("span");
+
+                text.textContent =
+                    message.text || "";
+
+                messageDiv.appendChild(
+                    username
+                );
+
+                messageDiv.appendChild(
+                    document.createTextNode(" ")
+                );
+
+                messageDiv.appendChild(
+                    text
+                );
+
+                chatMessages.appendChild(
+                    messageDiv
+                );
+
+            });
+
+            chatMessages.scrollTop =
+                chatMessages.scrollHeight;
+
+        },
+        (error) => {
+
+            console.error(
+                "Live chat listener error:",
+                error
+            );
+
+        }
+    );
+
+}
+
+
+// =====================================================
+// SEND CHAT MESSAGE
+// =====================================================
+
+async function sendChatMessage() {
+
+    const user =
+        auth.currentUser;
+
+    if (!user) {
+
+        alert(
+            "Please log in to chat."
+        );
+
+        return;
+
+    }
+
+    const text =
+        chatInput.value.trim();
+
+    if (!text) {
+        return;
+    }
+
+    try {
+
+        sendChatBtn.disabled = true;
+
+        const username =
+            user.displayName ||
+            user.email ||
+            "MatchConnect User";
+
+        await addDoc(
+
+            collection(
+                db,
+                "liveStreams",
+                streamId,
+                "messages"
+            ),
+
+            {
+                userId: user.uid,
+
+                username: username,
+
+                photoURL:
+                    user.photoURL || "",
+
+                text: text,
+
+                createdAt:
+                    serverTimestamp()
+            }
+
+        );
+
+        chatInput.value = "";
+
+    } catch (error) {
+
+        console.error(
+            "Send live chat error:",
+            error
+        );
+
+        alert(
+            "Unable to send your message."
+        );
+
+    } finally {
+
+        sendChatBtn.disabled = false;
+
+        chatInput.focus();
+
+    }
+
+}
+
+
+// =====================================================
+// CHAT EVENTS
+// =====================================================
+
+sendChatBtn.addEventListener(
+    "click",
+    sendChatMessage
+);
+
+
+chatInput.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Enter" &&
+            !event.shiftKey
+        ) {
+
+            event.preventDefault();
+
+            sendChatMessage();
+
+        }
+
+    }
+);
+
+
+// =====================================================
+// START LIVE CHAT
+// =====================================================
+
+startLiveChat();
