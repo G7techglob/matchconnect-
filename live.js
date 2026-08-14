@@ -774,8 +774,7 @@ async function endLive() {
         );
 
 
-        window.location.href =
-            "stream.html";
+        window.location.replace("stream.html");
 
 
     } catch (error) {
