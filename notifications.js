@@ -18,10 +18,16 @@ function buildNotificationText(type) {
   switch (type) {
     case "follow":
       return " followed you";
+
     case "like":
       return " liked your post ❤️";
+
     case "comment":
       return " commented on your post 💬";
+
+    case "live":
+      return " is LIVE 🔴";
+
     default:
       return " sent a notification";
   }
@@ -165,6 +171,18 @@ wrapper.addEventListener("click", () => {
 
     window.location.href =
       `post.html?id=${notification.postId}#comments`;
+
+  } else if (notification.type === "live") {
+
+    if (!notification.streamId) {
+      console.error("Live notification has no streamId.");
+      return;
+    }
+
+    window.location.href =
+      `live.html?streamId=${encodeURIComponent(
+        notification.streamId
+      )}`;
 
   }
 
