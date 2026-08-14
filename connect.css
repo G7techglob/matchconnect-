@@ -116,7 +116,7 @@ body {
 #adBoard{
     width:100%;
     position:sticky;
-    top:0;
+    top:65px;
     z-index:997;
     background:#fff;
     text-align:center;
