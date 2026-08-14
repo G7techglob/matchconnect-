@@ -11,9 +11,17 @@ body {
 }
 
 .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 65px;
+    z-index: 1000;
+
     background: linear-gradient(135deg, #1877f2, #0d5fd8);
     color: white;
-    padding: 12px 15px;
+
+    padding: 10px 15px;
     display: flex;
     gap: 10px;
     align-items: flex-start;
@@ -45,6 +53,8 @@ body {
 
 .container {
     padding: 18px;
+    padding-top: 245px;
+
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 16px;
