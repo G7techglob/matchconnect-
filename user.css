@@ -370,7 +370,7 @@ body {
     border: none !important;
     box-shadow: none !important;
 
-    color: silver !important; /* Changed from blue to silver */
+    color: rgba(0, 0, 0, 0.6) !important;
     font-size: 15px;
     font-weight: 600;
 
@@ -384,7 +384,7 @@ body {
 .user-page .user-action-buttons button:hover {
     background: transparent !important;
     background-color: transparent !important;
-    color: #a9a9a9 !important; /* Darker silver on hover */
+    color: rgba(0, 0, 0, 0.8) !important;
 }
 
 /* Bio and member date */
