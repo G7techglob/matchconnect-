@@ -8,27 +8,39 @@ import {
 
 const videoFeed = document.getElementById("videoFeed");
 
-const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+const q = query(
+    collection(db, "posts"),
+    orderBy("createdAt", "desc")
+);
 
 onSnapshot(q, (snapshot) => {
 
     videoFeed.innerHTML = "";
 
     snapshot.forEach(doc => {
+
         const post = doc.data();
 
-        // ONLY show posts that have video
-        if (post.video) {
+        if (!post.media) return;
 
-            const div = document.createElement("div");
-            div.classList.add("video-post");
+        const video = post.media.find(
+            item => item.type === "video"
+        );
 
-            div.innerHTML = `
-                <video controls src="${post.video}"></video>
-                <p>${post.text || ""}</p>
-            `;
+        if (!video) return;
 
-            videoFeed.appendChild(div);
-        }
+        const div = document.createElement("div");
+
+        div.className = "video-post";
+
+        div.innerHTML = `
+            <video controls src="${video.url}"></video>
+
+            <p>${post.content || ""}</p>
+        `;
+
+        videoFeed.appendChild(div);
+
     });
+
 });
