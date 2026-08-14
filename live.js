@@ -175,11 +175,7 @@ auth.onAuthStateChanged(
              * or microphone.
              */
 
-            if (localVideo) {
-
-                localVideo.muted = false;
-
-            }
+            
 
             /*
              * Hide host-only controls.
