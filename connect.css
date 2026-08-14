@@ -53,7 +53,7 @@ body {
 
 .container {
     padding: 18px;
-    padding-top: 250px;
+    padding-top: 200px;
 
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
