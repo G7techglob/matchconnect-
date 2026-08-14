@@ -499,7 +499,7 @@ hr {
 .edit-profile-btn {
     display: inline !important;
     background: transparent !important;
-    color: silver !important;
+    color: rgba(0, 0, 0, 0.6) !important;
     opacity: 0.85;
     padding: 0 !important;
     margin: 0 !important;
@@ -513,8 +513,7 @@ hr {
 }
 
 .edit-profile-btn:hover {
-    color: silver !important;
-    opacity: 1;
+    color: rgba(0, 0, 0, 0.85) !important;
 }
 /* =========================
    PROFILE PHOTO + FOLLOW STATS
@@ -681,13 +680,12 @@ hr {
 }
 
 .connect-icon i {
-    color: silver !important;
-    opacity: 0.85;
+    color: rgba(0, 0, 0, 0.6) !important;
     font-size: 22px;
-    transition: opacity 0.2s ease;
+    transition: color 0.2s ease;
 }
 
 .connect-icon:hover i,
 .connect-icon:active i {
-    opacity: 1;
+    color: rgba(0, 0, 0, 0.85) !important;
 }
