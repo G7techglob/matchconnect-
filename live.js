@@ -246,9 +246,23 @@ async function loadStream() {
     streamSnap.data();
 
 
+if (
+    stream.status !== "live"
+) {
+
+    alert(
+        "This live stream has already ended."
+    );
+
+    window.location.href =
+        "stream.html";
+
+    return false;
+}
+
+
 isHost =
     stream.hostId === auth.currentUser.uid;
-
 
         const streamName =
             stream.title ||
