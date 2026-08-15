@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Business Directory - MatchConnect</title>
+
+    <link
+        rel="stylesheet"
+        href="business-directory.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+<header class="header">
+
+    <button
+        class="back-btn"
+        onclick="history.back()"
+    >
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <div class="header-title">
+        <h1>Business Directory</h1>
+        <p>Discover businesses near you</p>
+    </div>
+
+    <button
+        class="add-btn"
+        onclick="registerBusiness()"
+    >
+        <i class="fas fa-plus"></i>
+    </button>
+
+</header>
+
+
+<!-- ADVERTISEMENT -->
+
+<div id="adBoard">
+
+    <a
+        id="adLink"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+
+        <img
+            id="adImage"
+            src=""
+            alt="Advertisement"
+        >
+
+    </a>
+
+</div>
+
+
+<main class="container">
+
+
+    <!-- SEARCH -->
+
+    <div class="search-box">
+
+        <i class="fas fa-search"></i>
+
+        <input
+            type="search"
+            id="searchInput"
+            placeholder="Search businesses..."
+            autocomplete="off"
+        >
+
+        <button
+            id="clearSearch"
+            class="clear-btn"
+        >
+            <i class="fas fa-times"></i>
+        </button>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="quick-actions">
+
+        <button
+            class="quick-card"
+            onclick="registerBusiness()"
+        >
+            <i class="fas fa-building-circle-plus"></i>
+            <span>Add Business</span>
+        </button>
+
+        <button
+            class="quick-card"
+            onclick="myBusinesses()"
+        >
+            <i class="fas fa-building"></i>
+            <span>My Businesses</span>
+        </button>
+
+        <button
+            class="quick-card"
+            onclick="savedBusinesses()"
+        >
+            <i class="fas fa-bookmark"></i>
+            <span>Saved</span>
+        </button>
+
+        <button
+            class="quick-card"
+            onclick="businessRequests()"
+        >
+            <i class="fas fa-file-circle-check"></i>
+            <span>Requests</span>
+        </button>
+
+    </div>
+
+
+    <!-- CATEGORIES -->
+
+    <section class="section">
+
+        <div class="section-title">
+
+            <h2>Categories</h2>
+
+        </div>
+
+        <div class="categories">
+
+            <button
+                class="category active"
+                data-category="all"
+            >
+                <i class="fas fa-border-all"></i>
+                <span>All</span>
+            </button>
+
+            <button
+                class="category"
+                data-category="restaurant"
+            >
+                <i class="fas fa-utensils"></i>
+                <span>Restaurants</span>
+            </button>
+
+            <button
+                class="category"
+                data-category="shop"
+            >
+                <i class="fas fa-shop"></i>
+                <span>Shops</span>
+            </button>
+
+            <button
+                class="category"
+                data-category="technology"
+            >
+                <i class="fas fa-laptop-code"></i>
+                <span>Technology</span>
+            </button>
+
+            <button
+                class="category"
+                data-category="health"
+            >
+                <i class="fas fa-heart-pulse"></i>
+                <span>Health</span>
+            </button>
+
+            <button
+                class="category"
+                data-category="construction"
+            >
+                <i class="fas fa-hammer"></i>
+                <span>Construction</span>
+            </button>
+
+            <button
+                class="category"
+                data-category="transport"
+            >
+                <i class="fas fa-truck"></i>
+                <span>Transport</span>
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- FILTERS -->
+
+    <div class="filters">
+
+        <button
+            class="filter-btn active"
+            data-filter="all"
+        >
+            All
+        </button>
+
+        <button
+            class="filter-btn"
+            data-filter="verified"
+        >
+            <i class="fas fa-circle-check"></i>
+            Verified
+        </button>
+
+        <button
+            class="filter-btn"
+            data-filter="open"
+        >
+            Open Now
+        </button>
+
+    </div>
+
+
+    <!-- BUSINESS LIST -->
+
+    <section class="section">
+
+        <div class="section-title">
+
+            <h2>Businesses</h2>
+
+            <button
+                class="sort-btn"
+                onclick="toggleSort()"
+            >
+                <i class="fas fa-sort"></i>
+                Sort
+            </button>
+
+        </div>
+
+
+        <div
+            id="businessList"
+            class="business-list"
+        ></div>
+
+
+        <div
+            id="emptyState"
+            class="empty-state hidden"
+        >
+
+            <i class="fas fa-building"></i>
+
+            <h3>No Businesses Found</h3>
+
+            <p>
+                Try another search or category.
+            </p>
+
+            <button onclick="resetBusinesses()">
+                Show All
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- BUSINESS DETAILS MODAL -->
+
+<div
+    id="businessModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <button
+            class="modal-close"
+            onclick="closeBusiness()"
+        >
+            <i class="fas fa-times"></i>
+        </button>
+
+        <div id="businessDetails"></div>
+
+    </div>
+
+</div>
+
+
+<!-- SORT MENU -->
+
+<div
+    id="sortMenu"
+    class="sort-menu hidden"
+>
+
+    <button onclick="sortBusinesses('rating')">
+        Highest Rated
+    </button>
+
+    <button onclick="sortBusinesses('name')">
+        Name A-Z
+    </button>
+
+    <button onclick="sortBusinesses('new')">
+        Newest
+    </button>
+
+</div>
+
+
+<div
+    id="toast"
+    class="toast"
+></div>
+
+
+<script src="business-directory.js"></script>
+
+</body>
+
+          </html>
