@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Wallet - MatchConnect</title>
+
+    <link
+        rel="stylesheet"
+        href="wallet.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+<header class="header">
+
+    <button
+        class="back-btn"
+        onclick="history.back()"
+    >
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <div class="header-title">
+        <h1>Wallet</h1>
+        <p>Manage your MatchConnect payments</p>
+    </div>
+
+    <button
+        class="history-btn"
+        onclick="openTransactionHistory()"
+    >
+        <i class="fas fa-clock-rotate-left"></i>
+    </button>
+
+</header>
+
+
+<!-- ADVERTISEMENT -->
+
+<div id="adBoard">
+
+    <a
+        id="adLink"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+        <img
+            id="adImage"
+            src=""
+            alt="Advertisement"
+        >
+    </a>
+
+</div>
+
+
+<main class="container">
+
+
+    <!-- BALANCE CARD -->
+
+    <section class="balance-card">
+
+        <div class="balance-top">
+
+            <span>Available Balance</span>
+
+            <button
+                id="toggleBalance"
+                onclick="toggleBalanceVisibility()"
+            >
+                <i class="fas fa-eye"></i>
+            </button>
+
+        </div>
+
+
+        <div
+            id="balanceAmount"
+            class="balance-amount"
+        >
+            ₦0.00
+        </div>
+
+
+        <div class="wallet-number">
+
+            <span>Wallet ID</span>
+
+            <strong id="walletId">
+                MC-WALLET-001
+            </strong>
+
+            <button
+                onclick="copyWalletId()"
+            >
+                <i class="fas fa-copy"></i>
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ACTIONS -->
+
+    <section class="actions">
+
+        <button
+            class="action-card"
+            onclick="openDeposit()"
+        >
+
+            <span class="action-icon deposit">
+                <i class="fas fa-plus"></i>
+            </span>
+
+            <strong>Deposit</strong>
+
+            <small>Add Money</small>
+
+        </button>
+
+
+        <button
+            class="action-card"
+            onclick="openWithdraw()"
+        >
+
+            <span class="action-icon withdraw">
+                <i class="fas fa-arrow-up"></i>
+            </span>
+
+            <strong>Withdraw</strong>
+
+            <small>Take Out</small>
+
+        </button>
+
+
+        <button
+            class="action-card"
+            onclick="openSendMoney()"
+        >
+
+            <span class="action-icon send">
+                <i class="fas fa-paper-plane"></i>
+            </span>
+
+            <strong>Send</strong>
+
+            <small>Transfer Money</small>
+
+        </button>
+
+
+        <button
+            class="action-card"
+            onclick="openReceiveMoney()"
+        >
+
+            <span class="action-icon receive">
+                <i class="fas fa-download"></i>
+            </span>
+
+            <strong>Receive</strong>
+
+            <small>Get Money</small>
+
+        </button>
+
+    </section>
+
+
+    <!-- QUICK PAYMENT -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <h2>Quick Payment</h2>
+
+        </div>
+
+
+        <div class="payment-grid">
+
+            <button
+                onclick="openPayment('marketplace')"
+            >
+                <i class="fas fa-store"></i>
+                Marketplace
+            </button>
+
+            <button
+                onclick="openPayment('orders')"
+            >
+                <i class="fas fa-box"></i>
+                Orders
+            </button>
+
+            <button
+                onclick="openPayment('services')"
+            >
+                <i class="fas fa-tools"></i>
+                Services
+            </button>
+
+            <button
+                onclick="openPayment('advertising')"
+            >
+                <i class="fas fa-bullhorn"></i>
+                Advertising
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- RECENT TRANSACTIONS -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <h2>Recent Transactions</h2>
+
+            <button
+                onclick="openTransactionHistory()"
+            >
+                See All
+            </button>
+
+        </div>
+
+
+        <div
+            id="transactions"
+            class="transactions"
+        ></div>
+
+
+        <div
+            id="emptyTransactions"
+            class="empty-state"
+        >
+
+            <i class="fas fa-receipt"></i>
+
+            <h3>No Transactions Yet</h3>
+
+            <p>
+                Your recent wallet activity will appear here.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- SECURITY -->
+
+    <section class="security-card">
+
+        <div class="security-icon">
+            <i class="fas fa-shield-halved"></i>
+        </div>
+
+        <div>
+
+            <h3>Wallet Security</h3>
+
+            <p>
+                Never share your wallet PIN or verification code.
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- PAYMENT MODAL -->
+
+<div
+    id="paymentModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <button
+            class="modal-close"
+            onclick="closePaymentModal()"
+        >
+            <i class="fas fa-times"></i>
+        </button>
+
+        <div id="modalContent"></div>
+
+    </div>
+
+</div>
+
+
+<div
+    id="toast"
+    class="toast"
+></div>
+
+
+<script src="wallet.js"></script>
+
+</body>
+
+</html>
