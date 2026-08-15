@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Marketplace - MatchConnect</title>
+
+    <link
+        rel="stylesheet"
+        href="marketplace.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+</head>
+
+<body>
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="marketplace-header">
+
+    <button
+        class="back-btn"
+        onclick="history.back()"
+        aria-label="Go back"
+    >
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <div class="header-title">
+
+        <h1>Marketplace</h1>
+
+        <p>Buy & Sell Products</p>
+
+    </div>
+
+    <button
+        class="cart-btn"
+        onclick="openCart()"
+        aria-label="Shopping cart"
+    >
+
+        <i class="fas fa-shopping-cart"></i>
+
+        <span
+            id="cartCount"
+            class="cart-count"
+        >
+            0
+        </span>
+
+    </button>
+
+</header>
+
+
+<!-- =====================================================
+     ADVERTISEMENT BILLBOARD
+===================================================== -->
+
+<div id="adBoard">
+
+    <a
+        id="adLink"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+
+        <img
+            id="adImage"
+            src=""
+            alt="Advertisement"
+        >
+
+    </a>
+
+</div>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="marketplace-container">
+
+
+    <!-- =================================================
+         SEARCH
+    ================================================== -->
+
+    <section class="search-section">
+
+        <div class="search-box">
+
+            <i class="fas fa-search"></i>
+
+            <input
+                type="search"
+                id="searchInput"
+                placeholder="Search products..."
+                autocomplete="off"
+            >
+
+            <button
+                id="clearSearch"
+                class="clear-search"
+                aria-label="Clear search"
+            >
+                <i class="fas fa-times"></i>
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         QUICK ACTIONS
+    ================================================== -->
+
+    <section class="quick-actions">
+
+        <button
+            class="action-btn"
+            onclick="sellProduct()"
+        >
+
+            <i class="fas fa-plus"></i>
+
+            <span>Sell</span>
+
+        </button>
+
+
+        <button
+            class="action-btn"
+            onclick="showMyProducts()"
+        >
+
+            <i class="fas fa-box"></i>
+
+            <span>My Products</span>
+
+        </button>
+
+
+        <button
+            class="action-btn"
+            onclick="openOrders()"
+        >
+
+            <i class="fas fa-receipt"></i>
+
+            <span>Orders</span>
+
+        </button>
+
+
+        <button
+            class="action-btn"
+            onclick="openCategories()"
+        >
+
+            <i class="fas fa-list"></i>
+
+            <span>Categories</span>
+
+        </button>
+
+    </section>
+
+
+    <!-- =================================================
+         CATEGORIES
+    ================================================== -->
+
+    <section class="categories-section">
+
+        <div class="section-heading">
+
+            <h2>Categories</h2>
+
+            <button
+                id="viewAllCategories"
+                onclick="openCategories()"
+            >
+                View All
+            </button>
+
+        </div>
+
+
+        <div class="categories">
+
+            <button
+                class="category active"
+                data-category="all"
+            >
+
+                <i class="fas fa-border-all"></i>
+
+                <span>All</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="electronics"
+            >
+
+                <i class="fas fa-mobile-screen-button"></i>
+
+                <span>Electronics</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="fashion"
+            >
+
+                <i class="fas fa-shirt"></i>
+
+                <span>Fashion</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="home"
+            >
+
+                <i class="fas fa-house"></i>
+
+                <span>Home</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="vehicles"
+            >
+
+                <i class="fas fa-car"></i>
+
+                <span>Vehicles</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="phones"
+            >
+
+                <i class="fas fa-mobile"></i>
+
+                <span>Phones</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="beauty"
+            >
+
+                <i class="fas fa-spa"></i>
+
+                <span>Beauty</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="other"
+            >
+
+                <i class="fas fa-ellipsis"></i>
+
+                <span>Other</span>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         FEATURED PRODUCTS
+    ================================================== -->
+
+    <section class="products-section">
+
+        <div class="section-heading">
+
+            <h2>Featured Products</h2>
+
+            <button
+                id="sortButton"
+                onclick="toggleSort()"
+            >
+
+                <i class="fas fa-sort"></i>
+
+                Sort
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="productsGrid"
+            class="products-grid"
+        >
+
+            <!-- Products generated by JavaScript -->
+
+        </div>
+
+
+        <!-- =================================================
+             EMPTY STATE
+        ================================================== -->
+
+        <div
+            id="emptyState"
+            class="empty-state hidden"
+        >
+
+            <i class="fas fa-box-open"></i>
+
+            <h3>No products found</h3>
+
+            <p>
+                Try another search or category.
+            </p>
+
+            <button
+                onclick="resetMarketplace()"
+            >
+                Show All Products
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =====================================================
+     PRODUCT DETAILS MODAL
+===================================================== -->
+
+<div
+    id="productModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <button
+            class="modal-close"
+            onclick="closeProductModal()"
+            aria-label="Close"
+        >
+
+            <i class="fas fa-times"></i>
+
+        </button>
+
+
+        <img
+            id="modalProductImage"
+            class="modal-product-image"
+            src=""
+            alt="Product"
+        >
+
+
+        <div class="modal-body">
+
+            <span
+                id="modalProductCategory"
+                class="product-category"
+            >
+            </span>
+
+
+            <h2 id="modalProductName">
+            </h2>
+
+
+            <div
+                id="modalProductPrice"
+                class="modal-price"
+            >
+            </div>
+
+
+            <p
+                id="modalProductDescription"
+                class="modal-description"
+            >
+            </p>
+
+
+            <div class="seller-info">
+
+                <i class="fas fa-user-circle"></i>
+
+                <div>
+
+                    <strong id="modalSeller">
+                    </strong>
+
+                    <span id="modalLocation">
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                id="modalAddCart"
+                class="primary-btn"
+            >
+
+                <i class="fas fa-cart-plus"></i>
+
+                Add to Cart
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     SORT MENU
+===================================================== -->
+
+<div
+    id="sortMenu"
+    class="sort-menu hidden"
+>
+
+    <button onclick="sortProducts('default')">
+        Recommended
+    </button>
+
+    <button onclick="sortProducts('low')">
+        Price: Low to High
+    </button>
+
+    <button onclick="sortProducts('high')">
+        Price: High to Low
+    </button>
+
+    <button onclick="sortProducts('new')">
+        Newest
+    </button>
+
+</div>
+
+
+<!-- =====================================================
+     TOAST
+===================================================== -->
+
+<div
+    id="toast"
+    class="toast"
+>
+</div>
+
+
+<script src="marketplace.js"></script>
+
+</body>
+
+                                          </html>
