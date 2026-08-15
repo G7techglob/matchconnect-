@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Vehicles - MatchConnect</title>
+
+    <link
+        rel="stylesheet"
+        href="vehicles.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+</head>
+
+<body>
+
+<header class="header">
+
+    <button
+        class="back-btn"
+        onclick="history.back()"
+    >
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <div class="header-title">
+
+        <h1>Vehicles</h1>
+
+        <p>Cars, Motorcycles & More</p>
+
+    </div>
+
+    <button
+        class="add-btn"
+        onclick="sellVehicle()"
+    >
+        <i class="fas fa-plus"></i>
+    </button>
+
+</header>
+
+
+<!-- ADVERTISEMENT -->
+
+<div id="adBoard">
+
+    <a
+        id="adLink"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+
+        <img
+            id="adImage"
+            src=""
+            alt="Advertisement"
+        >
+
+    </a>
+
+</div>
+
+
+<main class="container">
+
+
+    <!-- SEARCH -->
+
+    <div class="search-box">
+
+        <i class="fas fa-search"></i>
+
+        <input
+            type="search"
+            id="searchInput"
+            placeholder="Search vehicles..."
+            autocomplete="off"
+        >
+
+        <button
+            id="clearSearch"
+            class="clear-btn"
+        >
+
+            <i class="fas fa-times"></i>
+
+        </button>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="quick-actions">
+
+        <button
+            class="quick-card"
+            onclick="sellVehicle()"
+        >
+
+            <i class="fas fa-plus-circle"></i>
+
+            <span>Sell Vehicle</span>
+
+        </button>
+
+
+        <button
+            class="quick-card"
+            onclick="myVehicles()"
+        >
+
+            <i class="fas fa-car"></i>
+
+            <span>My Vehicles</span>
+
+        </button>
+
+
+        <button
+            class="quick-card"
+            onclick="savedVehicles()"
+        >
+
+            <i class="fas fa-bookmark"></i>
+
+            <span>Saved</span>
+
+        </button>
+
+
+        <button
+            class="quick-card"
+            onclick="vehicleRequests()"
+        >
+
+            <i class="fas fa-file-circle-check"></i>
+
+            <span>Requests</span>
+
+        </button>
+
+    </div>
+
+
+    <!-- VEHICLE TYPES -->
+
+    <section class="section">
+
+        <div class="section-title">
+
+            <h2>Vehicle Type</h2>
+
+        </div>
+
+
+        <div class="categories">
+
+            <button
+                class="category active"
+                data-type="all"
+            >
+
+                <i class="fas fa-border-all"></i>
+
+                <span>All</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-type="car"
+            >
+
+                <i class="fas fa-car"></i>
+
+                <span>Cars</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-type="motorcycle"
+            >
+
+                <i class="fas fa-motorcycle"></i>
+
+                <span>Motorcycles</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-type="truck"
+            >
+
+                <i class="fas fa-truck"></i>
+
+                <span>Trucks</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-type="bus"
+            >
+
+                <i class="fas fa-bus"></i>
+
+                <span>Buses</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-type="van"
+            >
+
+                <i class="fas fa-van-shuttle"></i>
+
+                <span>Vans</span>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- SALE / RENT -->
+
+    <div class="filters">
+
+        <button
+            class="filter-btn active"
+            data-purpose="all"
+        >
+            All
+        </button>
+
+        <button
+            class="filter-btn"
+            data-purpose="sale"
+        >
+            For Sale
+        </button>
+
+        <button
+            class="filter-btn"
+            data-purpose="rent"
+        >
+            For Rent
+        </button>
+
+    </div>
+
+
+    <!-- VEHICLE LIST -->
+
+    <section class="section">
+
+        <div class="section-title">
+
+            <h2>Vehicles</h2>
+
+            <button
+                class="sort-btn"
+                onclick="toggleSort()"
+            >
+
+                <i class="fas fa-sort"></i>
+
+                Sort
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="vehicleList"
+            class="vehicle-list"
+        >
+        </div>
+
+
+        <div
+            id="emptyState"
+            class="empty-state hidden"
+        >
+
+            <i class="fas fa-car-side"></i>
+
+            <h3>No Vehicles Found</h3>
+
+            <p>
+                Try another search or filter.
+            </p>
+
+            <button onclick="resetVehicles()">
+                Show All
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- VEHICLE DETAILS MODAL -->
+
+<div
+    id="vehicleModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <button
+            class="modal-close"
+            onclick="closeVehicle()"
+        >
+
+            <i class="fas fa-times"></i>
+
+        </button>
+
+        <div id="vehicleDetails"></div>
+
+    </div>
+
+</div>
+
+
+<!-- SORT MENU -->
+
+<div
+    id="sortMenu"
+    class="sort-menu hidden"
+>
+
+    <button onclick="sortVehicles('new')">
+        Newest
+    </button>
+
+    <button onclick="sortVehicles('low')">
+        Lowest Price
+    </button>
+
+    <button onclick="sortVehicles('high')">
+        Highest Price
+    </button>
+
+    <button onclick="sortVehicles('year')">
+        Newest Vehicle
+    </button>
+
+</div>
+
+
+<div
+    id="toast"
+    class="toast"
+></div>
+
+
+<script src="vehicles.js"></script>
+
+</body>
+
+</html>
