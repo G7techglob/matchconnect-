@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Jobs - MatchConnect</title>
+
+    <link
+        rel="stylesheet"
+        href="jobs.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+</head>
+
+<body>
+
+<header class="jobs-header">
+
+    <button
+        class="back-btn"
+        onclick="history.back()"
+        aria-label="Go back"
+    >
+
+        <i class="fas fa-arrow-left"></i>
+
+    </button>
+
+
+    <div class="header-title">
+
+        <h1>Jobs</h1>
+
+        <p>Find Jobs & Hire</p>
+
+    </div>
+
+
+    <button
+        class="header-action"
+        onclick="postJob()"
+        aria-label="Post a job"
+    >
+
+        <i class="fas fa-plus"></i>
+
+    </button>
+
+</header>
+
+
+<!-- ADVERTISEMENT -->
+
+<div id="adBoard">
+
+    <a
+        id="adLink"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+
+        <img
+            id="adImage"
+            src=""
+            alt="Advertisement"
+        >
+
+    </a>
+
+</div>
+
+
+<main class="jobs-container">
+
+
+    <!-- SEARCH -->
+
+    <section class="search-section">
+
+        <div class="search-box">
+
+            <i class="fas fa-search"></i>
+
+            <input
+                type="search"
+                id="jobSearch"
+                placeholder="Search jobs, skills or companies..."
+                autocomplete="off"
+            >
+
+            <button
+                id="clearSearch"
+                class="clear-search"
+                aria-label="Clear search"
+            >
+
+                <i class="fas fa-times"></i>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ACTIONS -->
+
+    <section class="job-actions">
+
+        <button
+            class="job-action"
+            onclick="postJob()"
+        >
+
+            <i class="fas fa-plus-circle"></i>
+
+            <span>Post a Job</span>
+
+        </button>
+
+
+        <button
+            class="job-action"
+            onclick="myApplications()"
+        >
+
+            <i class="fas fa-file-lines"></i>
+
+            <span>Applications</span>
+
+        </button>
+
+
+        <button
+            class="job-action"
+            onclick="savedJobs()"
+        >
+
+            <i class="fas fa-bookmark"></i>
+
+            <span>Saved Jobs</span>
+
+        </button>
+
+
+        <button
+            class="job-action"
+            onclick="myJobs()"
+        >
+
+            <i class="fas fa-briefcase"></i>
+
+            <span>My Jobs</span>
+
+        </button>
+
+    </section>
+
+
+    <!-- CATEGORIES -->
+
+    <section class="categories-section">
+
+        <div class="section-heading">
+
+            <h2>Job Categories</h2>
+
+        </div>
+
+
+        <div class="categories">
+
+            <button
+                class="category active"
+                data-category="all"
+            >
+
+                <i class="fas fa-border-all"></i>
+
+                <span>All</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="technology"
+            >
+
+                <i class="fas fa-code"></i>
+
+                <span>Technology</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="business"
+            >
+
+                <i class="fas fa-chart-line"></i>
+
+                <span>Business</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="sales"
+            >
+
+                <i class="fas fa-bullseye"></i>
+
+                <span>Sales</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="design"
+            >
+
+                <i class="fas fa-palette"></i>
+
+                <span>Design</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="education"
+            >
+
+                <i class="fas fa-graduation-cap"></i>
+
+                <span>Education</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="health"
+            >
+
+                <i class="fas fa-heart-pulse"></i>
+
+                <span>Health</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="other"
+            >
+
+                <i class="fas fa-ellipsis"></i>
+
+                <span>Other</span>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- FILTERS -->
+
+    <section class="filter-section">
+
+        <button
+            class="filter-btn active"
+            data-type="all"
+        >
+            All Jobs
+        </button>
+
+        <button
+            class="filter-btn"
+            data-type="remote"
+        >
+            Remote
+        </button>
+
+        <button
+            class="filter-btn"
+            data-type="full-time"
+        >
+            Full Time
+        </button>
+
+        <button
+            class="filter-btn"
+            data-type="part-time"
+        >
+            Part Time
+        </button>
+
+        <button
+            class="filter-btn"
+            data-type="contract"
+        >
+            Contract
+        </button>
+
+    </section>
+
+
+    <!-- JOB LIST -->
+
+    <section class="jobs-section">
+
+        <div class="section-heading">
+
+            <h2>Latest Jobs</h2>
+
+            <button
+                onclick="toggleSort()"
+                class="sort-button"
+            >
+
+                <i class="fas fa-sort"></i>
+
+                Sort
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="jobsList"
+            class="jobs-list"
+        >
+        </div>
+
+
+        <div
+            id="emptyState"
+            class="empty-state hidden"
+        >
+
+            <i class="fas fa-briefcase"></i>
+
+            <h3>No Jobs Found</h3>
+
+            <p>
+                Try another search or category.
+            </p>
+
+            <button onclick="resetJobs()">
+                Show All Jobs
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- JOB DETAILS MODAL -->
+
+<div
+    id="jobModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <button
+            class="modal-close"
+            onclick="closeJobModal()"
+        >
+
+            <i class="fas fa-times"></i>
+
+        </button>
+
+
+        <div
+            id="jobDetails"
+            class="job-details"
+        >
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- SORT MENU -->
+
+<div
+    id="sortMenu"
+    class="sort-menu hidden"
+>
+
+    <button onclick="sortJobs('new')">
+        Newest
+    </button>
+
+    <button onclick="sortJobs('salary-high')">
+        Highest Salary
+    </button>
+
+    <button onclick="sortJobs('salary-low')">
+        Lowest Salary
+    </button>
+
+</div>
+
+
+<div
+    id="toast"
+    class="toast"
+>
+</div>
+
+
+<script src="jobs.js"></script>
+
+</body>
+
+  </html>
