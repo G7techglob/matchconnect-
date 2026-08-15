@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Advertising - MatchConnect</title>
+
+    <link
+        rel="stylesheet"
+        href="advertising.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+</head>
+
+<body>
+
+<header class="header">
+
+    <button
+        class="back-btn"
+        onclick="history.back()"
+    >
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <div class="header-title">
+
+        <h1>Advertising</h1>
+
+        <p>
+            Promote your business
+        </p>
+
+    </div>
+
+    <button
+        class="header-btn"
+        onclick="showAdvertisingInfo()"
+    >
+        <i class="fas fa-circle-info"></i>
+    </button>
+
+</header>
+
+
+<!-- ADVERTISEMENT -->
+
+<div id="adBoard">
+
+    <a
+        id="adLink"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+
+        <img
+            id="adImage"
+            src=""
+            alt="Advertisement"
+        >
+
+    </a>
+
+</div>
+
+
+<main class="container">
+
+
+    <!-- CREATE AD -->
+
+    <button
+        class="create-ad-btn"
+        onclick="openAdForm()"
+    >
+
+        <i class="fas fa-plus"></i>
+
+        Create Advertisement
+
+    </button>
+
+
+    <!-- QUICK STATS -->
+
+    <div class="stats">
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="fas fa-bullhorn"></i>
+            </div>
+
+            <div>
+
+                <span>
+                    Active Ads
+                </span>
+
+                <strong id="activeAds">
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="fas fa-eye"></i>
+            </div>
+
+            <div>
+
+                <span>
+                    Impressions
+                </span>
+
+                <strong id="impressions">
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="fas fa-mouse-pointer"></i>
+            </div>
+
+            <div>
+
+                <span>
+                    Clicks
+                </span>
+
+                <strong id="clicks">
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FILTERS -->
+
+    <div class="filters">
+
+        <button
+            class="filter-btn active"
+            data-status="all"
+        >
+            All
+        </button>
+
+        <button
+            class="filter-btn"
+            data-status="active"
+        >
+            Active
+        </button>
+
+        <button
+            class="filter-btn"
+            data-status="pending"
+        >
+            Pending
+        </button>
+
+        <button
+            class="filter-btn"
+            data-status="paused"
+        >
+            Paused
+        </button>
+
+        <button
+            class="filter-btn"
+            data-status="completed"
+        >
+            Completed
+        </button>
+
+    </div>
+
+
+    <!-- ADVERTISEMENTS -->
+
+    <section id="adsContainer"></section>
+
+
+    <!-- EMPTY -->
+
+    <div
+        id="emptyAds"
+        class="empty-state"
+    >
+
+        <div class="empty-icon">
+
+            <i class="fas fa-bullhorn"></i>
+
+        </div>
+
+        <h2>
+            No Advertisements
+        </h2>
+
+        <p>
+            Create an advertisement to promote
+            your business, products or services.
+        </p>
+
+        <button
+            onclick="openAdForm()"
+        >
+
+            <i class="fas fa-plus"></i>
+
+            Create Advertisement
+
+        </button>
+
+    </div>
+
+</main>
+
+
+<!-- CREATE AD MODAL -->
+
+<div
+    id="adModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <button
+            class="modal-close"
+            onclick="closeAdModal()"
+        >
+
+            <i class="fas fa-times"></i>
+
+        </button>
+
+
+        <h2>
+            Create Advertisement
+        </h2>
+
+
+        <div class="form-group">
+
+            <label>
+                Advertisement Title
+            </label>
+
+            <input
+                id="adTitle"
+                type="text"
+                placeholder="Example: New Fashion Collection"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Description
+            </label>
+
+            <textarea
+                id="adDescription"
+                placeholder="Describe your advertisement"
+            ></textarea>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Advertisement Image URL
+            </label>
+
+            <input
+                id="adImageUrl"
+                type="url"
+                placeholder="https://example.com/image.jpg"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Destination Link
+            </label>
+
+            <input
+                id="adDestination"
+                type="url"
+                placeholder="https://example.com"
+            >
+
+        </div>
+
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>
+                    Daily Budget
+                </label>
+
+                <input
+                    id="adBudget"
+                    type="number"
+                    min="0"
+                    placeholder="1000"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Duration
+                </label>
+
+                <select id="adDuration">
+
+                    <option value="7">
+                        7 Days
+                    </option>
+
+                    <option value="14">
+                        14 Days
+                    </option>
+
+                    <option value="30">
+                        30 Days
+                    </option>
+
+                    <option value="60">
+                        60 Days
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="submit-btn"
+            onclick="createAdvertisement()"
+        >
+
+            <i class="fas fa-bullhorn"></i>
+
+            Create Advertisement
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- DETAILS MODAL -->
+
+<div
+    id="detailsModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <button
+            class="modal-close"
+            onclick="closeDetailsModal()"
+        >
+
+            <i class="fas fa-times"></i>
+
+        </button>
+
+        <div id="adDetails"></div>
+
+    </div>
+
+</div>
+
+
+<!-- INFO MODAL -->
+
+<div
+    id="infoModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <button
+            class="modal-close"
+            onclick="closeInfoModal()"
+        >
+
+            <i class="fas fa-times"></i>
+
+        </button>
+
+
+        <h2>
+            MatchConnect Advertising
+        </h2>
+
+
+        <p class="info-text">
+
+            Advertising will allow businesses,
+            sellers and service providers to
+            promote their products and services
+            to MatchConnect users.
+
+        </p>
+
+
+        <div class="info-row">
+
+            <i class="fas fa-bullhorn"></i>
+
+            <span>
+                Create promotional campaigns.
+            </span>
+
+        </div>
+
+
+        <div class="info-row">
+
+            <i class="fas fa-users"></i>
+
+            <span>
+                Reach potential customers.
+            </span>
+
+        </div>
+
+
+        <div class="info-row">
+
+            <i class="fas fa-chart-line"></i>
+
+            <span>
+                Track impressions and clicks.
+            </span>
+
+        </div>
+
+
+        <div class="info-row">
+
+            <i class="fas fa-wallet"></i>
+
+            <span>
+                Advertising payments will be connected later.
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    id="toast"
+    class="toast"
+></div>
+
+
+<script src="advertising.js"></script>
+
+</body>
+
+              </html>
