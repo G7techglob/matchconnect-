@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Orders - MatchConnect</title>
+
+    <link
+        rel="stylesheet"
+        href="orders.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+</head>
+
+<body>
+
+<header class="orders-header">
+
+    <button
+        class="back-btn"
+        onclick="history.back()"
+    >
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <div class="header-title">
+
+        <h1>My Orders</h1>
+
+        <p>Track your purchases</p>
+
+    </div>
+
+    <div class="header-icon">
+        <i class="fas fa-box"></i>
+    </div>
+
+</header>
+
+
+<main class="orders-container">
+
+
+    <!-- ORDER FILTER -->
+
+    <div class="order-tabs">
+
+        <button
+            class="order-tab active"
+            data-status="all"
+        >
+            All
+        </button>
+
+        <button
+            class="order-tab"
+            data-status="pending"
+        >
+            Pending
+        </button>
+
+        <button
+            class="order-tab"
+            data-status="processing"
+        >
+            Processing
+        </button>
+
+        <button
+            class="order-tab"
+            data-status="shipped"
+        >
+            Shipped
+        </button>
+
+        <button
+            class="order-tab"
+            data-status="delivered"
+        >
+            Delivered
+        </button>
+
+    </div>
+
+
+    <!-- ORDERS -->
+
+    <section
+        id="ordersList"
+        class="orders-list"
+    >
+    </section>
+
+
+    <!-- EMPTY -->
+
+    <div
+        id="emptyOrders"
+        class="empty-orders hidden"
+    >
+
+        <i class="fas fa-box-open"></i>
+
+        <h2>No Orders Yet</h2>
+
+        <p>
+            Your purchases will appear here.
+        </p>
+
+        <button
+            onclick="goToMarketplace()"
+        >
+            Start Shopping
+        </button>
+
+    </div>
+
+</main>
+
+
+<!-- ORDER DETAILS MODAL -->
+
+<div
+    id="orderModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <button
+            class="modal-close"
+            onclick="closeOrderModal()"
+        >
+            <i class="fas fa-times"></i>
+        </button>
+
+        <h2>Order Details</h2>
+
+        <div
+            id="orderDetails"
+            class="order-details"
+        >
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    id="toast"
+    class="toast"
+>
+</div>
+
+
+<script src="orders.js"></script>
+
+</body>
+
+</html>
