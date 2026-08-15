@@ -999,196 +999,217 @@ function cancelReply() {
 
     }
 // ================================
-// SEND REPLY / REPLY TO REPLY
+// SEND REPLY
+// USE MAIN COMMENT INPUT
 // ================================
 
-document.addEventListener(
-  "click",
-  async (e) => {
+async function sendReply() {
 
-    const btn =
-      e.target.closest(
-        ".send-reply-btn"
+  const user =
+    auth.currentUser;
+
+
+  if (!user) {
+
+    alert("Please login first");
+
+    return;
+
+  }
+
+
+  const text =
+    commentInput.value.trim();
+
+
+  if (!text) return;
+
+
+  if (
+    !replyParentType ||
+    !replyParentId
+  ) {
+
+    console.error(
+      "Reply parent information is missing."
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    const userSnap =
+      await getDoc(
+        doc(
+          db,
+          "users",
+          user.uid
+        )
       );
 
-    if (!btn) return;
+
+    const userData =
+      userSnap.exists()
+        ? userSnap.data()
+        : {};
 
 
-    const user =
-      auth.currentUser;
+    let repliesRef;
 
-    if (!user) {
 
-      alert("Please login first");
+    // =========================
+    // REPLY TO MAIN COMMENT
+    // =========================
+
+    if (
+      replyParentType === "comment"
+    ) {
+
+      repliesRef =
+        collection(
+          db,
+          "posts",
+          postId,
+          "comments",
+          replyParentId,
+          "replies"
+        );
+
+    }
+
+
+    // =========================
+    // REPLY TO ANOTHER REPLY
+    // =========================
+
+    else if (
+      replyParentType === "reply"
+    ) {
+
+      repliesRef =
+        collection(
+          db,
+          "posts",
+          postId,
+          "comments",
+          replyCommentId,
+          "replies",
+          replyParentId,
+          "replies"
+        );
+
+    }
+
+
+    if (!repliesRef) {
+
+      console.error(
+        "Reply collection not found."
+      );
 
       return;
 
     }
 
 
-    const textInput =
-      btn.parentElement.querySelector(
-        ".reply-input"
-      );
+    // =========================
+    // SAVE REPLY
+    // =========================
 
-    if (!textInput) return;
+    await addDoc(
+      repliesRef,
+      {
 
+        text: text,
 
-    const text =
-      textInput.value.trim();
+        userId:
+          user.uid,
 
-    if (!text) return;
+        username:
+          userData.name ||
+          user.email ||
+          "User",
 
+        photoURL:
+          userData.photoURL ||
+          "images/default-avatar.png",
 
-    const parentType =
-      btn.dataset.parentType;
+        createdAt:
+          serverTimestamp(),
 
-    const parentId =
-      btn.dataset.parentId;
+        likes: 0,
 
-    const commentId =
-      btn.dataset.commentId ||
-      parentId;
-
-
-    try {
-
-      const userSnap =
-        await getDoc(
-          doc(db, "users", user.uid)
-        );
-
-      const userData =
-        userSnap.data() || {};
-
-
-      let repliesRef;
-
-
-      // =========================
-      // REPLY TO MAIN COMMENT
-      // =========================
-
-      if (parentType === "comment") {
-
-        repliesRef =
-          collection(
-            db,
-            "posts",
-            postId,
-            "comments",
-            parentId,
-            "replies"
-          );
+        parentReplyId:
+          replyParentType === "reply"
+            ? replyParentId
+            : null
 
       }
+    );
 
 
-      // =========================
-      // REPLY TO A REPLY
-      // =========================
+    // =========================
+    // INCREASE POST COMMENT COUNT
+    // =========================
 
-      else if (parentType === "reply") {
-
-        repliesRef =
-          collection(
-            db,
-            "posts",
-            postId,
-            "comments",
-            commentId,
-            "replies",
-            parentId,
-            "replies"
-          );
-
+    await updateDoc(
+      doc(
+        db,
+        "posts",
+        postId
+      ),
+      {
+        comments:
+          increment(1)
       }
+    );
 
 
-      if (!repliesRef) return;
+    // =========================
+    // INCREASE REPLY COUNT
+    // =========================
+
+    await updateDoc(
+      doc(
+        db,
+        "posts",
+        postId,
+        "comments",
+        replyCommentId
+      ),
+      {
+        replyCount:
+          increment(1)
+      }
+    );
 
 
-      await addDoc(
-  repliesRef,
-  {
-    text: text,
+    // =========================
+    // RESET INPUT
+    // =========================
 
-    userId: user.uid,
+    cancelReply();
 
-    username:
-      userData.name ||
-      user.email ||
-      "User",
-
-    photoURL:
-      userData.photoURL ||
-      "images/default-avatar.png",
-
-    createdAt:
-      serverTimestamp(),
-
-    likes: 0,
-
-    parentReplyId:
-      parentType === "reply"
-        ? parentId
-        : null
-  }
-);
+    commentInput.focus();
 
 
-// ================================
-// INCREASE POST COMMENT COUNT
-// ================================
+  } catch (error) {
 
-await updateDoc(
-  doc(db, "posts", postId),
-  {
-    comments: increment(1)
-  }
-);
+    console.error(
+      "Send reply error:",
+      error
+    );
 
-
-// ================================
-// INCREASE MAIN COMMENT REPLY COUNT
-// ================================
-
-await updateDoc(
-  doc(
-    db,
-    "posts",
-    postId,
-    "comments",
-    commentId
-  ),
-  {
-    replyCount: increment(1)
-  }
-);
-
-
-      textInput.value = "";
-
-      textInput.focus();
-
-
-    } catch (error) {
-
-      console.error(
-        "Send reply error:",
-        error
-      );
-
-      alert(
-        "Unable to send reply."
-      );
-
-    }
+    alert(
+      "Unable to send reply."
+    );
 
   }
-);
 
-
+}
 // ================================
 // LIKE MAIN COMMENT
 // ================================
