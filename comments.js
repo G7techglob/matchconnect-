@@ -45,6 +45,19 @@ const sendCommentBtn =
 
 const myProfilePic =
   document.getElementById("myProfilePic");
+// ================================
+// REPLY MODE
+// ================================
+
+let replyMode = false;
+
+let replyParentType = null;
+
+let replyParentId = null;
+
+let replyCommentId = null;
+
+let replyUsername = null;
 
 
 // ================================
@@ -352,28 +365,7 @@ async function createCommentElement(
   </span>
 
 </div>
-
-
-      <div
-        class="reply-box"
-        style="display:none;"
-      >
-
-        <input
-          type="text"
-          class="reply-input"
-          placeholder="Write a reply..."
-        >
-
-        <button
-          class="send-reply-btn"
-          data-parent-type="comment"
-          data-parent-id="${commentId}"
-        >
-          Send
-        </button>
-
-      </div>
+ <div
 
       <div class="replies"></div>
 
@@ -696,28 +688,6 @@ async function createReplyElement(
 
       </div>
 
-      <div
-        class="reply-box"
-        style="display:none;"
-      >
-
-        <input
-          type="text"
-          class="reply-input"
-          placeholder="Write a reply..."
-        >
-
-        <button
-          class="send-reply-btn"
-          data-parent-type="reply"
-          data-comment-id="${commentId}"
-          data-parent-id="${replyId}"
-        >
-          Send
-        </button>
-
-      </div>
-
     </div>
 
   `;
@@ -772,7 +742,19 @@ auth.onAuthStateChanged(
 
 sendCommentBtn.addEventListener(
   "click",
-  sendComment
+  () => {
+
+    if (replyMode) {
+
+      sendReply();
+
+    } else {
+
+      sendComment();
+
+    }
+
+  }
 );
 
 
@@ -784,7 +766,15 @@ commentInput.addEventListener(
 
       e.preventDefault();
 
-      sendComment();
+      if (replyMode) {
+
+        sendReply();
+
+      } else {
+
+        sendComment();
+
+      }
 
     }
 
@@ -911,10 +901,9 @@ async function sendComment() {
   }
 
 }
-
-
 // ================================
 // REPLY BUTTON
+// USE MAIN COMMENT BOX
 // ================================
 
 document.addEventListener(
@@ -927,45 +916,88 @@ document.addEventListener(
     if (!btn) return;
 
 
+    // Enable reply mode
+    replyMode = true;
+
+
+    // Store what we are replying to
+    replyParentType =
+      btn.dataset.parentType;
+
+
+    replyParentId =
+      btn.dataset.parentId;
+
+
+    replyCommentId =
+      btn.dataset.commentId ||
+      btn.dataset.parentId;
+
+
+    // Find the username
     const parent =
       btn.closest(
         ".comment-content, .reply-content"
       );
 
-    if (!parent) return;
 
+    if (parent) {
 
-    const box =
-      parent.querySelector(
-        ":scope > .reply-box"
-      );
-
-    if (!box) return;
-
-
-    box.style.display =
-      box.style.display === "none"
-        ? "flex"
-        : "none";
-
-
-    if (box.style.display === "flex") {
-
-      const input =
-        box.querySelector(
-          ".reply-input"
+      const usernameElement =
+        parent.querySelector(
+          ".comment-username, .reply-username"
         );
 
-      if (input) {
-        input.focus();
-      }
+
+      replyUsername =
+        usernameElement
+          ? usernameElement.textContent.trim()
+          : "User";
+
+    } else {
+
+      replyUsername = "User";
 
     }
+
+
+    // Change the main input
+    commentInput.placeholder =
+      `Reply to ${replyUsername}...`;
+
+
+    // Show reply information
+    showReplyIndicator();
+
+
+    // Focus the SAME main input
+    commentInput.focus();
 
   }
 );
 
+// ================================
+// CANCEL / RESET REPLY MODE
+// ================================
 
+function cancelReply() {
+
+  replyMode = false;
+
+  replyParentType = null;
+
+  replyParentId = null;
+
+  replyCommentId = null;
+
+  replyUsername = null;
+
+  commentInput.value = "";
+
+  commentInput.placeholder =
+    "Write a comment...";
+
+    }
 // ================================
 // SEND REPLY / REPLY TO REPLY
 // ================================
