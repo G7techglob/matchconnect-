@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Stores - MatchConnect</title>
+
+    <link
+        rel="stylesheet"
+        href="stores.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+</head>
+
+<body>
+
+<header class="header">
+
+    <button
+        class="back-btn"
+        onclick="history.back()"
+    >
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <div class="header-title">
+
+        <h1>Stores</h1>
+
+        <p>Official stores on MatchConnect</p>
+
+    </div>
+
+    <button
+        class="add-btn"
+        onclick="openStoreRegistration()"
+    >
+        <i class="fas fa-plus"></i>
+    </button>
+
+</header>
+
+
+<!-- ADVERTISEMENT -->
+
+<div id="adBoard">
+
+    <a
+        id="adLink"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+
+        <img
+            id="adImage"
+            src=""
+            alt="Advertisement"
+        >
+
+    </a>
+
+</div>
+
+
+<main class="container">
+
+
+    <!-- SEARCH -->
+
+    <div class="search-box">
+
+        <i class="fas fa-search"></i>
+
+        <input
+            type="search"
+            id="searchInput"
+            placeholder="Search stores..."
+            autocomplete="off"
+        >
+
+        <button
+            id="clearSearch"
+            class="clear-btn"
+        >
+
+            <i class="fas fa-times"></i>
+
+        </button>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="quick-actions">
+
+        <button
+            class="quick-card"
+            onclick="openStoreRegistration()"
+        >
+
+            <i class="fas fa-store-circle-plus"></i>
+
+            <span>Open Store</span>
+
+        </button>
+
+
+        <button
+            class="quick-card"
+            onclick="openMyStore()"
+        >
+
+            <i class="fas fa-store"></i>
+
+            <span>My Store</span>
+
+        </button>
+
+
+        <button
+            class="quick-card"
+            onclick="openSavedStores()"
+        >
+
+            <i class="fas fa-bookmark"></i>
+
+            <span>Saved</span>
+
+        </button>
+
+
+        <button
+            class="quick-card"
+            onclick="openStoreOrders()"
+        >
+
+            <i class="fas fa-box"></i>
+
+            <span>Orders</span>
+
+        </button>
+
+    </div>
+
+
+    <!-- STORE CATEGORIES -->
+
+    <section class="section">
+
+        <div class="section-title">
+
+            <h2>Categories</h2>
+
+        </div>
+
+
+        <div class="categories">
+
+            <button
+                class="category active"
+                data-category="all"
+            >
+
+                <i class="fas fa-border-all"></i>
+
+                <span>All</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="fashion"
+            >
+
+                <i class="fas fa-shirt"></i>
+
+                <span>Fashion</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="electronics"
+            >
+
+                <i class="fas fa-mobile-screen"></i>
+
+                <span>Electronics</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="beauty"
+            >
+
+                <i class="fas fa-spa"></i>
+
+                <span>Beauty</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="food"
+            >
+
+                <i class="fas fa-utensils"></i>
+
+                <span>Food</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="home"
+            >
+
+                <i class="fas fa-house"></i>
+
+                <span>Home</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="general"
+            >
+
+                <i class="fas fa-store"></i>
+
+                <span>General</span>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- FILTERS -->
+
+    <div class="filters">
+
+        <button
+            class="filter-btn active"
+            data-filter="all"
+        >
+            All
+        </button>
+
+
+        <button
+            class="filter-btn"
+            data-filter="verified"
+        >
+
+            <i class="fas fa-circle-check"></i>
+
+            Verified
+
+        </button>
+
+
+        <button
+            class="filter-btn"
+            data-filter="featured"
+        >
+
+            <i class="fas fa-star"></i>
+
+            Featured
+
+        </button>
+
+    </div>
+
+
+    <!-- STORES -->
+
+    <section class="section">
+
+        <div class="section-title">
+
+            <h2>Official Stores</h2>
+
+            <button
+                class="sort-btn"
+                onclick="toggleSort()"
+            >
+
+                <i class="fas fa-sort"></i>
+
+                Sort
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="storeList"
+            class="store-list"
+        ></div>
+
+
+        <div
+            id="emptyState"
+            class="empty-state hidden"
+        >
+
+            <i class="fas fa-store"></i>
+
+            <h3>No Stores Found</h3>
+
+            <p>
+                Try another search or category.
+            </p>
+
+            <button onclick="resetStores()">
+                Show All
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- STORE DETAILS -->
+
+<div
+    id="storeModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <button
+            class="modal-close"
+            onclick="closeStore()"
+        >
+
+            <i class="fas fa-times"></i>
+
+        </button>
+
+        <div id="storeDetails"></div>
+
+    </div>
+
+</div>
+
+
+<!-- SORT -->
+
+<div
+    id="sortMenu"
+    class="sort-menu hidden"
+>
+
+    <button onclick="sortStores('rating')">
+        Highest Rated
+    </button>
+
+    <button onclick="sortStores('name')">
+        Name A-Z
+    </button>
+
+    <button onclick="sortStores('new')">
+        Newest
+    </button>
+
+</div>
+
+
+<div
+    id="toast"
+    class="toast"
+></div>
+
+
+<script src="stores.js"></script>
+
+</body>
+
+</html>
