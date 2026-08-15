@@ -365,7 +365,6 @@ async function createCommentElement(
   </span>
 
 </div>
- <div
 
       <div class="replies"></div>
 
@@ -965,9 +964,6 @@ document.addEventListener(
     commentInput.placeholder =
       `Reply to ${replyUsername}...`;
 
-
-    // Show reply information
-    showReplyIndicator();
 
 
     // Focus the SAME main input
