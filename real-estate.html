@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Real Estate - MatchConnect</title>
+
+    <link
+        rel="stylesheet"
+        href="real-estate.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+</head>
+
+<body>
+
+<header class="header">
+
+    <button
+        class="back-btn"
+        onclick="history.back()"
+    >
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <div class="header-title">
+
+        <h1>Real Estate</h1>
+
+        <p>Homes, Land & Properties</p>
+
+    </div>
+
+    <button
+        class="add-btn"
+        onclick="listProperty()"
+    >
+        <i class="fas fa-plus"></i>
+    </button>
+
+</header>
+
+
+<!-- Advertisement -->
+
+<div id="adBoard">
+
+    <a
+        id="adLink"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+
+        <img
+            id="adImage"
+            src=""
+            alt="Advertisement"
+        >
+
+    </a>
+
+</div>
+
+
+<main class="container">
+
+
+    <!-- SEARCH -->
+
+    <div class="search-box">
+
+        <i class="fas fa-search"></i>
+
+        <input
+            type="search"
+            id="searchInput"
+            placeholder="Search properties..."
+            autocomplete="off"
+        >
+
+        <button
+            id="clearSearch"
+            class="clear-btn"
+        >
+            <i class="fas fa-times"></i>
+        </button>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="quick-actions">
+
+        <button
+            class="quick-card"
+            onclick="listProperty()"
+        >
+
+            <i class="fas fa-plus-circle"></i>
+
+            <span>List Property</span>
+
+        </button>
+
+
+        <button
+            class="quick-card"
+            onclick="myProperties()"
+        >
+
+            <i class="fas fa-house"></i>
+
+            <span>My Properties</span>
+
+        </button>
+
+
+        <button
+            class="quick-card"
+            onclick="savedProperties()"
+        >
+
+            <i class="fas fa-bookmark"></i>
+
+            <span>Saved</span>
+
+        </button>
+
+
+        <button
+            class="quick-card"
+            onclick="myRequests()"
+        >
+
+            <i class="fas fa-file-circle-check"></i>
+
+            <span>Requests</span>
+
+        </button>
+
+    </div>
+
+
+    <!-- PROPERTY TYPE -->
+
+    <section class="section">
+
+        <div class="section-title">
+
+            <h2>Property Type</h2>
+
+        </div>
+
+
+        <div class="categories">
+
+            <button
+                class="category active"
+                data-type="all"
+            >
+
+                <i class="fas fa-border-all"></i>
+
+                <span>All</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-type="house"
+            >
+
+                <i class="fas fa-house"></i>
+
+                <span>House</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-type="apartment"
+            >
+
+                <i class="fas fa-building"></i>
+
+                <span>Apartment</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-type="land"
+            >
+
+                <i class="fas fa-mountain"></i>
+
+                <span>Land</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-type="office"
+            >
+
+                <i class="fas fa-briefcase"></i>
+
+                <span>Office</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-type="shop"
+            >
+
+                <i class="fas fa-shop"></i>
+
+                <span>Shop</span>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- SALE / RENT -->
+
+    <div class="filters">
+
+        <button
+            class="filter-btn active"
+            data-purpose="all"
+        >
+            All
+        </button>
+
+        <button
+            class="filter-btn"
+            data-purpose="sale"
+        >
+            For Sale
+        </button>
+
+        <button
+            class="filter-btn"
+            data-purpose="rent"
+        >
+            For Rent
+        </button>
+
+    </div>
+
+
+    <!-- PROPERTIES -->
+
+    <section class="section">
+
+        <div class="section-title">
+
+            <h2>Properties</h2>
+
+            <button
+                class="sort-btn"
+                onclick="toggleSort()"
+            >
+
+                <i class="fas fa-sort"></i>
+
+                Sort
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="propertyList"
+            class="property-list"
+        >
+        </div>
+
+
+        <div
+            id="emptyState"
+            class="empty-state hidden"
+        >
+
+            <i class="fas fa-house-circle-xmark"></i>
+
+            <h3>No Properties Found</h3>
+
+            <p>
+                Try another search or filter.
+            </p>
+
+            <button onclick="resetProperties()">
+                Show All
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- PROPERTY MODAL -->
+
+<div
+    id="propertyModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <button
+            class="modal-close"
+            onclick="closeProperty()"
+        >
+            <i class="fas fa-times"></i>
+        </button>
+
+        <div id="propertyDetails"></div>
+
+    </div>
+
+</div>
+
+
+<!-- SORT MENU -->
+
+<div
+    id="sortMenu"
+    class="sort-menu hidden"
+>
+
+    <button onclick="sortProperties('new')">
+        Newest
+    </button>
+
+    <button onclick="sortProperties('low')">
+        Lowest Price
+    </button>
+
+    <button onclick="sortProperties('high')">
+        Highest Price
+    </button>
+
+</div>
+
+
+<div
+    id="toast"
+    class="toast"
+></div>
+
+
+<script src="real-estate.js"></script>
+
+</body>
+
+</html>
