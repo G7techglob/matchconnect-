@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Services - MatchConnect</title>
+
+    <link
+        rel="stylesheet"
+        href="services.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+</head>
+
+<body>
+
+<header class="services-header">
+
+    <button
+        class="back-btn"
+        onclick="history.back()"
+    >
+
+        <i class="fas fa-arrow-left"></i>
+
+    </button>
+
+
+    <div class="header-title">
+
+        <h1>Services</h1>
+
+        <p>Find Professional Services</p>
+
+    </div>
+
+
+    <button
+        class="header-action"
+        onclick="offerService()"
+    >
+
+        <i class="fas fa-plus"></i>
+
+    </button>
+
+</header>
+
+
+<!-- ADVERTISEMENT -->
+
+<div id="adBoard">
+
+    <a
+        id="adLink"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+
+        <img
+            id="adImage"
+            src=""
+            alt="Advertisement"
+        >
+
+    </a>
+
+</div>
+
+
+<main class="services-container">
+
+
+    <!-- SEARCH -->
+
+    <div class="search-box">
+
+        <i class="fas fa-search"></i>
+
+        <input
+            type="search"
+            id="serviceSearch"
+            placeholder="Search services..."
+            autocomplete="off"
+        >
+
+        <button
+            id="clearSearch"
+            class="clear-search"
+        >
+
+            <i class="fas fa-times"></i>
+
+        </button>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+
+    <section class="quick-actions">
+
+        <button
+            onclick="offerService()"
+            class="quick-card"
+        >
+
+            <i class="fas fa-plus-circle"></i>
+
+            <span>Offer Service</span>
+
+        </button>
+
+
+        <button
+            onclick="myServices()"
+            class="quick-card"
+        >
+
+            <i class="fas fa-briefcase"></i>
+
+            <span>My Services</span>
+
+        </button>
+
+
+        <button
+            onclick="savedServices()"
+            class="quick-card"
+        >
+
+            <i class="fas fa-bookmark"></i>
+
+            <span>Saved</span>
+
+        </button>
+
+
+        <button
+            onclick="myBookings()"
+            class="quick-card"
+        >
+
+            <i class="fas fa-calendar-check"></i>
+
+            <span>Bookings</span>
+
+        </button>
+
+    </section>
+
+
+    <!-- CATEGORIES -->
+
+    <section class="category-section">
+
+        <div class="section-heading">
+
+            <h2>Categories</h2>
+
+        </div>
+
+
+        <div class="categories">
+
+            <button
+                class="category active"
+                data-category="all"
+            >
+
+                <i class="fas fa-border-all"></i>
+
+                <span>All</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="cleaning"
+            >
+
+                <i class="fas fa-broom"></i>
+
+                <span>Cleaning</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="repair"
+            >
+
+                <i class="fas fa-screwdriver-wrench"></i>
+
+                <span>Repair</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="technology"
+            >
+
+                <i class="fas fa-laptop-code"></i>
+
+                <span>Technology</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="beauty"
+            >
+
+                <i class="fas fa-scissors"></i>
+
+                <span>Beauty</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="education"
+            >
+
+                <i class="fas fa-graduation-cap"></i>
+
+                <span>Education</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="transport"
+            >
+
+                <i class="fas fa-truck"></i>
+
+                <span>Transport</span>
+
+            </button>
+
+
+            <button
+                class="category"
+                data-category="business"
+            >
+
+                <i class="fas fa-chart-line"></i>
+
+                <span>Business</span>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- FILTER -->
+
+    <section class="filters">
+
+        <button
+            class="filter-btn active"
+            data-location="all"
+        >
+            All
+        </button>
+
+        <button
+            class="filter-btn"
+            data-location="nearby"
+        >
+            Nearby
+        </button>
+
+        <button
+            class="filter-btn"
+            data-location="remote"
+        >
+            Remote
+        </button>
+
+    </section>
+
+
+    <!-- SERVICE LIST -->
+
+    <section class="services-section">
+
+        <div class="section-heading">
+
+            <h2>Popular Services</h2>
+
+            <button
+                class="sort-btn"
+                onclick="toggleSort()"
+            >
+
+                <i class="fas fa-sort"></i>
+
+                Sort
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="servicesList"
+            class="services-list"
+        >
+        </div>
+
+
+        <div
+            id="emptyState"
+            class="empty-state hidden"
+        >
+
+            <i class="fas fa-tools"></i>
+
+            <h3>No Services Found</h3>
+
+            <p>
+                Try another search or category.
+            </p>
+
+            <button onclick="resetServices()">
+                Show All Services
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- SERVICE DETAILS -->
+
+<div
+    id="serviceModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <button
+            class="modal-close"
+            onclick="closeServiceModal()"
+        >
+
+            <i class="fas fa-times"></i>
+
+        </button>
+
+
+        <div
+            id="serviceDetails"
+            class="service-details"
+        >
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- SORT MENU -->
+
+<div
+    id="sortMenu"
+    class="sort-menu hidden"
+>
+
+    <button onclick="sortServices('new')">
+        Newest
+    </button>
+
+    <button onclick="sortServices('price-high')">
+        Highest Price
+    </button>
+
+    <button onclick="sortServices('price-low')">
+        Lowest Price
+    </button>
+
+</div>
+
+
+<div
+    id="toast"
+    class="toast"
+>
+</div>
+
+
+<script src="services.js"></script>
+
+</body>
+
+              </html>
