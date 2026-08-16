@@ -832,10 +832,11 @@ function openWithdraw() {
 
 
         <button
+    id="withdrawButton"
     class="modal-action"
     onclick="createWithdrawalRequest()"
 >
-    Submit Withdrawal Request
+    Withdraw
 </button>
 
     `;
@@ -854,6 +855,16 @@ function openWithdraw() {
 
 async function createWithdrawalRequest() {
 
+        const button =
+        document.querySelector(
+            "#withdrawButton"
+        );
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Submitting...";
+    }
+
     const amount =
         Number(
             document.getElementById(
@@ -868,26 +879,36 @@ async function createWithdrawalRequest() {
 
 
     if (
-        !amount ||
-        amount <= 0
-    ) {
+    !amount ||
+    amount <= 0
+) {
 
-        showToast(
-            "Enter a valid amount"
-        );
+    showToast(
+        "Enter a valid amount"
+    );
 
-        return;
+    if (button) {
+        button.disabled = false;
+        button.textContent = "Withdraw";
+    }
+
+    return;
 
     }
 
 
     if (!account) {
 
-        showToast(
-            "Enter your bank account"
-        );
+    showToast(
+        "Enter your bank account"
+    );
 
-        return;
+    if (button) {
+        button.disabled = false;
+        button.textContent = "Withdraw";
+    }
+
+    return;
 
     }
 
@@ -898,11 +919,16 @@ async function createWithdrawalRequest() {
 
     if (!user) {
 
-        showToast(
-            "Please log in first"
-        );
+    showToast(
+        "Please log in first"
+    );
 
-        return;
+    if (button) {
+        button.disabled = false;
+        button.textContent = "Withdraw";
+    }
+
+    return;
 
     }
 
@@ -965,35 +991,39 @@ async function createWithdrawalRequest() {
                     "withdrawalRequests"
                 ),
                 {
+    userId:
+        user.uid,
 
-                    userId:
-                        user.uid,
+    walletId:
+        walletData.walletId ||
+        wallet.walletId,
 
-                    walletId:
-                        walletData.walletId ||
-                        wallet.walletId,
+    amount:
+        amount,
 
-                    amount:
-                        amount,
+    currency:
+        "MCC",
 
-                    currency:
-                        "MCC",
+    bankAccount:
+        account,
 
-                    bankAccount:
-                        account,
+    status:
+        "pending",
 
-                    status:
-                        "pending",
+    provider:
+        null,
 
-                    provider:
-                        null,
+    providerReference:
+        null,
 
-                    providerReference:
-                        null,
+    failureReason:
+        null,
 
-                    createdAt:
-                        serverTimestamp()
+    processedAt:
+        null,
 
+    createdAt:
+        serverTimestamp()
                 }
             );
 
@@ -1016,17 +1046,22 @@ async function createWithdrawalRequest() {
 
     catch (error) {
 
-        console.error(
-            "Withdrawal request error:",
-            error
-        );
+    console.error(
+        "Withdrawal request error:",
+        error
+    );
 
+    if (button) {
+        button.disabled = false;
+        button.textContent = "Withdraw";
+    }
 
-        showToast(
-            "Unable to submit withdrawal request"
-        );
+    showToast(
+        "Unable to submit withdrawal request"
+    );
 
     }
+}
 
 }
 /* =====================================================
