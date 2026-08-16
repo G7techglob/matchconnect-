@@ -72,7 +72,7 @@
             id="balanceAmount"
             class="balance-amount"
         >
-            ₦0.00
+            0 MCC
         </div>
 
 
@@ -100,9 +100,10 @@
     <section class="actions">
 
         <button
-            class="action-card"
-            onclick="openDeposit()"
-        >
+    type="button"
+    class="action-card"
+    onclick="openDeposit()"
+>
 
             <span class="action-icon deposit">
                 <i class="fas fa-plus"></i>
@@ -116,9 +117,10 @@
 
 
         <button
-            class="action-card"
-            onclick="openWithdraw()"
-        >
+    type="button"
+    class="action-card"
+    onclick="openWithdraw()"
+>
 
             <span class="action-icon withdraw">
                 <i class="fas fa-arrow-up"></i>
@@ -132,9 +134,10 @@
 
 
         <button
-            class="action-card"
-            onclick="openSendMoney()"
-        >
+    type="button"
+    class="action-card"
+    onclick="openSendMoney()"
+>
 
             <span class="action-icon send">
                 <i class="fas fa-paper-plane"></i>
@@ -148,9 +151,10 @@
 
 
         <button
-            class="action-card"
-            onclick="openReceiveMoney()"
-        >
+    type="button"
+    class="action-card"
+    onclick="openReceiveMoney()"
+>
 
             <span class="action-icon receive">
                 <i class="fas fa-download"></i>
@@ -302,9 +306,8 @@
     id="toast"
     class="toast"
 ></div>
+<script type="module" src="wallet.js?v=2"></script>
 
-
-<script type="module" src="wallet.js"></script>
 </body>
 
 </html>
