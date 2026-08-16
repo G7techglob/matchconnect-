@@ -48,6 +48,33 @@ document.getElementById("registerBtn").addEventListener("click", async () => {
 
     console.log("User profile saved successfully");
 
+// 3. Create MatchConnect wallet automatically
+const walletId =
+  "MC-" +
+  Math.random()
+    .toString(36)
+    .substring(2, 10)
+    .toUpperCase();
+
+await setDoc(doc(db, "wallets", user.uid), {
+
+  userId: user.uid,
+
+  walletId: walletId,
+
+  balanceMCC: 0,
+
+  defaultCurrency: "MCC",
+
+  createdAt: new Date()
+
+});
+
+console.log(
+  "Wallet created successfully:",
+  walletId
+);
+
 // Send verification email
 await sendEmailVerification(user);
 
