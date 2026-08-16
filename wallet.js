@@ -740,8 +740,6 @@ async function processDeposit() {
 
     }
 
-            }
-
 
 /* =====================================================
    WITHDRAW
