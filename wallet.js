@@ -10,7 +10,8 @@ import {
     orderBy,
     getDocs,
     runTransaction,
-    serverTimestamp
+    serverTimestamp,
+    setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 /* =====================================================
    MATCHCONNECT WALLET
@@ -167,15 +168,59 @@ async function loadWallet() {
 
         if (!walletSnap.exists()) {
 
-            console.error(
-                "Wallet document not found."
-            );
+    console.log(
+        "Wallet not found. Creating wallet..."
+    );
 
-            showToast(
-                "Wallet not found"
-            );
+    const newWalletId =
+        "MC-" +
+        Math.random()
+            .toString(36)
+            .substring(2, 10)
+            .toUpperCase();
 
-            return;
+    await setDoc(
+        walletRef,
+        {
+            userId:
+                user.uid,
+
+            walletId:
+                newWalletId,
+
+            balanceMCC:
+                0,
+
+            defaultCurrency:
+                "MCC",
+
+            createdAt:
+                serverTimestamp()
+        }
+    );
+
+    wallet.balance =
+        0;
+
+    wallet.walletId =
+        newWalletId;
+
+    wallet.userId =
+        user.uid;
+
+    wallet.currency =
+        "MCC";
+
+    renderWallet();
+
+    await loadTransactions();
+
+    console.log(
+        "New wallet created:",
+        wallet
+    );
+
+    return;
 
         }
 
