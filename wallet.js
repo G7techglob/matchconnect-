@@ -573,19 +573,22 @@ function openDeposit() {
    PROCESS DEPOSIT
 ===================================================== */
 
-function processDeposit() {
+async function processDeposit() {
 
     const input =
         document.getElementById(
             "depositAmount"
         );
 
+    const method =
+        document.getElementById(
+            "depositMethod"
+        ).value;
 
     const amount =
         Number(
             input.value
         );
-
 
     if (
         !amount ||
@@ -600,16 +603,144 @@ function processDeposit() {
 
     }
 
+    const user =
+        auth.currentUser;
 
-    /*
-       Payment gateway will be connected here later.
-    */
+    if (!user) {
 
-    showToast(
-        "Payment system will be connected later"
-    );
+        showToast(
+            "Please log in first"
+        );
 
-}
+        return;
+
+    }
+
+    const walletRef =
+        doc(
+            db,
+            "wallets",
+            user.uid
+        );
+
+    const transactionRef =
+        doc(
+            collection(
+                db,
+                "walletTransactions"
+            )
+        );
+
+    try {
+
+        await runTransaction(
+            db,
+            async (transaction) => {
+
+                const walletSnap =
+                    await transaction.get(
+                        walletRef
+                    );
+
+                if (
+                    !walletSnap.exists()
+                ) {
+
+                    throw new Error(
+                        "Wallet not found"
+                    );
+
+                }
+
+                const walletData =
+                    walletSnap.data();
+
+                const currentBalance =
+                    Number(
+                        walletData.balanceMCC || 0
+                    );
+
+                const newBalance =
+                    currentBalance +
+                    amount;
+
+                transaction.update(
+                    walletRef,
+                    {
+                        balanceMCC:
+                            newBalance
+                    }
+                );
+
+                transaction.set(
+                    transactionRef,
+                    {
+                        userId:
+                            user.uid,
+
+                        walletId:
+                            walletData.walletId ||
+                            wallet.walletId,
+
+                        type:
+                            "credit",
+
+                        amount:
+                            amount,
+
+                        currency:
+                            "MCC",
+
+                        description:
+                            "Wallet Deposit",
+
+                        method:
+                            method,
+
+                        status:
+                            "completed",
+
+                        reference:
+                            "DEP-" +
+                            Date.now(),
+
+                        createdAt:
+                            serverTimestamp()
+                    }
+                );
+
+            }
+        );
+
+        wallet.balance +=
+            amount;
+
+        renderWallet();
+
+        closePaymentModal();
+
+        await loadTransactions();
+
+        showToast(
+            `${formatMoney(amount)} added to your wallet`
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Deposit error:",
+            error
+        );
+
+        showToast(
+            "Deposit failed"
+        );
+
+    }
+
+            }
 
 
 /* =====================================================
