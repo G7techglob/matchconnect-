@@ -803,8 +803,7 @@ function openWithdraw() {
 /* =====================================================
    PROCESS WITHDRAW
 ===================================================== */
-
-function processWithdraw() {
+async function processWithdraw() {
 
     const amount =
         Number(
@@ -812,6 +811,11 @@ function processWithdraw() {
                 "withdrawAmount"
             ).value
         );
+
+    const account =
+        document.getElementById(
+            "withdrawAccount"
+        ).value.trim();
 
 
     if (
@@ -828,13 +832,10 @@ function processWithdraw() {
     }
 
 
-    if (
-        amount >
-        wallet.balance
-    ) {
+    if (!account) {
 
         showToast(
-            "Insufficient balance"
+            "Enter your bank account"
         );
 
         return;
@@ -842,11 +843,194 @@ function processWithdraw() {
     }
 
 
-    showToast(
-        "Withdrawal system will be connected later"
-    );
+    const user =
+        auth.currentUser;
 
-}
+
+    if (!user) {
+
+        showToast(
+            "Please log in first"
+        );
+
+        return;
+
+    }
+
+
+    const walletRef =
+        doc(
+            db,
+            "wallets",
+            user.uid
+        );
+
+
+    const transactionRef =
+        doc(
+            collection(
+                db,
+                "walletTransactions"
+            )
+        );
+
+
+    try {
+
+        await runTransaction(
+            db,
+            async (transaction) => {
+
+                const walletSnap =
+                    await transaction.get(
+                        walletRef
+                    );
+
+
+                if (
+                    !walletSnap.exists()
+                ) {
+
+                    throw new Error(
+                        "Wallet not found"
+                    );
+
+                }
+
+
+                const walletData =
+                    walletSnap.data();
+
+
+                const currentBalance =
+                    Number(
+                        walletData.balanceMCC || 0
+                    );
+
+
+                if (
+                    amount >
+                    currentBalance
+                ) {
+
+                    throw new Error(
+                        "Insufficient balance"
+                    );
+
+                }
+
+
+                const newBalance =
+                    currentBalance -
+                    amount;
+
+
+                transaction.update(
+                    walletRef,
+                    {
+                        balanceMCC:
+                            newBalance
+                    }
+                );
+
+
+                transaction.set(
+                    transactionRef,
+                    {
+
+                        userId:
+                            user.uid,
+
+                        walletId:
+                            walletData.walletId ||
+                            wallet.walletId,
+
+                        type:
+                            "debit",
+
+                        amount:
+                            amount,
+
+                        currency:
+                            "MCC",
+
+                        description:
+                            "Wallet Withdrawal",
+
+                        method:
+                            "bank",
+
+                        account:
+                            account,
+
+                        status:
+                            "completed",
+
+                        reference:
+                            "WDR-" +
+                            Date.now(),
+
+                        createdAt:
+                            serverTimestamp()
+
+                    }
+                );
+
+            }
+        );
+
+
+        wallet.balance -=
+            amount;
+
+
+        renderWallet();
+
+
+        closePaymentModal();
+
+
+        await loadTransactions();
+
+
+        showToast(
+            `${formatMoney(amount)} withdrawn from your wallet`
+        );
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Withdrawal error:",
+            error
+        );
+
+
+        if (
+            error.message ===
+            "Insufficient balance"
+        ) {
+
+            showToast(
+                "Insufficient balance"
+            );
+
+        }
+
+        else {
+
+            showToast(
+                "Withdrawal failed"
+            );
+
+        }
+
+    }
+
+            }
+
 
 
 /* =====================================================
