@@ -832,11 +832,11 @@ function openWithdraw() {
 
 
         <button
-            class="modal-action"
-            onclick="processWithdraw()"
-        >
-            Withdraw
-        </button>
+    class="modal-action"
+    onclick="createWithdrawalRequest()"
+>
+    Submit Withdrawal Request
+</button>
 
     `;
 
@@ -846,6 +846,189 @@ function openWithdraw() {
 }
 
 
+
+/* =====================================================
+   CREATE WITHDRAWAL REQUEST
+   FUTURE SECURE PAYMENT ARCHITECTURE
+===================================================== */
+
+async function createWithdrawalRequest() {
+
+    const amount =
+        Number(
+            document.getElementById(
+                "withdrawAmount"
+            ).value
+        );
+
+    const account =
+        document.getElementById(
+            "withdrawAccount"
+        ).value.trim();
+
+
+    if (
+        !amount ||
+        amount <= 0
+    ) {
+
+        showToast(
+            "Enter a valid amount"
+        );
+
+        return;
+
+    }
+
+
+    if (!account) {
+
+        showToast(
+            "Enter your bank account"
+        );
+
+        return;
+
+    }
+
+
+    const user =
+        auth.currentUser;
+
+
+    if (!user) {
+
+        showToast(
+            "Please log in first"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const walletRef =
+            doc(
+                db,
+                "wallets",
+                user.uid
+            );
+
+
+        const walletSnap =
+            await getDoc(
+                walletRef
+            );
+
+
+        if (!walletSnap.exists()) {
+
+            showToast(
+                "Wallet not found"
+            );
+
+            return;
+
+        }
+
+
+        const walletData =
+            walletSnap.data();
+
+
+        const currentBalance =
+            Number(
+                walletData.balanceMCC || 0
+            );
+
+
+        if (
+            amount >
+            currentBalance
+        ) {
+
+            showToast(
+                "Insufficient balance"
+            );
+
+            return;
+
+        }
+
+
+        const withdrawalRef =
+            await addDoc(
+                collection(
+                    db,
+                    "withdrawalRequests"
+                ),
+                {
+
+                    userId:
+                        user.uid,
+
+                    walletId:
+                        walletData.walletId ||
+                        wallet.walletId,
+
+                    amount:
+                        amount,
+
+                    currency:
+                        "MCC",
+
+                    bankAccount:
+                        account,
+
+                    status:
+                        "pending",
+
+                    provider:
+                        null,
+
+                    providerReference:
+                        null,
+
+                    createdAt:
+                        serverTimestamp()
+
+                }
+            );
+
+
+        console.log(
+            "Withdrawal request created:",
+            withdrawalRef.id
+        );
+
+
+        closePaymentModal();
+
+
+        showToast(
+            "Withdrawal request submitted"
+        );
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Withdrawal request error:",
+            error
+        );
+
+
+        showToast(
+            "Unable to submit withdrawal request"
+        );
+
+    }
+
+}
 /* =====================================================
    PROCESS WITHDRAW
 ===================================================== */
@@ -1577,3 +1760,6 @@ window.openTransactionHistory =
 
 window.closePaymentModal =
     closePaymentModal;
+
+window.createWithdrawalRequest =
+    createWithdrawalRequest;
