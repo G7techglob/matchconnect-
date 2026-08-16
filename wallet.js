@@ -3,9 +3,13 @@ import { auth, db } from "./firebase.js";
 
 import {
     doc,
-    getDoc
+    getDoc,
+    collection,
+    query,
+    where,
+    orderBy,
+    getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
 /* =====================================================
    MATCHCONNECT WALLET
 ===================================================== */
@@ -198,8 +202,7 @@ async function loadWallet() {
 
         renderWallet();
 
-        renderTransactions();
-
+await loadTransactions();
 
         console.log(
             "Wallet loaded:",
@@ -223,6 +226,123 @@ async function loadWallet() {
 
 }
 
+/* =====================================================
+   LOAD TRANSACTIONS FROM FIRESTORE
+===================================================== */
+
+async function loadTransactions() {
+
+    try {
+
+        const user = auth.currentUser;
+
+        if (!user) {
+
+            console.log("No logged-in user.");
+
+            return;
+
+        }
+
+
+        const transactionsRef =
+            collection(
+                db,
+                "walletTransactions"
+            );
+
+
+        const transactionsQuery =
+            query(
+                transactionsRef,
+                where(
+                    "userId",
+                    "==",
+                    user.uid
+                ),
+                orderBy(
+                    "createdAt",
+                    "desc"
+                )
+            );
+
+
+        const snapshot =
+            await getDocs(
+                transactionsQuery
+            );
+
+
+        transactions = [];
+
+
+        snapshot.forEach(
+            document => {
+
+                const data =
+                    document.data();
+
+
+                transactions.push({
+
+                    id:
+                        document.id,
+
+                    type:
+                        data.type,
+
+                    amount:
+                        Number(
+                            data.amount || 0
+                        ),
+
+                    currency:
+                        data.currency ||
+                        "MCC",
+
+                    title:
+                        data.description ||
+                        "Transaction",
+
+                    date:
+                        data.createdAt
+                            ? data.createdAt
+                                .toDate()
+                                .toLocaleString()
+                            : "",
+
+                    status:
+                        data.status,
+
+                    reference:
+                        data.reference
+
+                });
+
+            }
+        );
+
+
+        renderTransactions();
+
+
+        console.log(
+            "Transactions loaded:",
+            transactions
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error loading transactions:",
+            error
+        );
+
+    }
+
+}
 /* =====================================================
    RENDER BALANCE
 ===================================================== */
