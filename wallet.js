@@ -1,3 +1,11 @@
+
+import { auth, db } from "./firebase.js";
+
+import {
+    doc,
+    getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
 /* =====================================================
    MATCHCONNECT WALLET
 ===================================================== */
@@ -11,8 +19,11 @@ let wallet = {
 
     balance: 0,
 
-    walletId:
-        "MC-WALLET-001"
+    walletId: "",
+
+    userId: "",
+
+    currency: "MCC"
 
 };
 
@@ -121,7 +132,102 @@ function formatMoney(amount) {
     ).format(amount);
 
 }
+/* =====================================================
+   LOAD WALLET FROM FIRESTORE
+===================================================== */
 
+async function loadWallet() {
+
+    try {
+
+        const user = auth.currentUser;
+
+        if (!user) {
+
+            console.log("No logged-in user.");
+
+            return;
+
+        }
+
+
+        const walletRef =
+            doc(
+                db,
+                "wallets",
+                user.uid
+            );
+
+
+        const walletSnap =
+            await getDoc(
+                walletRef
+            );
+
+
+        if (!walletSnap.exists()) {
+
+            console.error(
+                "Wallet document not found."
+            );
+
+            showToast(
+                "Wallet not found"
+            );
+
+            return;
+
+        }
+
+
+        const data =
+            walletSnap.data();
+
+
+        wallet.balance =
+            Number(
+                data.balanceMCC || 0
+            );
+
+
+        wallet.walletId =
+            data.walletId || "";
+
+
+        wallet.userId =
+            data.userId || user.uid;
+
+
+        wallet.currency =
+            data.defaultCurrency || "MCC";
+
+
+        renderWallet();
+
+        renderTransactions();
+
+
+        console.log(
+            "Wallet loaded:",
+            wallet
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error loading wallet:",
+            error
+        );
+
+        showToast(
+            "Unable to load wallet"
+        );
+
+    }
+
+}
 
 /* =====================================================
    RENDER BALANCE
@@ -940,6 +1046,16 @@ document.addEventListener(
    INITIALIZE
 ===================================================== */
 
-renderWallet();
+auth.onAuthStateChanged(async (user) => {
 
-renderTransactions();
+    if (!user) {
+
+        console.log("No user logged in.");
+
+        return;
+
+    }
+
+    await loadWallet();
+
+});
