@@ -27,6 +27,8 @@ let wallet = {
 
     balance: 0,
 
+    locked: 0,
+    
     walletId: "",
 
     userId: "",
@@ -192,6 +194,9 @@ async function loadWallet() {
             balanceMCC:
                 0,
 
+            lockedMCC: 
+                0,
+            
             defaultCurrency:
                 "MCC",
 
@@ -235,6 +240,10 @@ async function loadWallet() {
                 data.balanceMCC || 0
             );
 
+        wallet.locked =
+    Number(
+        data.lockedMCC || 0
+    );
 
         wallet.walletId =
             data.walletId || "";
@@ -964,22 +973,26 @@ async function createWithdrawalRequest() {
             walletSnap.data();
 
 
-        const currentBalance =
-            Number(
-                walletData.balanceMCC || 0
-            );
+        const lockedBalance =
+    Number(
+        walletData.lockedMCC || 0
+    );
+
+const availableBalance =
+    currentBalance -
+    lockedBalance;
 
 
         if (
-            amount >
-            currentBalance
-        ) {
+    amount >
+    availableBalance
+) {
 
-            showToast(
-                "Insufficient balance"
-            );
+    showToast(
+        "Insufficient available balance"
+    );
 
-            return;
+    return;
 
         }
 
