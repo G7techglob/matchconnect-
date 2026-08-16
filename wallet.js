@@ -1173,3 +1173,46 @@ auth.onAuthStateChanged(async (user) => {
     await loadWallet();
 
 });
+
+/* =====================================================
+   EXPOSE WALLET FUNCTIONS TO HTML
+===================================================== */
+
+window.toggleBalanceVisibility =
+    toggleBalanceVisibility;
+
+window.copyWalletId =
+    copyWalletId;
+
+window.openDeposit =
+    openDeposit;
+
+window.processDeposit =
+    processDeposit;
+
+window.openWithdraw =
+    openWithdraw;
+
+window.processWithdraw =
+    processWithdraw;
+
+window.openSendMoney =
+    openSendMoney;
+
+window.processSend =
+    processSend;
+
+window.openReceiveMoney =
+    openReceiveMoney;
+
+window.openPayment =
+    openPayment;
+
+window.processQuickPayment =
+    processQuickPayment;
+
+window.openTransactionHistory =
+    openTransactionHistory;
+
+window.closePaymentModal =
+    closePaymentModal;
