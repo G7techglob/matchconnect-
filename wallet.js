@@ -1,5 +1,5 @@
 
-import { auth, db } from "./firebase.js";
+import { auth, db,functions } from "./firebase.js";
 
 import {
     doc,
@@ -14,6 +14,9 @@ import {
     setDoc,
     addDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import {
+    httpsCallable
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-functions.js";
 /* =====================================================
    MATCHCONNECT WALLET
 ===================================================== */
@@ -1371,7 +1374,7 @@ function openSendMoney() {
 }
 
 
-function processSend() {
+async function processSend() {
 
     const recipient =
         document.getElementById(
@@ -1387,10 +1390,14 @@ function processSend() {
         );
 
 
+    // ==========================================
+    // VALIDATE RECIPIENT
+    // ==========================================
+
     if (!recipient) {
 
         showToast(
-            "Enter recipient"
+            "Enter recipient Wallet ID"
         );
 
         return;
@@ -1398,13 +1405,17 @@ function processSend() {
     }
 
 
+    // ==========================================
+    // VALIDATE AMOUNT
+    // ==========================================
+
     if (
-        !amount ||
+        !Number.isInteger(amount) ||
         amount <= 0
     ) {
 
         showToast(
-            "Enter a valid amount"
+            "Enter a valid whole MCC amount"
         );
 
         return;
@@ -1412,13 +1423,18 @@ function processSend() {
     }
 
 
-    if (
-        amount >
-        wallet.balance
-    ) {
+    // ==========================================
+    // REQUIRE LOGIN
+    // ==========================================
+
+    const user =
+        auth.currentUser;
+
+
+    if (!user) {
 
         showToast(
-            "Insufficient balance"
+            "Please log in first"
         );
 
         return;
@@ -1426,9 +1442,139 @@ function processSend() {
     }
 
 
-    showToast(
-        "Transfer system will be connected later"
-    );
+    try {
+
+        // ======================================
+        // CONNECT TO SECURE CLOUD FUNCTION
+        // ======================================
+
+        const transferMCC =
+            httpsCallable(
+                functions,
+                "transferMCC"
+            );
+
+
+        // ======================================
+        // SEND REQUEST TO BACKEND
+        // ======================================
+
+        const result =
+            await transferMCC({
+
+                recipientWalletId:
+                    recipient,
+
+                amount:
+                    amount
+
+            });
+
+
+        // ======================================
+        // CHECK SUCCESS
+        // ======================================
+
+        if (
+            result.data &&
+            result.data.success
+        ) {
+
+            closePaymentModal();
+
+
+            // Reload the real wallet balance
+            await loadWallet();
+
+
+            // Reload transaction history
+            await loadTransactions();
+
+
+            showToast(
+                `${formatMoney(amount)} sent successfully`
+            );
+
+        }
+
+        else {
+
+            showToast(
+                "Transfer failed"
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "MCC transfer error:",
+            error
+        );
+
+
+        // ======================================
+        // FIREBASE FUNCTION ERRORS
+        // ======================================
+
+        if (
+            error.code ===
+            "functions/failed-precondition"
+        ) {
+
+            showToast(
+                error.message ||
+                "Insufficient available MCC balance."
+            );
+
+        }
+
+        else if (
+            error.code ===
+            "functions/not-found"
+        ) {
+
+            showToast(
+                error.message ||
+                "Recipient wallet not found."
+            );
+
+        }
+
+        else if (
+            error.code ===
+            "functions/invalid-argument"
+        ) {
+
+            showToast(
+                error.message ||
+                "Invalid transfer details."
+            );
+
+        }
+
+        else if (
+            error.code ===
+            "functions/unauthenticated"
+        ) {
+
+            showToast(
+                "Please log in again."
+            );
+
+        }
+
+        else {
+
+            showToast(
+                "Unable to complete MCC transfer."
+            );
+
+        }
+
+    }
 
 }
 
