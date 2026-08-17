@@ -1,3 +1,5 @@
+
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
   getAuth,
@@ -7,6 +9,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
+import { getFunctions } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-functions.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCVdy9nJLp3YDV9PNB9kfR3HiQCdFdvGmg",
@@ -30,6 +33,7 @@ setPersistence(auth, browserLocalPersistence)
   });
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+export const functions = getFunctions(app);
 
 // optional debug (safe for development)
 window.auth = auth;
