@@ -54,20 +54,47 @@
 
     <section class="camera-section">
 
-        <video
-            id="localVideo"
-            autoplay
-            muted
-            playsinline
-        ></video>
+    <!-- PARTICIPANT VIDEO GRID -->
+    <div
+        id="participantGrid"
+        class="participant-grid"
+    >
 
-        <div class="camera-overlay">
+        <!-- YOUR VIDEO -->
+        <div
+            class="participant-tile host-tile"
+            id="hostTile"
+        >
 
-            <div id="streamTitle">
-                Loading...
+            <video
+                id="localVideo"
+                autoplay
+                muted
+                playsinline
+            ></video>
+
+            <div class="participant-name">
+                You
             </div>
 
         </div>
+
+        <!--
+            Guest video tiles will be created
+            automatically by live.js.
+        -->
+
+    </div>
+
+
+    <!-- STREAM TITLE -->
+    <div class="camera-overlay">
+
+        <div id="streamTitle">
+            Loading...
+        </div>
+
+    </div>
 
     </section>
 
