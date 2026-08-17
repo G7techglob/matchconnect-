@@ -307,3 +307,465 @@ exports.withdrawMCC = onCall(
 
     }
 );
+
+// =====================================================
+// SECURE MCC USER-TO-USER TRANSFER
+// =====================================================
+
+exports.transferMCC = onCall(
+    async (request) => {
+
+        // =================================================
+        // 1. REQUIRE AUTHENTICATION
+        // =================================================
+
+        if (!request.auth) {
+
+            throw new HttpsError(
+                "unauthenticated",
+                "You must be logged in to send MCC."
+            );
+
+        }
+
+        const senderUid =
+            request.auth.uid;
+
+
+        // =================================================
+        // 2. READ REQUEST DATA
+        // =================================================
+
+        const recipientWalletId =
+            String(
+                request.data?.recipientWalletId || ""
+            ).trim();
+
+        const amount =
+            Number(
+                request.data?.amount
+            );
+
+
+        // =================================================
+        // 3. VALIDATE RECIPIENT
+        // =================================================
+
+        if (!recipientWalletId) {
+
+            throw new HttpsError(
+                "invalid-argument",
+                "Recipient Wallet ID is required."
+            );
+
+        }
+
+
+        // =================================================
+        // 4. VALIDATE AMOUNT
+        // =================================================
+
+        if (
+            !Number.isFinite(amount) ||
+            amount <= 0
+        ) {
+
+            throw new HttpsError(
+                "invalid-argument",
+                "Enter a valid MCC amount."
+            );
+
+        }
+
+
+        // =================================================
+        // 5. MCC MUST BE WHOLE NUMBER
+        // =================================================
+
+        if (
+            !Number.isInteger(amount)
+        ) {
+
+            throw new HttpsError(
+                "invalid-argument",
+                "MCC amount must be a whole number."
+            );
+
+        }
+
+
+        // =================================================
+        // 6. GET SENDER WALLET
+        // =================================================
+
+        const senderWalletRef =
+            db.collection("wallets")
+              .doc(senderUid);
+
+
+        // =================================================
+        // 7. FIND RECIPIENT WALLET
+        // =================================================
+
+        const recipientQuery =
+            db.collection("wallets")
+              .where(
+                  "walletId",
+                  "==",
+                  recipientWalletId
+              )
+              .limit(1);
+
+
+        // =================================================
+        // 8. TRANSACTION
+        // =================================================
+
+        const transferReference =
+            "TRF-" +
+            Date.now() +
+            "-" +
+            Math.random()
+                .toString(36)
+                .substring(2, 8)
+                .toUpperCase();
+
+
+        await db.runTransaction(
+            async (transaction) => {
+
+                // -----------------------------------------
+                // READ SENDER
+                // -----------------------------------------
+
+                const senderSnap =
+                    await transaction.get(
+                        senderWalletRef
+                    );
+
+
+                if (
+                    !senderSnap.exists
+                ) {
+
+                    throw new HttpsError(
+                        "not-found",
+                        "Your wallet was not found."
+                    );
+
+                }
+
+
+                const senderData =
+                    senderSnap.data();
+
+
+                // -----------------------------------------
+                // VERIFY SENDER WALLET
+                // -----------------------------------------
+
+                if (
+                    senderData.userId !== senderUid
+                ) {
+
+                    throw new HttpsError(
+                        "permission-denied",
+                        "This wallet does not belong to you."
+                    );
+
+                }
+
+
+                // -----------------------------------------
+                // FIND RECIPIENT
+                // -----------------------------------------
+
+                const recipientSnap =
+                    await transaction.get(
+                        recipientQuery
+                    );
+
+
+                if (
+                    recipientSnap.empty
+                ) {
+
+                    throw new HttpsError(
+                        "not-found",
+                        "Recipient wallet was not found."
+                    );
+
+                }
+
+
+                const recipientDoc =
+                    recipientSnap.docs[0];
+
+
+                const recipientWalletRef =
+                    recipientDoc.ref;
+
+
+                const recipientData =
+                    recipientDoc.data();
+
+
+                const recipientUid =
+                    recipientData.userId;
+
+
+                // -----------------------------------------
+                // PREVENT SELF TRANSFER
+                // -----------------------------------------
+
+                if (
+                    recipientUid === senderUid
+                ) {
+
+                    throw new HttpsError(
+                        "failed-precondition",
+                        "You cannot send MCC to yourself."
+                    );
+
+                }
+
+
+                // -----------------------------------------
+                // SENDER BALANCE
+                // -----------------------------------------
+
+                const senderBalance =
+                    Number(
+                        senderData.balanceMCC || 0
+                    );
+
+
+                const senderLocked =
+                    Number(
+                        senderData.lockedMCC || 0
+                    );
+
+
+                const availableBalance =
+                    senderBalance -
+                    senderLocked;
+
+
+                // -----------------------------------------
+                // CHECK BALANCE
+                // -----------------------------------------
+
+                if (
+                    amount >
+                    availableBalance
+                ) {
+
+                    throw new HttpsError(
+                        "failed-precondition",
+                        "Insufficient available MCC balance."
+                    );
+
+                }
+
+
+                // -----------------------------------------
+                // RECIPIENT BALANCE
+                // -----------------------------------------
+
+                const recipientBalance =
+                    Number(
+                        recipientData.balanceMCC || 0
+                    );
+
+
+                // -----------------------------------------
+                // CALCULATE NEW BALANCES
+                // -----------------------------------------
+
+                const newSenderBalance =
+                    senderBalance -
+                    amount;
+
+
+                const newRecipientBalance =
+                    recipientBalance +
+                    amount;
+
+
+                // -----------------------------------------
+                // UPDATE SENDER
+                // -----------------------------------------
+
+                transaction.update(
+                    senderWalletRef,
+                    {
+
+                        balanceMCC:
+                            newSenderBalance,
+
+                        updatedAt:
+                            FieldValue.serverTimestamp()
+
+                    }
+                );
+
+
+                // -----------------------------------------
+                // UPDATE RECIPIENT
+                // -----------------------------------------
+
+                transaction.update(
+                    recipientWalletRef,
+                    {
+
+                        balanceMCC:
+                            newRecipientBalance,
+
+                        updatedAt:
+                            FieldValue.serverTimestamp()
+
+                    }
+                );
+
+
+                // -----------------------------------------
+                // SENDER TRANSACTION
+                // -----------------------------------------
+
+                const senderTransactionRef =
+                    db.collection(
+                        "walletTransactions"
+                    ).doc();
+
+
+                transaction.set(
+                    senderTransactionRef,
+                    {
+
+                        userId:
+                            senderUid,
+
+                        walletId:
+                            senderData.walletId ||
+                            "",
+
+                        type:
+                            "debit",
+
+                        amount:
+                            amount,
+
+                        currency:
+                            "MCC",
+
+                        description:
+                            "MCC Transfer Sent",
+
+                        method:
+                            "wallet",
+
+                        recipientUserId:
+                            recipientUid,
+
+                        recipientWalletId:
+                            recipientWalletId,
+
+                        status:
+                            "completed",
+
+                        reference:
+                            transferReference,
+
+                        createdAt:
+                            FieldValue.serverTimestamp()
+
+                    }
+                );
+
+
+                // -----------------------------------------
+                // RECIPIENT TRANSACTION
+                // -----------------------------------------
+
+                const recipientTransactionRef =
+                    db.collection(
+                        "walletTransactions"
+                    ).doc();
+
+
+                transaction.set(
+                    recipientTransactionRef,
+                    {
+
+                        userId:
+                            recipientUid,
+
+                        walletId:
+                            recipientWalletId,
+
+                        type:
+                            "credit",
+
+                        amount:
+                            amount,
+
+                        currency:
+                            "MCC",
+
+                        description:
+                            "MCC Transfer Received",
+
+                        method:
+                            "wallet",
+
+                        senderUserId:
+                            senderUid,
+
+                        senderWalletId:
+                            senderData.walletId ||
+                            "",
+
+                        status:
+                            "completed",
+
+                        reference:
+                            transferReference,
+
+                        createdAt:
+                            FieldValue.serverTimestamp()
+
+                    }
+                );
+
+            }
+        );
+
+
+        // =================================================
+        // SUCCESS
+        // =================================================
+
+        return {
+
+            success:
+                true,
+
+            amount:
+                amount,
+
+            currency:
+                "MCC",
+
+            recipientWalletId:
+                recipientWalletId,
+
+            reference:
+                transferReference,
+
+            message:
+                "MCC transfer completed successfully."
+
+        };
+
+    }
+);
