@@ -977,6 +977,10 @@ async function createWithdrawalRequest() {
     Number(
         walletData.lockedMCC || 0
     );
+        const currentBalance =
+    Number(
+        walletData.balanceMCC || 0
+    );
 
 const availableBalance =
     currentBalance -
@@ -1074,8 +1078,6 @@ const availableBalance =
     );
 
     }
-}
-
 }
 /* =====================================================
    PROCESS WITHDRAW
