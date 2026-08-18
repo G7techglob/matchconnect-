@@ -4,6 +4,8 @@ import {
     collection,
     addDoc,
     getDocs,
+    doc,
+    setDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
@@ -350,6 +352,49 @@ startLiveBtn.addEventListener(
                 "✅ Live stream created:",
                 streamRef.id
             );
+
+            /* =================================================
+   ADD HOST AS FIRST PARTICIPANT
+================================================= */
+
+const hostParticipantRef =
+    doc(
+        db,
+        "liveStreams",
+        streamRef.id,
+        "participants",
+        user.uid
+    );
+
+await setDoc(
+    hostParticipantRef,
+    {
+        userId:
+            user.uid,
+
+        username:
+            user.displayName ||
+            user.email ||
+            "MatchConnect User",
+
+        photoURL:
+            user.photoURL ||
+            "",
+
+        role:
+            "host",
+
+        status:
+            "active",
+
+        joinedAt:
+            serverTimestamp()
+    }
+);
+
+console.log(
+    "✅ Host added as live participant"
+);
 
 
             /* =================================================
