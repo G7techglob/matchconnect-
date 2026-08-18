@@ -583,23 +583,31 @@ console.log(
 
 
         const answer =
-            await pc.createAnswer();
+    await pc.createAnswer();
 
+await pc.setLocalDescription(
+    answer
+);
 
-        await pc.setLocalDescription(
-            answer
-        );
+console.log(
+    "📡 Host answer created for viewer:",
+    viewerId
+);
 
+await updateDoc(
+    answerRef,
+    {
+        answer: {
+            type: pc.localDescription.type,
+            sdp: pc.localDescription.sdp
+        }
+    }
+);
 
-        await updateDoc(
-            answerRef,
-            {
-                answer: {
-                    type: answer.type,
-                    sdp: answer.sdp
-                }
-            }
-        );
+console.log(
+    "✅ Host answer sent to viewer:",
+    viewerId
+);
 
 
         // Listen for viewer ICE candidates
@@ -616,42 +624,48 @@ console.log(
 
 
         onSnapshot(
-            viewerCandidatesRef,
-            snapshot => {
+    viewerCandidatesRef,
+    async (snapshot) => {
 
-                snapshot.docChanges()
-                    .forEach(
-                        async change => {
+        for (
+            const change of snapshot.docChanges()
+        ) {
 
-                            if (
-                                change.type !== "added"
-                            ) {
-                                return;
-                            }
+            if (
+                change.type !== "added"
+            ) {
+                continue;
+            }
 
+            try {
 
-                            try {
-
-                                await pc.addIceCandidate(
-                                    new RTCIceCandidate(
-                                        change.doc.data()
-                                    )
-                                );
-
-                            } catch (error) {
-
-                                console.error(
-                                    "ICE candidate error:",
-                                    error
-                                );
-
-                            }
-
-                        }
+                const candidate =
+                    new RTCIceCandidate(
+                        change.doc.data()
                     );
 
+                await pc.addIceCandidate(
+                    candidate
+                );
+
+                console.log(
+                    "✅ Host added viewer ICE candidate:",
+                    viewerId
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "❌ Host ICE candidate error:",
+                    error
+                );
+
             }
-        );
+
+        }
+
+    }
+);
 
 
         console.log(
@@ -971,6 +985,28 @@ window.addEventListener(
     "beforeunload",
     () => {
 
+        // Remove viewer from live viewer list
+        if (!isHost && auth.currentUser && streamId) {
+
+            deleteDoc(
+                doc(
+                    db,
+                    "liveStreams",
+                    streamId,
+                    "viewers",
+                    auth.currentUser.uid
+                )
+            ).catch(error => {
+
+                console.error(
+                    "❌ Unable to remove viewer:",
+                    error
+                );
+
+            });
+
+        }
+
         if (localStream) {
 
             localStream
@@ -1238,29 +1274,34 @@ async function startViewerSignaling() {
                 rtcConfig
             );
 
-        // =====================================================
+// =====================================================
 // REGISTER VIEWER
 // =====================================================
 
 try {
 
+    const viewerRef = doc(
+        db,
+        "liveStreams",
+        streamId,
+        "viewers",
+        auth.currentUser.uid
+    );
+
     await setDoc(
-        doc(
-            db,
-            "liveStreams",
-            streamId,
-            "viewers",
-            auth.currentUser.uid
-        ),
+        viewerRef,
         {
             userId: auth.currentUser.uid,
-              role: "viewer",
+            role: "viewer",
             joinedAt: serverTimestamp()
         },
         { merge: true }
     );
 
-    console.log("✅ Viewer registered");
+    console.log(
+        "✅ Viewer registered:",
+        auth.currentUser.uid
+    );
 
 } catch (error) {
 
@@ -1559,49 +1600,49 @@ if (
     
         );
         
+
 // =====================================================
-// UPDATE VIEWER COUNT
+// WATCH VIEWER COUNT
 // =====================================================
 
-try {
-
-    const viewersRef = collection(
+const viewersRef =
+    collection(
         db,
         "liveStreams",
         streamId,
         "viewers"
     );
 
-    const viewersSnapshot =
-        await getDocs(viewersRef);
+onSnapshot(
+    viewersRef,
+    (snapshot) => {
 
-    const count =
-        viewersSnapshot.size;
+        const count =
+            snapshot.size;
 
-    await updateDoc(
-        doc(
-            db,
-            "liveStreams",
-            streamId
-        ),
-        {
-            viewerCount: count
+        if (viewerCount) {
+
+            viewerCount.textContent =
+                count;
+
         }
-    );
 
-    console.log(
-        "✅ Viewer count:",
-        count
-    );
+        console.log(
+            "👁️ LIVE VIEWERS:",
+            count
+        );
 
-} catch (error) {
+    },
+    (error) => {
 
-    console.error(
-        "❌ Unable to update viewer count:",
-        error
-    );
+        console.error(
+            "❌ Viewer count listener error:",
+            error
+        );
 
-}
+    }
+);
+
 
 // =====================================================
 // ADD VIEWER COUNT
