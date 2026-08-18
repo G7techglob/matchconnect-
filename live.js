@@ -3,6 +3,8 @@ import { auth, db } from "./firebase.js";
 import {
     doc,
     getDoc,
+    getDocs,
+    deleteDoc,
     updateDoc,
     setDoc,
     collection,
@@ -277,6 +279,65 @@ isHost =
 
         viewerCount.textContent =
             stream.viewerCount || 0;
+
+        // =====================================================
+// WATCH VIEWERS
+// =====================================================
+
+onSnapshot(
+    collection(
+        db,
+        "liveStreams",
+        streamId,
+        "viewers"
+    ),
+    (snapshot) => {
+
+        const count =
+            snapshot.size;
+
+        viewerCount.textContent =
+            count;
+
+        if (isHost) {
+
+            updateDoc(
+                doc(
+                    db,
+                    "liveStreams",
+                    streamId
+                ),
+                {
+                    viewerCount: count
+                }
+            ).catch(error => {
+
+                console.error(
+                    "Viewer count update error:",
+                    error
+                );
+
+            });
+
+        }
+
+    }
+);
+        onSnapshot(
+    doc(db, "liveStreams", streamId),
+    (snapshot) => {
+
+        if (!snapshot.exists()) {
+            return;
+        }
+
+        const data = snapshot.data();
+
+        viewerCount.textContent =
+            data.viewerCount || 0;
+
+    }
+);
         return true;
 
 
@@ -388,6 +449,11 @@ function startSignaling() {
 
                 const viewerId =
                     change.doc.id;
+
+                console.log(
+    "👤 HOST RECEIVED VIEWER OFFER:",
+    viewerId
+);
 
 
                 if (
@@ -503,13 +569,17 @@ async function createViewerConnection(
         );
 
 
-        await pc.setRemoteDescription({
+        await pc.setRemoteDescription(
+    new RTCSessionDescription({
+        type: offerData.type || "offer",
+        sdp: offerData.sdp
+    })
+);
 
-            type: "offer",
-
-            sdp: offerData.sdp
-
-        });
+console.log(
+    "✅ Viewer offer received by host:",
+    viewerId
+);
 
 
         const answer =
@@ -851,6 +921,31 @@ backBtn.addEventListener(
     "click",
     async () => {
 
+        // =========================================
+        // VIEWER
+        // =========================================
+
+        if (!isHost) {
+
+            if (viewerPeerConnection) {
+
+                viewerPeerConnection.close();
+
+                viewerPeerConnection = null;
+
+            }
+
+            window.location.href =
+                "stream.html";
+
+            return;
+        }
+
+
+        // =========================================
+        // HOST
+        // =========================================
+
         const confirmLeave =
             confirm(
                 "Your live stream is running. End it?"
@@ -1143,41 +1238,85 @@ async function startViewerSignaling() {
                 rtcConfig
             );
 
+        // =====================================================
+// REGISTER VIEWER
+// =====================================================
+
+try {
+
+    await setDoc(
+        doc(
+            db,
+            "liveStreams",
+            streamId,
+            "viewers",
+            auth.currentUser.uid
+        ),
+        {
+            userId: auth.currentUser.uid,
+              role: "viewer",
+            joinedAt: serverTimestamp()
+        },
+        { merge: true }
+    );
+
+    console.log("✅ Viewer registered");
+
+} catch (error) {
+
+    console.error(
+        "❌ Unable to register viewer:",
+        error
+    );
+
+}
+
 
         /*
          * Receive host camera/audio.
          */
 
         viewerPeerConnection.ontrack =
-            (event) => {
+    (event) => {
+
+        console.log(
+            "🎥 Host stream received"
+        );
+
+        const remoteStream =
+            event.streams[0];
+
+        if (!remoteStream) {
+            return;
+        }
+
+        localVideo.srcObject =
+            remoteStream;
+
+        localVideo.muted = false;
+
+        localVideo.autoplay = true;
+
+        localVideo.playsInline = true;
+
+        localVideo.play()
+            .then(() => {
 
                 console.log(
-                    "🎥 Host stream received"
+                    "✅ Host video is now playing"
                 );
 
+            })
+            .catch(error => {
 
-                if (
-                    event.streams &&
-                    event.streams[0]
-                ) {
+                console.log(
+                    "⚠️ Video playback requires user interaction:",
+                    error
+                );
 
-                    localVideo.srcObject =
-                        event.streams[0];
+            });
 
-                    localVideo
-                        .play()
-                        .catch(error => {
-
-                            console.log(
-                                "Video autoplay waiting for user interaction:",
-                                error
-                            );
-
-                        });
-
-                }
-
-            };
+    };
 
 
         /*
@@ -1261,11 +1400,17 @@ async function startViewerSignaling() {
 
 
                 if (
-                    viewerPeerConnection
-                        .currentRemoteDescription
-                ) {
-                    return;
-                }
+    viewerPeerConnection.connectionState ===
+    "connected"
+) {
+    return;
+}
+
+if (
+    viewerPeerConnection.remoteDescription
+) {
+    return;
+}
 
 
                 try {
@@ -1367,6 +1512,10 @@ async function startViewerSignaling() {
                 offer
             );
 
+        console.log(
+    "📡 Viewer offer created:",
+    offer
+);
 
         /*
          * Create the viewer offer document.
@@ -1407,16 +1556,105 @@ async function startViewerSignaling() {
 
         console.log(
             "📡 Viewer offer sent to host"
+    
+        );
+        
+// =====================================================
+// UPDATE VIEWER COUNT
+// =====================================================
+
+try {
+
+    const viewersRef = collection(
+        db,
+        "liveStreams",
+        streamId,
+        "viewers"
+    );
+
+    const viewersSnapshot =
+        await getDocs(viewersRef);
+
+    const count =
+        viewersSnapshot.size;
+
+    await updateDoc(
+        doc(
+            db,
+            "liveStreams",
+            streamId
+        ),
+        {
+            viewerCount: count
+        }
+    );
+
+    console.log(
+        "✅ Viewer count:",
+        count
+    );
+
+} catch (error) {
+
+    console.error(
+        "❌ Unable to update viewer count:",
+        error
+    );
+
+}
+
+// =====================================================
+// ADD VIEWER COUNT
+// =====================================================
+
+async function addViewerToCount() {
+
+    try {
+
+        const streamRef =
+            doc(
+                db,
+                "liveStreams",
+                streamId
+            );
+
+        const streamSnap =
+            await getDoc(streamRef);
+
+        if (!streamSnap.exists()) {
+            return;
+        }
+
+        const currentCount =
+            streamSnap.data().viewerCount || 0;
+
+        await updateDoc(
+            streamRef,
+            {
+                viewerCount:
+                    currentCount + 1
+            }
         );
 
+        console.log(
+            "👁️ Viewer count:",
+            currentCount + 1
+        );
+
+        if (viewerCount) {
+
+            viewerCount.textContent =
+                currentCount + 1;
+
+        }
 
     } catch (error) {
 
         console.error(
-            "❌ Viewer WebRTC error:",
+            "❌ Unable to update viewer count:",
             error
         );
 
     }
 
-            }
+}
