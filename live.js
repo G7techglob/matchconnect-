@@ -594,12 +594,59 @@ console.log(
     viewerId
 );
 
+// Wait for ICE gathering to finish
+await new Promise(resolve => {
+
+    if (
+        pc.iceGatheringState ===
+        "complete"
+    ) {
+
+        resolve();
+
+        return;
+    }
+
+    const checkIce =
+        () => {
+
+            if (
+                pc.iceGatheringState ===
+                "complete"
+            ) {
+
+                pc.removeEventListener(
+                    "icegatheringstatechange",
+                    checkIce
+                );
+
+                resolve();
+
+            }
+
+        };
+
+    pc.addEventListener(
+        "icegatheringstatechange",
+        checkIce
+    );
+
+});
+
+console.log(
+    "✅ Host ICE gathering completed:",
+    viewerId
+);
+
 await updateDoc(
     answerRef,
     {
         answer: {
-            type: pc.localDescription.type,
-            sdp: pc.localDescription.sdp
+            type:
+                pc.localDescription.type,
+
+            sdp:
+                pc.localDescription.sdp
         }
     }
 );
