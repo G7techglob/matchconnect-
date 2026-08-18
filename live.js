@@ -1746,3 +1746,17 @@ async function addViewerToCount() {
     }
 
 }
+        // =====================================================
+// CLOSE VIEWER SIGNALING
+// =====================================================
+
+    } catch (error) {
+
+        console.error(
+            "❌ Viewer signaling error:",
+            error
+        );
+
+    }
+
+}
