@@ -98,6 +98,12 @@ let isHost = false;
 
 let viewerPeerConnection = null;
 
+let mediaRecorder = null;
+
+let recordedChunks = [];
+
+let recordedVideoBlob = null;
+
 // =====================================================
 // LIVE RECORDING
 // =====================================================
@@ -1251,20 +1257,49 @@ endLiveBtn.addEventListener(
     async () => {
 
         const confirmEnd =
-            confirm(
-                "Are you sure you want to end your live stream?"
-            );
+    confirm(
+        "Do you want to end your live stream?"
+    );
 
 
-        if (!confirmEnd) {
-            return;
-        }
+if (!confirmEnd) {
+    return;
+}
 
+
+// =====================================================
+// ASK WHETHER TO SAVE VIDEO
+// =====================================================
+
+const saveVideo =
+    confirm(
+        "Do you want to save this live video?\n\n" +
+        "OK = Save Video\n" +
+        "Cancel = Discard Video"
+    );
 
         await endLive();
 
     }
 );
+
+// =====================================================
+// SAVE OR DISCARD RECORDING
+// =====================================================
+
+if (saveVideo) {
+
+    console.log(
+        "💾 User chose to SAVE the live video"
+    );
+
+} else {
+
+    console.log(
+        "🗑️ User chose to DISCARD the live video"
+    );
+
+}
 
 
 // =====================================================
@@ -1290,8 +1325,9 @@ async function endLive() {
         endLiveBtn.textContent =
             "Ending...";
 
-        // =====================================================
-// STOP LIVE RECORDING
+        
+// =====================================================
+// STOP AND SAVE LIVE RECORDING
 // =====================================================
 
 if (
@@ -1299,12 +1335,43 @@ if (
     mediaRecorder.state !== "inactive"
 ) {
 
-    mediaRecorder.stop();
+    await new Promise((resolve) => {
+
+        mediaRecorder.addEventListener(
+            "stop",
+            resolve,
+            {
+                once: true
+            }
+        );
+
+        mediaRecorder.stop();
+
+    });
+
 
     console.log(
         "⏹️ LIVE RECORDING STOPPED"
     );
 
+
+    // Save the finished recording
+
+    if (saveVideo) {
+
+    await saveLiveRecording();
+
+} else {
+
+    recordedChunks = [];
+
+    recordedVideoBlob = null;
+
+    console.log(
+        "🗑️ Live video discarded"
+    );
+
+    }
 }
 
 
