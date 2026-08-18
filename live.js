@@ -98,21 +98,14 @@ let isHost = false;
 
 let viewerPeerConnection = null;
 
-let mediaRecorder = null;
-
-let recordedChunks = [];
-
-let recordedVideoBlob = null;
-
-// =====================================================
-// LIVE RECORDING
-// =====================================================
+let saveVideo = false;
 
 let mediaRecorder = null;
 
 let recordedChunks = [];
 
 let recordedVideoBlob = null;
+
 
 
 // =====================================================
