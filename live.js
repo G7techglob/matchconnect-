@@ -1,4 +1,4 @@
-import { auth, db } from "./firebase.js";
+import { auth, db ,storage } from "./firebase.js";
 
 import {
     doc,
@@ -593,6 +593,109 @@ function startLiveRecording() {
 
         console.error(
             "❌ Unable to start live recording:",
+            error
+        );
+
+    }
+
+}
+
+// =====================================================
+// SAVE LIVE RECORDING
+// =====================================================
+
+async function saveLiveRecording() {
+
+    if (!isHost) {
+        return;
+    }
+
+    if (!recordedVideoBlob) {
+
+        console.warn(
+            "⚠️ No recorded video available to save."
+        );
+
+        return;
+    }
+
+    try {
+
+        console.log(
+            "☁️ Uploading live recording..."
+        );
+
+
+        const videoPath =
+            `liveVideos/${auth.currentUser.uid}/${streamId}.webm`;
+
+
+        const videoRef =
+            ref(
+                storage,
+                videoPath
+            );
+
+
+        await uploadBytes(
+            videoRef,
+            recordedVideoBlob,
+            {
+                contentType:
+                    "video/webm"
+            }
+        );
+
+
+        console.log(
+            "✅ Live video uploaded to Storage"
+        );
+
+
+        const videoURL =
+            await getDownloadURL(
+                videoRef
+            );
+
+
+        console.log(
+            "✅ Video URL created"
+        );
+
+
+        await updateDoc(
+            doc(
+                db,
+                "liveStreams",
+                streamId
+            ),
+            {
+
+                videoURL:
+                    videoURL,
+
+                videoPath:
+                    videoPath,
+
+                videoSaved:
+                    true,
+
+                savedAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        console.log(
+            "✅ Live video saved successfully"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "❌ Unable to save live recording:",
             error
         );
 
