@@ -784,6 +784,53 @@ async function createViewerConnection(
 
                         }
 
+
+// =====================================================
+// WAIT FOR ICE GATHERING
+// =====================================================
+
+function waitForIceGathering(pc) {
+
+    return new Promise(resolve => {
+
+        if (
+            pc.iceGatheringState === "complete"
+        ) {
+
+            resolve();
+
+            return;
+
+        }
+
+
+        const checkIce =
+            () => {
+
+                if (
+                    pc.iceGatheringState === "complete"
+                ) {
+
+                    pc.removeEventListener(
+                        "icegatheringstatechange",
+                        checkIce
+                    );
+
+                    resolve();
+
+                }
+
+            };
+
+
+        pc.addEventListener(
+            "icegatheringstatechange",
+            checkIce
+        );
+
+    });
+
+}
 // =====================================================
 // MICROPHONE
 // =====================================================
