@@ -1400,15 +1400,21 @@ startLiveChat();
 // VIEWER WEBRTC
 // =====================================================
 
-
 async function startViewerSignaling() {
 
     if (!streamId) {
-        console.error("❌ No stream ID");
+
+        console.error(
+            "❌ No stream ID"
+        );
+
         return;
     }
 
-    console.log("👀 Starting viewer WebRTC...");
+    console.log(
+        "👀 Starting viewer WebRTC..."
+    );
+
 
     try {
 
@@ -1417,9 +1423,37 @@ async function startViewerSignaling() {
         // =================================================
 
         viewerPeerConnection =
-            new RTCPeerConnection(rtcConfig);
+            new RTCPeerConnection(
+                rtcConfig
+            );
 
-        console.log("✅ Viewer peer connection created");
+        console.log(
+            "✅ Viewer peer connection created"
+        );
+
+
+        // =================================================
+        // IMPORTANT:
+        // REQUEST HOST VIDEO AND AUDIO
+        // =================================================
+
+        viewerPeerConnection.addTransceiver(
+            "video",
+            {
+                direction: "recvonly"
+            }
+        );
+
+        viewerPeerConnection.addTransceiver(
+            "audio",
+            {
+                direction: "recvonly"
+            }
+        );
+
+        console.log(
+            "✅ Viewer is requesting host video and audio"
+        );
 
 
         // =================================================
@@ -1428,6 +1462,7 @@ async function startViewerSignaling() {
 
         const viewerId =
             auth.currentUser.uid;
+
 
         const viewerRef =
             doc(
@@ -1438,17 +1473,22 @@ async function startViewerSignaling() {
                 viewerId
             );
 
+
         await setDoc(
             viewerRef,
             {
                 userId: viewerId,
+
                 role: "viewer",
-                joinedAt: serverTimestamp()
+
+                joinedAt:
+                    serverTimestamp()
             },
             {
                 merge: true
             }
         );
+
 
         console.log(
             "✅ Viewer registered:",
@@ -1467,22 +1507,42 @@ async function startViewerSignaling() {
                     "🎥 HOST TRACK RECEIVED"
                 );
 
-                const remoteStream =
+
+                let remoteStream =
                     event.streams &&
                     event.streams[0];
 
+
+                // -----------------------------------------
+                // If browser does not provide a stream,
+                // create one manually.
+                // -----------------------------------------
+
                 if (!remoteStream) {
 
-                    console.error(
-                        "❌ No remote stream received"
+                    remoteStream =
+                        new MediaStream();
+
+                    remoteStream.addTrack(
+                        event.track
                     );
 
-                    return;
                 }
 
 
+                console.log(
+                    "🎥 Remote track:",
+                    event.track.kind
+                );
+
+
+                // -----------------------------------------
+                // Put host stream into viewer video
+                // -----------------------------------------
+
                 localVideo.srcObject =
                     remoteStream;
+
 
                 localVideo.muted =
                     false;
@@ -1505,7 +1565,7 @@ async function startViewerSignaling() {
                     .catch(error => {
 
                         console.warn(
-                            "⚠️ Autoplay blocked:",
+                            "⚠️ Video autoplay blocked:",
                             error
                         );
 
@@ -1518,23 +1578,44 @@ async function startViewerSignaling() {
         // CONNECTION STATE
         // =================================================
 
-        viewerPeerConnection.onconnectionstatechange =
+        viewerPeerConnection
+            .onconnectionstatechange =
             () => {
 
                 console.log(
                     "📡 Viewer connection state:",
-                    viewerPeerConnection.connectionState
+                    viewerPeerConnection
+                        .connectionState
                 );
+
+
+                if (
+                    viewerPeerConnection
+                        .connectionState ===
+                    "connected"
+                ) {
+
+                    console.log(
+                        "🎉 VIEWER CONNECTED TO HOST"
+                    );
+
+                }
 
             };
 
 
-        viewerPeerConnection.oniceconnectionstatechange =
+        // =================================================
+        // ICE CONNECTION STATE
+        // =================================================
+
+        viewerPeerConnection
+            .oniceconnectionstatechange =
             () => {
 
                 console.log(
                     "🧊 Viewer ICE state:",
-                    viewerPeerConnection.iceConnectionState
+                    viewerPeerConnection
+                        .iceConnectionState
                 );
 
             };
@@ -1550,6 +1631,7 @@ async function startViewerSignaling() {
                 if (!event.candidate) {
                     return;
                 }
+
 
                 try {
 
@@ -1567,6 +1649,7 @@ async function startViewerSignaling() {
                         event.candidate.toJSON()
 
                     );
+
 
                     console.log(
                         "🧊 Viewer ICE candidate sent"
@@ -1606,6 +1689,7 @@ async function startViewerSignaling() {
                     return;
                 }
 
+
                 const data =
                     snapshot.data();
 
@@ -1616,7 +1700,8 @@ async function startViewerSignaling() {
 
 
                 if (
-                    viewerPeerConnection.remoteDescription
+                    viewerPeerConnection
+                        .remoteDescription
                 ) {
 
                     return;
@@ -1627,14 +1712,18 @@ async function startViewerSignaling() {
 
                     await viewerPeerConnection
                         .setRemoteDescription(
+
                             new RTCSessionDescription(
                                 data.answer
                             )
+
                         );
+
 
                     console.log(
                         "✅ HOST ANSWER RECEIVED"
                     );
+
 
                 } catch (error) {
 
@@ -1685,14 +1774,18 @@ async function startViewerSignaling() {
 
                         await viewerPeerConnection
                             .addIceCandidate(
+
                                 new RTCIceCandidate(
                                     change.doc.data()
                                 )
+
                             );
+
 
                         console.log(
                             "🧊 Host ICE candidate added"
                         );
+
 
                     } catch (error) {
 
@@ -1746,6 +1839,7 @@ async function startViewerSignaling() {
         await setDoc(
             offerRef,
             {
+
                 sdp:
                     offer.sdp,
 
@@ -1757,6 +1851,7 @@ async function startViewerSignaling() {
 
                 createdAt:
                     serverTimestamp()
+
             }
         );
 
@@ -1786,12 +1881,14 @@ async function startViewerSignaling() {
                 const count =
                     snapshot.size;
 
+
                 if (viewerCount) {
 
                     viewerCount.textContent =
                         count;
 
                 }
+
 
                 console.log(
                     "👁️ LIVE VIEWERS:",
@@ -1813,6 +1910,7 @@ async function startViewerSignaling() {
         console.log(
             "✅ Viewer WebRTC setup complete"
         );
+
 
     } catch (error) {
 
