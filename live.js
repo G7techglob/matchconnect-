@@ -13,6 +13,11 @@ import {
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
+import {
+    ref,
+    uploadBytes,
+    getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
 console.log("✅ Live WebRTC JS loaded");
 
@@ -92,6 +97,16 @@ let isEnding = false;
 let isHost = false;
 
 let viewerPeerConnection = null;
+
+// =====================================================
+// LIVE RECORDING
+// =====================================================
+
+let mediaRecorder = null;
+
+let recordedChunks = [];
+
+let recordedVideoBlob = null;
 
 
 // =====================================================
@@ -390,6 +405,16 @@ async function startCamera() {
         localVideo.srcObject =
             localStream;
 
+        // =====================================================
+// START LIVE RECORDING
+// =====================================================
+
+if (isHost) {
+
+    startLiveRecording();
+
+}
+
 
         console.log(
             "✅ Camera and microphone ready"
@@ -411,6 +436,169 @@ async function startCamera() {
 
 }
 
+
+// =====================================================
+// START LIVE RECORDING
+// =====================================================
+
+function startLiveRecording() {
+
+    if (!isHost) {
+        return;
+    }
+
+    if (!localStream) {
+
+        console.error(
+            "❌ Cannot start recording: host stream is missing"
+        );
+
+        return;
+    }
+
+
+    // Reset previous recording data
+
+    recordedChunks = [];
+
+    recordedVideoBlob = null;
+
+
+    // =============================================
+    // CHECK SUPPORTED RECORDING FORMAT
+    // =============================================
+
+    let mimeType = "";
+
+    if (
+        MediaRecorder.isTypeSupported(
+            "video/webm;codecs=vp9,opus"
+        )
+    ) {
+
+        mimeType =
+            "video/webm;codecs=vp9,opus";
+
+    } else if (
+        MediaRecorder.isTypeSupported(
+            "video/webm;codecs=vp8,opus"
+        )
+    ) {
+
+        mimeType =
+            "video/webm;codecs=vp8,opus";
+
+    } else if (
+        MediaRecorder.isTypeSupported(
+            "video/webm"
+        )
+    ) {
+
+        mimeType =
+            "video/webm";
+
+    }
+
+
+    try {
+
+        mediaRecorder =
+            mimeType
+            ? new MediaRecorder(
+                localStream,
+                {
+                    mimeType: mimeType
+                }
+            )
+            : new MediaRecorder(
+                localStream
+            );
+
+
+        // =========================================
+        // RECORDING DATA
+        // =========================================
+
+        mediaRecorder.ondataavailable =
+            (event) => {
+
+                if (
+                    event.data &&
+                    event.data.size > 0
+                ) {
+
+                    recordedChunks.push(
+                        event.data
+                    );
+
+                }
+
+            };
+
+
+        // =========================================
+        // RECORDING FINISHED
+        // =========================================
+
+        mediaRecorder.onstop =
+            () => {
+
+                if (
+                    recordedChunks.length === 0
+                ) {
+
+                    console.warn(
+                        "⚠️ No recording data was captured."
+                    );
+
+                    return;
+                }
+
+
+                recordedVideoBlob =
+                    new Blob(
+                        recordedChunks,
+                        {
+                            type:
+                                mediaRecorder.mimeType ||
+                                "video/webm"
+                        }
+                    );
+
+
+                console.log(
+                    "✅ Live recording created:",
+                    recordedVideoBlob.size,
+                    "bytes"
+                );
+
+            };
+
+
+        // =========================================
+        // START RECORDING
+        // =========================================
+
+        mediaRecorder.start(
+            1000
+        );
+
+
+        console.log(
+            "🔴 LIVE RECORDING STARTED"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "❌ Unable to start live recording:",
+            error
+        );
+
+    }
+
+}
 
 // =====================================================
 // WEBRTC SIGNALING
@@ -998,6 +1186,23 @@ async function endLive() {
 
         endLiveBtn.textContent =
             "Ending...";
+
+        // =====================================================
+// STOP LIVE RECORDING
+// =====================================================
+
+if (
+    mediaRecorder &&
+    mediaRecorder.state !== "inactive"
+) {
+
+    mediaRecorder.stop();
+
+    console.log(
+        "⏹️ LIVE RECORDING STOPPED"
+    );
+
+}
 
 
         if (localStream) {
