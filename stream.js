@@ -46,8 +46,6 @@ videoTab.addEventListener("click", () => {
     videoSection.style.display = "block";
 
 });
-
-
 /* =====================================================
    LOAD LIVE STREAMS
 ===================================================== */
@@ -61,114 +59,357 @@ const streamsQuery = query(
 
 onSnapshot(
     streamsQuery,
+
     (snapshot) => {
 
         liveStreams.innerHTML = "";
+
+
+        // =============================================
+        // NOBODY IS LIVE
+        // =============================================
 
         if (snapshot.empty) {
 
             noLiveStreams.style.display = "block";
 
+            noLiveStreams.textContent =
+                "Nobody is live right now.";
+
             return;
         }
+
+
+        // =============================================
+        // SOMEONE IS LIVE
+        // =============================================
 
         noLiveStreams.style.display = "none";
 
 
-        snapshot.forEach((docSnap) => {
+        snapshot.forEach(
+            (docSnap) => {
 
-            const stream = docSnap.data();
+                const stream =
+                    docSnap.data();
 
-            const streamId = docSnap.id;
-
-            const card = document.createElement("div");
-
-            card.className = "live-card";
-
-            card.innerHTML = `
-
-                <div class="live-preview">
-
-                    ${
-                        stream.hostPhoto
-                        ?
-                        `<img
-                            src="${escapeHTML(stream.hostPhoto)}"
-                            alt="Live stream"
-                        >`
-                        :
-                        `<i
-                            class="fa-solid fa-video"
-                            style="color:white;font-size:40px;"
-                        ></i>`
-                    }
-
-                    <span class="live-badge">
-                        LIVE
-                    </span>
-
-                    <span class="viewer-count">
-                        <i class="fa-solid fa-eye"></i>
-                        ${stream.viewerCount || 0}
-                    </span>
-
-                </div>
+                const streamId =
+                    docSnap.id;
 
 
-                <div class="live-info">
+                // =====================================
+                // CREATE LIVE CARD
+                // =====================================
 
-                    <h4>
-                        ${escapeHTML(stream.title || "Live Stream")}
-                    </h4>
+                const card =
+                    document.createElement("div");
 
-                    <div class="live-user">
+                card.className =
+                    "live-card";
+
+
+                // =====================================
+                // HOST PHOTO
+                // =====================================
+
+                const hostPhoto =
+                    stream.hostPhoto ||
+                    "default-profile.png";
+
+
+                // =====================================
+                // HOST NAME
+                // =====================================
+
+                const hostName =
+                    stream.hostName ||
+                    "MatchConnect User";
+
+
+                // =====================================
+                // STREAM TITLE
+                // =====================================
+
+                const streamTitle =
+                    stream.title ||
+                    "Live Stream";
+
+
+                // =====================================
+                // VIEWER COUNT
+                // =====================================
+
+                const viewers =
+                    stream.viewerCount || 0;
+
+
+                // =====================================
+                // CARD HTML
+                // =====================================
+
+                card.innerHTML = `
+
+                    <div class="live-preview">
 
                         <img
-                            src="${escapeHTML(
-                                stream.hostPhoto ||
-                                "default-profile.png"
-                            )}"
-                            alt=""
+                            src="${escapeHTML(hostPhoto)}"
+                            alt="${escapeHTML(hostName)}"
+                            onerror="this.src='default-profile.png'"
                         >
 
-                        <span>
-                            ${escapeHTML(
-                                stream.hostName ||
-                                "MatchConnect User"
-                            )}
+                        <span class="live-badge">
+                            🔴 LIVE
+                        </span>
+
+                        <span class="viewer-count">
+
+                            <i class="fa-solid fa-eye"></i>
+
+                            ${viewers}
+
                         </span>
 
                     </div>
 
-                </div>
-            `;
+
+                    <div class="live-info">
+
+                        <h4>
+                            ${escapeHTML(streamTitle)}
+                        </h4>
 
 
-            card.addEventListener("click", () => {
+                        <div class="live-user">
 
-                window.location.href =
-                    `watch-live.html?streamId=${encodeURIComponent(streamId)}`;
+                            <img
+                                src="${escapeHTML(hostPhoto)}"
+                                alt=""
+                                onerror="this.src='default-profile.png'"
+                            >
 
-            });
+                            <span>
+                                ${escapeHTML(hostName)}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                `;
 
 
-            liveStreams.appendChild(card);
+                // =====================================
+                // OPEN LIVE
+                // =====================================
 
-        });
+                card.addEventListener(
+                    "click",
+                    () => {
+
+                        window.location.href =
+                            `watch-live.html?streamId=${encodeURIComponent(streamId)}`;
+
+                    }
+                );
+
+
+                // =====================================
+                // ADD CARD TO PAGE
+                // =====================================
+
+                liveStreams.appendChild(
+                    card
+                );
+
+            }
+        );
 
     },
+
 
     (error) => {
 
         console.error(
-            "Error loading live streams:",
+            "❌ Error loading live streams:",
             error
         );
 
     }
+
+);
+
+/* =====================================================
+   LOAD SAVED LIVE VIDEOS
+===================================================== */
+
+const videoFeed =
+    document.getElementById("videoFeed");
+
+
+const savedVideosQuery = query(
+    collection(db, "liveStreams"),
+    where("status", "==", "ended"),
+    orderBy("endedAt", "desc")
 );
 
 
+onSnapshot(
+    savedVideosQuery,
+
+    (snapshot) => {
+
+        videoFeed.innerHTML = "";
+
+
+        // =============================================
+        // NO SAVED VIDEOS
+        // =============================================
+
+        if (snapshot.empty) {
+
+            videoFeed.innerHTML = `
+
+                <p class="empty-message">
+
+                    No saved live videos yet.
+
+                </p>
+
+            `;
+
+            return;
+        }
+
+
+        // =============================================
+        // DISPLAY SAVED VIDEOS
+        // =============================================
+
+        snapshot.forEach(
+            (docSnap) => {
+
+                const stream =
+                    docSnap.data();
+
+                const streamId =
+                    docSnap.id;
+
+
+                const title =
+                    stream.title ||
+                    "Live Stream";
+
+
+                const hostName =
+                    stream.hostName ||
+                    "MatchConnect User";
+
+
+                const hostPhoto =
+                    stream.hostPhoto ||
+                    "default-profile.png";
+
+
+                // =====================================
+                // VIDEO CARD
+                // =====================================
+
+                const card =
+                    document.createElement("div");
+
+                card.className =
+                    "video-card";
+
+
+                card.innerHTML = `
+
+                    <div class="video-thumbnail">
+
+                        <img
+                            src="${escapeHTML(hostPhoto)}"
+                            alt="${escapeHTML(hostName)}"
+                            onerror="this.src='default-profile.png'"
+                        >
+
+                        <span class="play-icon">
+
+                            <i class="fa-solid fa-play"></i>
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="video-info">
+
+                        <h4>
+                            ${escapeHTML(title)}
+                        </h4>
+
+                        <div class="video-user">
+
+                            <img
+                                src="${escapeHTML(hostPhoto)}"
+                                alt=""
+                                onerror="this.src='default-profile.png'"
+                            >
+
+                            <span>
+                                ${escapeHTML(hostName)}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+
+                // =====================================
+                // OPEN SAVED VIDEO
+                // =====================================
+
+                card.addEventListener(
+                    "click",
+                    () => {
+
+                        window.location.href =
+                            `watch-live.html?streamId=${encodeURIComponent(streamId)}&recorded=true`;
+
+                    }
+                );
+
+
+                videoFeed.appendChild(
+                    card
+                );
+
+            }
+        );
+
+    },
+
+
+    (error) => {
+
+        console.error(
+            "❌ Error loading saved live videos:",
+            error
+        );
+
+        videoFeed.innerHTML = `
+
+            <p class="empty-message">
+
+                Unable to load saved videos.
+
+            </p>
+
+        `;
+
+    }
+
+);
 /* =====================================================
    ESCAPE HTML
 ===================================================== */
