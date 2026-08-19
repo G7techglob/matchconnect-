@@ -999,7 +999,6 @@ function listenForIncomingCalls() {
         call.type
     );
 
-                }
 
                 } else {
 
