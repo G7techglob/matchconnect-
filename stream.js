@@ -53,7 +53,7 @@ videoTab.addEventListener("click", () => {
 const streamsQuery = query(
     collection(db, "liveStreams"),
     where("status", "==", "live"),
-    orderBy("createdAt", "desc")
+    
 );
 
 
@@ -229,10 +229,15 @@ onSnapshot(
 
     (error) => {
 
-        console.error(
-            "❌ Error loading live streams:",
-            error
-        );
+    console.error(
+        "❌ Error loading live streams:",
+        error
+    );
+
+    noLiveStreams.style.display = "block";
+
+    noLiveStreams.textContent =
+        "Unable to load live streams.";
 
     }
 
