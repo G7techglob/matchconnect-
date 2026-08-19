@@ -657,18 +657,18 @@ if (callBtn) {
 
         try {
 
-            const stream =
-                await navigator.mediaDevices.getUserMedia({
-                    audio: true,
-                    video: false
-                });
+            localStream =
+    await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: false
+    });
 
             const callId = await createCall("audio");
 
 if (!callId) return;
           await startCallerWebRTC(callId, "audio");
           
-            localVideo.srcObject = stream;
+            localVideo.srcObject = localStream;
 
             callScreen.classList.remove("hidden");
 
@@ -708,18 +708,18 @@ if (videoCallBtn) {
 
         try {
 
-            const stream =
-                await navigator.mediaDevices.getUserMedia({
-                    audio: true,
-                    video: true
-                });
+            localStream =
+    await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true
+    });
 
           const callId = await createCall("video");
 
 if (!callId) return;
           await startCallerWebRTC(callId, "video");
 
-            localVideo.srcObject = stream;
+            localVideo.srcObject = localStream;
           localVideo.muted = true;
 localVideo.autoplay = true;
 localVideo.playsInline = true;
