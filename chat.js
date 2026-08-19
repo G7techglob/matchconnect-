@@ -535,6 +535,9 @@ const callStatus = document.getElementById("callStatus");
 
 const localVideo = document.getElementById("localVideo");
 const remoteVideo = document.getElementById("remoteVideo");
+console.log("Local video element:", localVideo);
+console.log("Remote video element:", remoteVideo);
+console.log("MediaDevices:", navigator.mediaDevices);
 
 const cameraBtn = document.getElementById("cameraBtn");
 const switchCameraBtn = document.getElementById("switchCameraBtn");
@@ -605,6 +608,9 @@ if (videoCallBtn) {
                 });
 
             localVideo.srcObject = stream;
+          localVideo.muted = true;
+localVideo.autoplay = true;
+localVideo.playsInline = true;
 
             callScreen.classList.remove("hidden");
 
