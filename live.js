@@ -1,10 +1,8 @@
-import { auth, db ,storage } from "./firebase.js";
+import { auth, db, storage } from "./firebase.js";
 
 import {
     doc,
     getDoc,
-    getDocs,
-    deleteDoc,
     updateDoc,
     setDoc,
     collection,
@@ -19,18 +17,19 @@ import {
     getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
-console.log("✅ Live WebRTC JS loaded");
+
+console.log("✅ HOST Live JS loaded");
 
 
 // =====================================================
 // STREAM ID
 // =====================================================
 
-const params = new URLSearchParams(
-    window.location.search
-);
+const params =
+    new URLSearchParams(window.location.search);
 
-const streamId = params.get("streamId");
+const streamId =
+    params.get("streamId");
 
 
 // =====================================================
@@ -67,7 +66,6 @@ const endLiveBtn =
 const backBtn =
     document.getElementById("backBtn");
 
-
 const chatInput =
     document.getElementById("chatInput");
 
@@ -94,18 +92,13 @@ let peerConnections = {};
 
 let isEnding = false;
 
-let isHost = false;
-
-let viewerPeerConnection = null;
-
-let saveVideo = false;
-
 let mediaRecorder = null;
 
 let recordedChunks = [];
 
 let recordedVideoBlob = null;
 
+let shouldSaveVideo = false;
 
 
 // =====================================================
@@ -137,10 +130,11 @@ if (!streamId) {
 
     alert("Live stream not found.");
 
-    window.location.href =
-        "stream.html";
+    window.location.replace("stream.html");
 
 }
+
+
 // =====================================================
 // AUTH
 // =====================================================
@@ -151,81 +145,41 @@ auth.onAuthStateChanged(
         if (!user) {
 
             alert(
-                "Please log in before joining the live."
+                "Please log in before managing your live."
             );
 
-            window.location.href =
-                "stream.html";
+            window.location.replace(
+                "stream.html"
+            );
 
             return;
         }
 
 
-        const streamLoaded =
-            await loadStream();
+        const loaded =
+            await loadHostStream(user);
 
 
-        if (!streamLoaded) {
+        if (!loaded) {
             return;
         }
 
 
-        if (isHost) {
+        await startCamera();
 
-            console.log(
-                "🎥 Current user is the HOST"
-            );
+        startSignaling();
 
-            await startCamera();
-
-            startSignaling();
-
-        } else {
-
-            console.log(
-                "👀 Current user is a VIEWER"
-            );
-
-            /*
-             * Viewer does not need camera
-             * or microphone.
-             */
-
-            
-
-            /*
-             * Hide host-only controls.
-             */
-
-            if (micBtn) {
-                micBtn.style.display = "none";
-            }
-
-            if (cameraBtn) {
-                cameraBtn.style.display = "none";
-            }
-
-            if (switchCameraBtn) {
-                switchCameraBtn.style.display = "none";
-            }
-
-            if (endLiveBtn) {
-                endLiveBtn.style.display = "none";
-            }
-
-
-            await startViewerSignaling();
-
-        }
+        startLiveChat();
 
     }
 );
 
+
 // =====================================================
-// LOAD STREAM
+// LOAD HOST STREAM
 // =====================================================
 
-async function loadStream() {
+async function loadHostStream(user) {
 
     try {
 
@@ -247,120 +201,161 @@ async function loadStream() {
                 "This live stream does not exist."
             );
 
-            window.location.href =
-                "stream.html";
+            window.location.replace(
+                "stream.html"
+            );
 
-            return;
+            return false;
         }
 
 
         const stream =
-    streamSnap.data();
+            streamSnap.data();
 
 
-if (
-    stream.status !== "live"
-) {
+        // =================================================
+        // SECURITY CHECK
+        // =================================================
 
-    alert(
-        "This live stream has already ended."
-    );
+        if (stream.hostId !== user.uid) {
 
-    window.location.href =
-        "stream.html";
+            alert(
+                "Only the host can open this live screen."
+            );
 
-    return false;
-}
+            window.location.replace(
+                `watch-live.html?streamId=${encodeURIComponent(
+                    streamId
+                )}`
+            );
+
+            return false;
+        }
 
 
-isHost =
-    stream.hostId === auth.currentUser.uid;
+        // =================================================
+        // CHECK LIVE STATUS
+        // =================================================
+
+        if (stream.status !== "live") {
+
+            alert(
+                "This live stream has already ended."
+            );
+
+            window.location.replace(
+                "stream.html"
+            );
+
+            return false;
+        }
+
+
+        // =================================================
+        // DISPLAY STREAM INFORMATION
+        // =================================================
 
         const streamName =
             stream.title ||
             "MatchConnect Live";
 
 
-        streamTitle.textContent =
-            streamName;
-
-        title.textContent =
-            streamName;
-
-        description.textContent =
-            stream.description || "";
+        if (streamTitle) {
+            streamTitle.textContent =
+                streamName;
+        }
 
 
-        viewerCount.textContent =
-            stream.viewerCount || 0;
+        if (title) {
+            title.textContent =
+                streamName;
+        }
 
-        // =====================================================
-// WATCH VIEWERS
-// =====================================================
 
-onSnapshot(
-    collection(
-        db,
-        "liveStreams",
-        streamId,
-        "viewers"
-    ),
-    (snapshot) => {
+        if (description) {
 
-        const count =
-            snapshot.size;
-
-        viewerCount.textContent =
-            count;
-
-        if (isHost) {
-
-            updateDoc(
-                doc(
-                    db,
-                    "liveStreams",
-                    streamId
-                ),
-                {
-                    viewerCount: count
-                }
-            ).catch(error => {
-
-                console.error(
-                    "Viewer count update error:",
-                    error
-                );
-
-            });
+            description.textContent =
+                stream.description || "";
 
         }
 
-    }
-);
+
+        if (viewerCount) {
+
+            viewerCount.textContent =
+                stream.viewerCount || 0;
+
+        }
+
+
+        // =================================================
+        // WATCH VIEWERS
+        // =================================================
+
         onSnapshot(
-    doc(db, "liveStreams", streamId),
-    (snapshot) => {
+            collection(
+                db,
+                "liveStreams",
+                streamId,
+                "viewers"
+            ),
+            (snapshot) => {
 
-        if (!snapshot.exists()) {
-            return;
-        }
+                const count =
+                    snapshot.size;
 
-        const data = snapshot.data();
 
-        viewerCount.textContent =
-            data.viewerCount || 0;
+                if (viewerCount) {
 
-    }
-);
+                    viewerCount.textContent =
+                        count;
+
+                }
+
+
+                updateDoc(
+                    streamRef,
+                    {
+                        viewerCount: count
+                    }
+                ).catch(error => {
+
+                    console.error(
+                        "Viewer count update error:",
+                        error
+                    );
+
+                });
+
+            }
+        );
+
+
+        console.log(
+            "✅ Host stream loaded:",
+            streamId
+        );
+
+
         return true;
 
 
     } catch (error) {
 
         console.error(
-            "Load stream error:",
+            "Load host stream error:",
             error
         );
+
+        alert(
+            "Unable to load your live stream."
+        );
+
+        window.location.replace(
+            "stream.html"
+        );
+
+        return false;
 
     }
 
@@ -390,10 +385,12 @@ async function startCamera() {
             await navigator.mediaDevices.getUserMedia({
 
                 video: {
+
                     facingMode:
                         usingFrontCamera
-                        ? "user"
-                        : "environment"
+                            ? "user"
+                            : "environment"
+
                 },
 
                 audio: true
@@ -404,20 +401,13 @@ async function startCamera() {
         localVideo.srcObject =
             localStream;
 
-        // =====================================================
-// START LIVE RECORDING
-// =====================================================
-
-if (isHost) {
-
-    startLiveRecording();
-
-}
-
 
         console.log(
-            "✅ Camera and microphone ready"
+            "✅ Host camera and microphone ready"
         );
+
+
+        startLiveRecording();
 
 
     } catch (error) {
@@ -428,7 +418,7 @@ if (isHost) {
         );
 
         alert(
-            "Camera or microphone permission is required."
+            "Camera and microphone permission are required."
         );
 
     }
@@ -442,32 +432,18 @@ if (isHost) {
 
 function startLiveRecording() {
 
-    if (!isHost) {
-        return;
-    }
-
     if (!localStream) {
-
-        console.error(
-            "❌ Cannot start recording: host stream is missing"
-        );
-
         return;
     }
 
-
-    // Reset previous recording data
 
     recordedChunks = [];
 
     recordedVideoBlob = null;
 
 
-    // =============================================
-    // CHECK SUPPORTED RECORDING FORMAT
-    // =============================================
-
     let mimeType = "";
+
 
     if (
         MediaRecorder.isTypeSupported(
@@ -503,20 +479,16 @@ function startLiveRecording() {
 
         mediaRecorder =
             mimeType
-            ? new MediaRecorder(
-                localStream,
-                {
-                    mimeType: mimeType
-                }
-            )
-            : new MediaRecorder(
-                localStream
-            );
+                ? new MediaRecorder(
+                    localStream,
+                    {
+                        mimeType
+                    }
+                )
+                : new MediaRecorder(
+                    localStream
+                );
 
-
-        // =========================================
-        // RECORDING DATA
-        // =========================================
 
         mediaRecorder.ondataavailable =
             (event) => {
@@ -535,10 +507,6 @@ function startLiveRecording() {
             };
 
 
-        // =========================================
-        // RECORDING FINISHED
-        // =========================================
-
         mediaRecorder.onstop =
             () => {
 
@@ -547,7 +515,7 @@ function startLiveRecording() {
                 ) {
 
                     console.warn(
-                        "⚠️ No recording data was captured."
+                        "⚠️ No recording data captured."
                     );
 
                     return;
@@ -566,7 +534,7 @@ function startLiveRecording() {
 
 
                 console.log(
-                    "✅ Live recording created:",
+                    "✅ Recording ready:",
                     recordedVideoBlob.size,
                     "bytes"
                 );
@@ -574,13 +542,7 @@ function startLiveRecording() {
             };
 
 
-        // =========================================
-        // START RECORDING
-        // =========================================
-
-        mediaRecorder.start(
-            1000
-        );
+        mediaRecorder.start(1000);
 
 
         console.log(
@@ -591,7 +553,7 @@ function startLiveRecording() {
     } catch (error) {
 
         console.error(
-            "❌ Unable to start live recording:",
+            "❌ Recording error:",
             error
         );
 
@@ -599,24 +561,23 @@ function startLiveRecording() {
 
 }
 
+
 // =====================================================
 // SAVE LIVE RECORDING
 // =====================================================
 
 async function saveLiveRecording() {
 
-    if (!isHost) {
-        return;
-    }
-
     if (!recordedVideoBlob) {
 
         console.warn(
-            "⚠️ No recorded video available to save."
+            "⚠️ No recording available."
         );
 
         return;
+
     }
+
 
     try {
 
@@ -646,20 +607,10 @@ async function saveLiveRecording() {
         );
 
 
-        console.log(
-            "✅ Live video uploaded to Storage"
-        );
-
-
         const videoURL =
             await getDownloadURL(
                 videoRef
             );
-
-
-        console.log(
-            "✅ Video URL created"
-        );
 
 
         await updateDoc(
@@ -687,14 +638,14 @@ async function saveLiveRecording() {
 
 
         console.log(
-            "✅ Live video saved successfully"
+            "✅ Live recording saved"
         );
 
 
     } catch (error) {
 
         console.error(
-            "❌ Unable to save live recording:",
+            "❌ Unable to save recording:",
             error
         );
 
@@ -702,14 +653,15 @@ async function saveLiveRecording() {
 
 }
 
+
 // =====================================================
-// WEBRTC SIGNALING
+// WEBRTC HOST SIGNALING
 // =====================================================
 
 function startSignaling() {
 
     console.log(
-        "📡 WebRTC signaling started"
+        "📡 HOST signaling started"
     );
 
 
@@ -727,7 +679,8 @@ function startSignaling() {
         async (snapshot) => {
 
             for (
-                const change of snapshot.docChanges()
+                const change of
+                snapshot.docChanges()
             ) {
 
                 if (
@@ -739,11 +692,6 @@ function startSignaling() {
 
                 const viewerId =
                     change.doc.id;
-
-                console.log(
-    "👤 HOST RECEIVED VIEWER OFFER:",
-    viewerId
-);
 
 
                 if (
@@ -773,7 +721,7 @@ function startSignaling() {
 
 
 // =====================================================
-// CREATE VIEWER CONNECTION
+// CREATE HOST CONNECTION TO VIEWER
 // =====================================================
 
 async function createViewerConnection(
@@ -783,32 +731,30 @@ async function createViewerConnection(
 
     try {
 
-        console.log(
-            "🎥 Creating host connection for viewer:",
-            viewerId
-        );
+        if (!localStream) {
+
+            console.error(
+                "❌ Host stream unavailable."
+            );
+
+            return;
+
+        }
+
 
         const pc =
             new RTCPeerConnection(
                 rtcConfig
             );
 
+
         peerConnections[viewerId] =
             pc;
 
 
-        // =============================================
-        // ADD HOST CAMERA AND MICROPHONE
-        // =============================================
-
-        if (!localStream) {
-
-            console.error(
-                "❌ Host local stream is missing"
-            );
-
-            return;
-        }
+        // =================================================
+        // SEND HOST CAMERA + MICROPHONE
+        // =================================================
 
         localStream
             .getTracks()
@@ -821,14 +767,10 @@ async function createViewerConnection(
 
             });
 
-        console.log(
-            "✅ Host camera and microphone added"
-        );
 
-
-        // =============================================
-        // HOST ICE CANDIDATES
-        // =============================================
+        // =================================================
+        // HOST ICE
+        // =================================================
 
         pc.onicecandidate =
             async (event) => {
@@ -836,6 +778,7 @@ async function createViewerConnection(
                 if (!event.candidate) {
                     return;
                 }
+
 
                 try {
 
@@ -854,14 +797,10 @@ async function createViewerConnection(
 
                     );
 
-                    console.log(
-                        "📡 Host ICE candidate sent"
-                    );
-
                 } catch (error) {
 
                     console.error(
-                        "❌ Host ICE error:",
+                        "Host ICE error:",
                         error
                     );
 
@@ -870,35 +809,39 @@ async function createViewerConnection(
             };
 
 
-        // =============================================
-        // CONNECTION STATUS
-        // =============================================
+        // =================================================
+        // CONNECTION STATE
+        // =================================================
 
         pc.onconnectionstatechange =
             () => {
 
                 console.log(
-                    "🔗 Host connection:",
+                    "🔗 Viewer connection:",
+                    viewerId,
                     pc.connectionState
                 );
 
+
+                if (
+                    pc.connectionState ===
+                    "failed" ||
+                    pc.connectionState ===
+                    "closed"
+                ) {
+
+                    delete peerConnections[
+                        viewerId
+                    ];
+
+                }
+
             };
 
 
-        pc.oniceconnectionstatechange =
-            () => {
-
-                console.log(
-                    "🧊 Host ICE:",
-                    pc.iceConnectionState
-                );
-
-            };
-
-
-        // =============================================
-        // VIEWER ANSWER DOCUMENT
-        // =============================================
+        // =================================================
+        // ANSWER DOCUMENT
+        // =================================================
 
         const answerRef =
             doc(
@@ -921,9 +864,9 @@ async function createViewerConnection(
         );
 
 
-        // =============================================
+        // =================================================
         // RECEIVE VIEWER OFFER
-        // =============================================
+        // =================================================
 
         await pc.setRemoteDescription(
 
@@ -940,14 +883,9 @@ async function createViewerConnection(
         );
 
 
-        console.log(
-            "✅ Viewer offer received by host"
-        );
-
-
-        // =============================================
-        // CREATE HOST ANSWER
-        // =============================================
+        // =================================================
+        // CREATE ANSWER
+        // =================================================
 
         const answer =
             await pc.createAnswer();
@@ -958,23 +896,14 @@ async function createViewerConnection(
         );
 
 
-        // =============================================
-        // WAIT FOR HOST ICE
-        // =============================================
-
         await waitForIceGathering(
             pc
         );
 
 
-        console.log(
-            "✅ Host ICE gathering complete"
-        );
-
-
-        // =============================================
-        // SEND ANSWER TO VIEWER
-        // =============================================
+        // =================================================
+        // SEND ANSWER
+        // =================================================
 
         await updateDoc(
             answerRef,
@@ -994,14 +923,9 @@ async function createViewerConnection(
         );
 
 
-        console.log(
-            "📡 Host answer sent to viewer"
-        );
-
-
-        // =============================================
+        // =================================================
         // RECEIVE VIEWER ICE
-        // =============================================
+        // =================================================
 
         const viewerCandidatesRef =
             collection(
@@ -1029,6 +953,7 @@ async function createViewerConnection(
                         continue;
                     }
 
+
                     try {
 
                         await pc.addIceCandidate(
@@ -1039,14 +964,10 @@ async function createViewerConnection(
 
                         );
 
-                        console.log(
-                            "🧊 Viewer ICE received by host"
-                        );
-
                     } catch (error) {
 
                         console.error(
-                            "❌ Viewer ICE error:",
+                            "Viewer ICE error:",
                             error
                         );
 
@@ -1055,11 +976,6 @@ async function createViewerConnection(
                 }
 
             }
-        );
-
-
-        console.log(
-            "✅ Host connection ready"
         );
 
 
@@ -1072,11 +988,11 @@ async function createViewerConnection(
 
     }
 
-                        }
+}
 
 
 // =====================================================
-// WAIT FOR ICE GATHERING
+// WAIT FOR ICE
 // =====================================================
 
 function waitForIceGathering(pc) {
@@ -1084,7 +1000,8 @@ function waitForIceGathering(pc) {
     return new Promise(resolve => {
 
         if (
-            pc.iceGatheringState === "complete"
+            pc.iceGatheringState ===
+            "complete"
         ) {
 
             resolve();
@@ -1098,7 +1015,8 @@ function waitForIceGathering(pc) {
             () => {
 
                 if (
-                    pc.iceGatheringState === "complete"
+                    pc.iceGatheringState ===
+                    "complete"
                 ) {
 
                     pc.removeEventListener(
@@ -1121,6 +1039,8 @@ function waitForIceGathering(pc) {
     });
 
 }
+
+
 // =====================================================
 // MICROPHONE
 // =====================================================
@@ -1149,1167 +1069,11 @@ micBtn.addEventListener(
 
         micBtn.textContent =
             microphoneEnabled
-            ? "🎤"
-            : "🔇";
+                ? "🎤"
+                : "🔇";
 
     }
 );
 
 
-// =====================================================
-// CAMERA
-// =====================================================
-
-cameraBtn.addEventListener(
-    "click",
-    () => {
-
-        if (!localStream) {
-            return;
-        }
-
-
-        localStream
-            .getVideoTracks()
-            .forEach(track => {
-
-                track.enabled =
-                    !track.enabled;
-
-                cameraEnabled =
-                    track.enabled;
-
-            });
-
-
-        cameraBtn.textContent =
-            cameraEnabled
-            ? "📷"
-            : "🚫";
-
-    }
-);
-
-
-// =====================================================
-// SWITCH CAMERA
-// =====================================================
-
-switchCameraBtn.addEventListener(
-    "click",
-    async () => {
-
-        usingFrontCamera =
-            !usingFrontCamera;
-
-
-        await startCamera();
-
-
-        // Replace video track in
-        // existing WebRTC connections
-
-        const newVideoTrack =
-            localStream.getVideoTracks()[0];
-
-
-        Object.values(
-            peerConnections
-        ).forEach(pc => {
-
-            const sender =
-                pc.getSenders()
-                    .find(
-                        s =>
-                            s.track &&
-                            s.track.kind ===
-                            "video"
-                    );
-
-
-            if (sender) {
-
-                sender.replaceTrack(
-                    newVideoTrack
-                );
-
-            }
-
-        });
-
-    }
-);
-
-
-// =====================================================
-// END LIVE
-// =====================================================
-
-endLiveBtn.addEventListener(
-    "click",
-    async () => {
-
-        const confirmEnd =
-    confirm(
-        "Do you want to end your live stream?"
-    );
-
-
-if (!confirmEnd) {
-    return;
-}
-
-
-// =====================================================
-// ASK WHETHER TO SAVE VIDEO
-// =====================================================
-
-const saveVideo =
-    confirm(
-        "Do you want to save this live video?\n\n" +
-        "OK = Save Video\n" +
-        "Cancel = Discard Video"
-    );
-
-        await endLive();
-
-    }
-);
-
-// =====================================================
-// SAVE OR DISCARD RECORDING
-// =====================================================
-
-if (saveVideo) {
-
-    console.log(
-        "💾 User chose to SAVE the live video"
-    );
-
-} else {
-
-    console.log(
-        "🗑️ User chose to DISCARD the live video"
-    );
-
-}
-
-
-// =====================================================
-// END LIVE FUNCTION
-// =====================================================
-
-async function endLive() {
-
-    if (isEnding) {
-        return;
-    }
-
-
-    try {
-
-        isEnding = true;
-
-
-        endLiveBtn.disabled =
-            true;
-
-
-        endLiveBtn.textContent =
-            "Ending...";
-
-        
-// =====================================================
-// STOP AND SAVE LIVE RECORDING
-// =====================================================
-
-if (
-    mediaRecorder &&
-    mediaRecorder.state !== "inactive"
-) {
-
-    await new Promise((resolve) => {
-
-        mediaRecorder.addEventListener(
-            "stop",
-            resolve,
-            {
-                once: true
-            }
-        );
-
-        mediaRecorder.stop();
-
-    });
-
-
-    console.log(
-        "⏹️ LIVE RECORDING STOPPED"
-    );
-
-
-    // Save the finished recording
-
-    if (saveVideo) {
-
-    await saveLiveRecording();
-
-} else {
-
-    recordedChunks = [];
-
-    recordedVideoBlob = null;
-
-    console.log(
-        "🗑️ Live video discarded"
-    );
-
-    }
-}
-
-
-        if (localStream) {
-
-            localStream
-                .getTracks()
-                .forEach(track => {
-                    track.stop();
-                });
-
-        }
-
-
-        Object.values(
-            peerConnections
-        ).forEach(pc => {
-
-            pc.close();
-
-        });
-
-
-        const streamRef =
-            doc(
-                db,
-                "liveStreams",
-                streamId
-            );
-
-
-        await updateDoc(
-            streamRef,
-            {
-
-                status: "ended",
-
-                endedAt:
-                    serverTimestamp(),
-
-                viewerCount: 0
-
-            }
-        );
-
-
-        window.location.replace("stream.html");
-
-
-    } catch (error) {
-
-        console.error(
-            "End live error:",
-            error
-        );
-
-
-        alert(
-            "Unable to end the live stream."
-        );
-
-
-        isEnding = false;
-
-        endLiveBtn.disabled =
-            false;
-
-        endLiveBtn.textContent =
-            "🛑 End Live";
-
-    }
-
-}
-// =====================================================
-// BACK
-// =====================================================
-
-backBtn.addEventListener(
-    "click",
-    async () => {
-
-        // =========================================
-        // VIEWER
-        // =========================================
-
-        if (!isHost) {
-
-            if (viewerPeerConnection) {
-
-                viewerPeerConnection.close();
-
-                viewerPeerConnection = null;
-
-            }
-
-            window.location.href =
-                "stream.html";
-
-            return;
-        }
-
-
-        // =========================================
-        // HOST
-        // =========================================
-
-        /*
-         * IMPORTANT:
-         * Going back does NOT end the live.
-         *
-         * The live remains active in Firestore.
-         *
-         * The host can return to this same
-         * live stream later.
-         */
-
-        if (localStream) {
-
-            localStream
-                .getTracks()
-                .forEach(track => {
-                    track.stop();
-                });
-
-            localStream = null;
-
-        }
-
-
-        Object.values(
-            peerConnections
-        ).forEach(pc => {
-
-            pc.close();
-
-        });
-
-
-        peerConnections = {};
-
-
-        window.location.href =
-            "stream.html";
-
-    }
-);
-
-
-// =====================================================
-// CLEANUP
-// =====================================================
-
-window.addEventListener(
-    "beforeunload",
-    () => {
-
-        // Remove viewer from live viewer list
-        if (!isHost && auth.currentUser && streamId) {
-
-            deleteDoc(
-                doc(
-                    db,
-                    "liveStreams",
-                    streamId,
-                    "viewers",
-                    auth.currentUser.uid
-                )
-            ).catch(error => {
-
-                console.error(
-                    "❌ Unable to remove viewer:",
-                    error
-                );
-
-            });
-
-        }
-
-        if (localStream) {
-
-            localStream
-                .getTracks()
-                .forEach(track => {
-                    track.stop();
-                });
-
-        }
-
-
-        Object.values(
-            peerConnections
-        ).forEach(pc => {
-
-            pc.close();
-
-        });
-
-    }
-);
-
-// =====================================================
-// LIVE CHAT
-// =====================================================
-
-function startLiveChat() {
-
-    if (!streamId) {
-        return;
-    }
-
-    const messagesRef =
-        collection(
-            db,
-            "liveStreams",
-            streamId,
-            "messages"
-        );
-
-    onSnapshot(
-        messagesRef,
-        (snapshot) => {
-
-            const messages = [];
-
-            snapshot.forEach(messageDoc => {
-
-                messages.push({
-                    id: messageDoc.id,
-                    ...messageDoc.data()
-                });
-
-            });
-
-            messages.sort((a, b) => {
-
-                const timeA =
-                    a.createdAt?.toMillis?.() || 0;
-
-                const timeB =
-                    b.createdAt?.toMillis?.() || 0;
-
-                return timeA - timeB;
-
-            });
-
-            chatMessages.innerHTML = "";
-
-            messages.forEach(message => {
-
-                const messageDiv =
-                    document.createElement("div");
-
-                messageDiv.className =
-                    "live-chat-message";
-
-                const username =
-                    document.createElement("strong");
-
-                username.textContent =
-                    message.username ||
-                    "User";
-
-                const text =
-                    document.createElement("span");
-
-                text.textContent =
-                    message.text || "";
-
-                messageDiv.appendChild(
-                    username
-                );
-
-                messageDiv.appendChild(
-                    document.createTextNode(" ")
-                );
-
-                messageDiv.appendChild(
-                    text
-                );
-
-                chatMessages.appendChild(
-                    messageDiv
-                );
-
-            });
-
-            chatMessages.scrollTop =
-                chatMessages.scrollHeight;
-
-        },
-        (error) => {
-
-            console.error(
-                "Live chat listener error:",
-                error
-            );
-
-        }
-    );
-
-}
-
-
-// =====================================================
-// SEND CHAT MESSAGE
-// =====================================================
-
-async function sendChatMessage() {
-
-    const user =
-        auth.currentUser;
-
-    if (!user) {
-
-        alert(
-            "Please log in to chat."
-        );
-
-        return;
-
-    }
-
-    const text =
-        chatInput.value.trim();
-
-    if (!text) {
-        return;
-    }
-
-    try {
-
-        sendChatBtn.disabled = true;
-
-        const username =
-            user.displayName ||
-            user.email ||
-            "MatchConnect User";
-
-        await addDoc(
-
-            collection(
-                db,
-                "liveStreams",
-                streamId,
-                "messages"
-            ),
-
-            {
-                userId: user.uid,
-
-                username: username,
-
-                photoURL:
-                    user.photoURL || "",
-
-                text: text,
-
-                createdAt:
-                    serverTimestamp()
-            }
-
-        );
-
-        chatInput.value = "";
-
-    } catch (error) {
-
-        console.error(
-            "Send live chat error:",
-            error
-        );
-
-        alert(
-            "Unable to send your message."
-        );
-
-    } finally {
-
-        sendChatBtn.disabled = false;
-
-        chatInput.focus();
-
-    }
-
-}
-
-
-// =====================================================
-// CHAT EVENTS
-// =====================================================
-
-sendChatBtn.addEventListener(
-    "click",
-    sendChatMessage
-);
-
-
-chatInput.addEventListener(
-    "keydown",
-    event => {
-
-        if (
-            event.key === "Enter" &&
-            !event.shiftKey
-        ) {
-
-            event.preventDefault();
-
-            sendChatMessage();
-
-        }
-
-    }
-);
-
-
-// =====================================================
-// START LIVE CHAT
-// =====================================================
-
-startLiveChat();
-
-// =====================================================
-// VIEWER WEBRTC
-// =====================================================
-
-async function startViewerSignaling() {
-
-    if (!streamId) {
-
-        console.error(
-            "❌ No stream ID"
-        );
-
-        return;
-    }
-
-    console.log(
-        "👀 Starting viewer WebRTC..."
-    );
-
-
-    try {
-
-        // =================================================
-        // CREATE VIEWER PEER CONNECTION
-        // =================================================
-
-        viewerPeerConnection =
-            new RTCPeerConnection(
-                rtcConfig
-            );
-
-        console.log(
-            "✅ Viewer peer connection created"
-        );
-
-
-        // =================================================
-        // IMPORTANT:
-        // REQUEST HOST VIDEO AND AUDIO
-        // =================================================
-
-        viewerPeerConnection.addTransceiver(
-            "video",
-            {
-                direction: "recvonly"
-            }
-        );
-
-        viewerPeerConnection.addTransceiver(
-            "audio",
-            {
-                direction: "recvonly"
-            }
-        );
-
-        console.log(
-            "✅ Viewer is requesting host video and audio"
-        );
-
-
-        // =================================================
-        // REGISTER VIEWER
-        // =================================================
-
-        const viewerId =
-            auth.currentUser.uid;
-
-
-        const viewerRef =
-            doc(
-                db,
-                "liveStreams",
-                streamId,
-                "viewers",
-                viewerId
-            );
-
-
-        await setDoc(
-            viewerRef,
-            {
-                userId: viewerId,
-
-                role: "viewer",
-
-                joinedAt:
-                    serverTimestamp()
-            },
-            {
-                merge: true
-            }
-        );
-
-
-        console.log(
-            "✅ Viewer registered:",
-            viewerId
-        );
-
-
-        // =================================================
-        // RECEIVE HOST VIDEO/AUDIO
-        // =================================================
-
-        viewerPeerConnection.ontrack =
-            (event) => {
-
-                console.log(
-                    "🎥 HOST TRACK RECEIVED"
-                );
-
-
-                let remoteStream =
-                    event.streams &&
-                    event.streams[0];
-
-
-                // -----------------------------------------
-                // If browser does not provide a stream,
-                // create one manually.
-                // -----------------------------------------
-
-                if (!remoteStream) {
-
-                    remoteStream =
-                        new MediaStream();
-
-                    remoteStream.addTrack(
-                        event.track
-                    );
-
-                }
-
-
-                console.log(
-                    "🎥 Remote track:",
-                    event.track.kind
-                );
-
-
-                // -----------------------------------------
-                // Put host stream into viewer video
-                // -----------------------------------------
-
-                localVideo.srcObject =
-                    remoteStream;
-
-
-                localVideo.muted =
-                    false;
-
-                localVideo.autoplay =
-                    true;
-
-                localVideo.playsInline =
-                    true;
-
-
-                localVideo.play()
-                    .then(() => {
-
-                        console.log(
-                            "✅ HOST VIDEO PLAYING"
-                        );
-
-                    })
-                    .catch(error => {
-
-                        console.warn(
-                            "⚠️ Video autoplay blocked:",
-                            error
-                        );
-
-                    });
-
-            };
-
-
-        // =================================================
-        // CONNECTION STATE
-        // =================================================
-
-        viewerPeerConnection
-            .onconnectionstatechange =
-            () => {
-
-                console.log(
-                    "📡 Viewer connection state:",
-                    viewerPeerConnection
-                        .connectionState
-                );
-
-
-                if (
-                    viewerPeerConnection
-                        .connectionState ===
-                    "connected"
-                ) {
-
-                    console.log(
-                        "🎉 VIEWER CONNECTED TO HOST"
-                    );
-
-                }
-
-            };
-
-
-        // =================================================
-        // ICE CONNECTION STATE
-        // =================================================
-
-        viewerPeerConnection
-            .oniceconnectionstatechange =
-            () => {
-
-                console.log(
-                    "🧊 Viewer ICE state:",
-                    viewerPeerConnection
-                        .iceConnectionState
-                );
-
-            };
-
-
-        // =================================================
-        // SEND VIEWER ICE CANDIDATES
-        // =================================================
-
-        viewerPeerConnection.onicecandidate =
-            async (event) => {
-
-                if (!event.candidate) {
-                    return;
-                }
-
-
-                try {
-
-                    await addDoc(
-
-                        collection(
-                            db,
-                            "liveStreams",
-                            streamId,
-                            "viewers",
-                            viewerId,
-                            "viewerCandidates"
-                        ),
-
-                        event.candidate.toJSON()
-
-                    );
-
-
-                    console.log(
-                        "🧊 Viewer ICE candidate sent"
-                    );
-
-                } catch (error) {
-
-                    console.error(
-                        "❌ Viewer ICE error:",
-                        error
-                    );
-
-                }
-
-            };
-
-
-        // =================================================
-        // HOST ANSWER
-        // =================================================
-
-        const answerRef =
-            doc(
-                db,
-                "liveStreams",
-                streamId,
-                "viewers",
-                viewerId
-            );
-
-
-        onSnapshot(
-            answerRef,
-            async (snapshot) => {
-
-                if (!snapshot.exists()) {
-                    return;
-                }
-
-
-                const data =
-                    snapshot.data();
-
-
-                if (!data.answer) {
-                    return;
-                }
-
-
-                if (
-                    viewerPeerConnection
-                        .remoteDescription
-                ) {
-
-                    return;
-                }
-
-
-                try {
-
-                    await viewerPeerConnection
-                        .setRemoteDescription(
-
-                            new RTCSessionDescription(
-                                data.answer
-                            )
-
-                        );
-
-
-                    console.log(
-                        "✅ HOST ANSWER RECEIVED"
-                    );
-
-
-                } catch (error) {
-
-                    console.error(
-                        "❌ Unable to set host answer:",
-                        error
-                    );
-
-                }
-
-            }
-        );
-
-
-        // =================================================
-        // RECEIVE HOST ICE CANDIDATES
-        // =================================================
-
-        const hostCandidatesRef =
-            collection(
-                db,
-                "liveStreams",
-                streamId,
-                "viewers",
-                viewerId,
-                "hostCandidates"
-            );
-
-
-        onSnapshot(
-            hostCandidatesRef,
-            async (snapshot) => {
-
-                for (
-                    const change of
-                    snapshot.docChanges()
-                ) {
-
-                    if (
-                        change.type !== "added"
-                    ) {
-
-                        continue;
-                    }
-
-
-                    try {
-
-                        await viewerPeerConnection
-                            .addIceCandidate(
-
-                                new RTCIceCandidate(
-                                    change.doc.data()
-                                )
-
-                            );
-
-
-                        console.log(
-                            "🧊 Host ICE candidate added"
-                        );
-
-
-                    } catch (error) {
-
-                        console.error(
-                            "❌ Host ICE error:",
-                            error
-                        );
-
-                    }
-
-                }
-
-            }
-        );
-
-
-        // =================================================
-        // CREATE VIEWER OFFER
-        // =================================================
-
-        const offer =
-            await viewerPeerConnection
-                .createOffer();
-
-
-        await viewerPeerConnection
-            .setLocalDescription(
-                offer
-            );
-
-
-        console.log(
-            "📡 Viewer offer created"
-        );
-
-
-        // =================================================
-        // SEND OFFER TO HOST
-        // =================================================
-
-        const offerRef =
-            doc(
-                db,
-                "liveStreams",
-                streamId,
-                "offers",
-                viewerId
-            );
-
-
-        await setDoc(
-            offerRef,
-            {
-
-                sdp:
-                    offer.sdp,
-
-                type:
-                    offer.type,
-
-                viewerId:
-                    viewerId,
-
-                createdAt:
-                    serverTimestamp()
-
-            }
-        );
-
-
-        console.log(
-            "📡 VIEWER OFFER SENT TO HOST"
-        );
-
-
-        // =================================================
-        // WATCH VIEWER COUNT
-        // =================================================
-
-        const viewersRef =
-            collection(
-                db,
-                "liveStreams",
-                streamId,
-                "viewers"
-            );
-
-
-        onSnapshot(
-            viewersRef,
-            (snapshot) => {
-
-                const count =
-                    snapshot.size;
-
-
-                if (viewerCount) {
-
-                    viewerCount.textContent =
-                        count;
-
-                }
-
-
-                console.log(
-                    "👁️ LIVE VIEWERS:",
-                    count
-                );
-
-            },
-            (error) => {
-
-                console.error(
-                    "❌ Viewer count error:",
-                    error
-                );
-
-            }
-        );
-
-
-        console.log(
-            "✅ Viewer WebRTC setup complete"
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "❌ VIEWER WEBRTC ERROR:",
-            error
-        );
-
-    }
-
-}
+// ==========
