@@ -543,24 +543,45 @@ const endCallBtn = document.getElementById("endCallBtn");
 
 
 // =====================================================
-// VOICE CALL TEST
+// VOICE CALL 
 // =====================================================
 
 if (callBtn) {
 
-    callBtn.addEventListener("click", () => {
+    callBtn.addEventListener("click", async () => {
 
-        callScreen.classList.remove("hidden");
+        try {
 
-        callStatus.textContent =
-            `Calling ${chatUserName.textContent}...`;
+            const stream =
+                await navigator.mediaDevices.getUserMedia({
+                    audio: true,
+                    video: false
+                });
 
-        // Voice call = hide video
-        localVideo.style.display = "none";
-        remoteVideo.style.display = "none";
+            localVideo.srcObject = stream;
 
-        cameraBtn.style.display = "none";
-        switchCameraBtn.style.display = "none";
+            callScreen.classList.remove("hidden");
+
+            callStatus.textContent =
+                `Calling ${chatUserName.textContent}...`;
+
+            localVideo.style.display = "none";
+            remoteVideo.style.display = "none";
+
+            cameraBtn.style.display = "none";
+            switchCameraBtn.style.display = "none";
+
+            console.log("🎤 Microphone connected");
+
+        } catch (error) {
+
+            console.error("Microphone error:", error);
+
+            alert(
+                "MatchConnect needs microphone permission to make voice calls."
+            );
+
+        }
 
     });
 
@@ -573,19 +594,40 @@ if (callBtn) {
 
 if (videoCallBtn) {
 
-    videoCallBtn.addEventListener("click", () => {
+    videoCallBtn.addEventListener("click", async () => {
 
-        callScreen.classList.remove("hidden");
+        try {
 
-        callStatus.textContent =
-            `Calling ${chatUserName.textContent}...`;
+            const stream =
+                await navigator.mediaDevices.getUserMedia({
+                    audio: true,
+                    video: true
+                });
 
-        // Video call = show video
-        localVideo.style.display = "block";
-        remoteVideo.style.display = "block";
+            localVideo.srcObject = stream;
 
-        cameraBtn.style.display = "inline-flex";
-        switchCameraBtn.style.display = "inline-flex";
+            callScreen.classList.remove("hidden");
+
+            callStatus.textContent =
+                `Calling ${chatUserName.textContent}...`;
+
+            localVideo.style.display = "block";
+            remoteVideo.style.display = "block";
+
+            cameraBtn.style.display = "inline-flex";
+            switchCameraBtn.style.display = "inline-flex";
+
+            console.log("🎤📹 Camera and microphone connected");
+
+        } catch (error) {
+
+            console.error("Camera/microphone error:", error);
+
+            alert(
+                "MatchConnect needs camera and microphone permission for video calls."
+            );
+
+        }
 
     });
 
