@@ -52,8 +52,7 @@ videoTab.addEventListener("click", () => {
 
 const streamsQuery = query(
     collection(db, "liveStreams"),
-    where("status", "==", "live"),
-    
+    where("status", "==", "live")
 );
 
 
