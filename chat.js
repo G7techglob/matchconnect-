@@ -712,3 +712,112 @@ async function createCall(type) {
     }
 
 }
+
+
+// =====================================================
+// MATCHCONNECT — LISTEN FOR INCOMING CALLS
+// =====================================================
+
+function listenForIncomingCalls() {
+
+    if (!currentUser) return;
+
+    console.log("📡 Listening for incoming calls...");
+
+    const callsQuery = query(
+        collection(db, "calls"),
+        where("receiverId", "==", currentUser.uid)
+    );
+
+    onSnapshot(
+        callsQuery,
+        async (snapshot) => {
+
+            for (const callDoc of snapshot.docs) {
+
+                const call = callDoc.data();
+
+                // Only process ringing calls
+                if (call.status !== "ringing") {
+                    continue;
+                }
+
+                // Ignore calls created by ourselves
+                if (call.callerId === currentUser.uid) {
+                    continue;
+                }
+
+                console.log(
+                    "📞 INCOMING CALL DETECTED:",
+                    callDoc.id,
+                    call.type
+                );
+
+                // Get caller's profile
+                const callerSnap = await getDoc(
+                    doc(db, "users", call.callerId)
+                );
+
+                let callerName = "MatchConnect User";
+
+                if (callerSnap.exists()) {
+
+                    const callerData = callerSnap.data();
+
+                    callerName =
+                        callerData.name ||
+                        callerData.username ||
+                        "MatchConnect User";
+                }
+
+                const callType =
+                    call.type === "video"
+                    ? "📹 Video Call"
+                    : "📞 Voice Call";
+
+                const answer = confirm(
+                    `${callerName} is calling you.\n\n` +
+                    `${callType}\n\n` +
+                    `Press OK to answer.`
+                );
+
+                if (answer) {
+
+                    await updateDoc(
+                        doc(db, "calls", callDoc.id),
+                        {
+                            status: "accepted"
+                        }
+                    );
+
+                    console.log(
+                        "✅ CALL ACCEPTED:",
+                        callDoc.id
+                    );
+
+                } else {
+
+                    await updateDoc(
+                        doc(db, "calls", callDoc.id),
+                        {
+                            status: "rejected"
+                        }
+                    );
+
+                    console.log(
+                        "❌ CALL REJECTED:",
+                        callDoc.id
+                    );
+                }
+            }
+        },
+        (error) => {
+
+            console.error(
+                "❌ Incoming call listener error:",
+                error
+            );
+
+        }
+    );
+}
