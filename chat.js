@@ -666,6 +666,7 @@ if (callBtn) {
             const callId = await createCall("audio");
 
 if (!callId) return;
+          await startCallerWebRTC(callId, "audio");
           
             localVideo.srcObject = stream;
 
@@ -716,6 +717,7 @@ if (videoCallBtn) {
           const callId = await createCall("video");
 
 if (!callId) return;
+          await startCallerWebRTC(callId, "video");
 
             localVideo.srcObject = stream;
           localVideo.muted = true;
@@ -848,6 +850,7 @@ async function startCallerWebRTC(callId, type) {
         );
 
         console.log("📤 WebRTC offer sent");
+      listenForCallerAnswer(callId);
 
     } catch (error) {
 
@@ -861,6 +864,52 @@ async function startCallerWebRTC(callId, type) {
         );
 
     }
+
+}
+
+// =====================================================
+// MATCHCONNECT — LISTEN FOR CALLER ANSWER
+// =====================================================
+
+function listenForCallerAnswer(callId) {
+
+    onSnapshot(
+        doc(db, "calls", callId),
+        async (snapshot) => {
+
+            if (!snapshot.exists()) return;
+
+            const callData = snapshot.data();
+
+            if (
+                callData.answer &&
+                peerConnection &&
+                !peerConnection.currentRemoteDescription
+            ) {
+
+                try {
+
+                    await peerConnection.setRemoteDescription(
+                        new RTCSessionDescription(
+                            callData.answer
+                        )
+                    );
+
+                    console.log("📥 Receiver answer received.");
+
+                } catch (error) {
+
+                    console.error(
+                        "❌ Failed to set receiver answer:",
+                        error
+                    );
+
+                }
+
+            }
+
+        }
+    );
 
 }
 // =====================================================
@@ -932,17 +981,25 @@ function listenForIncomingCalls() {
 
                 if (answer) {
 
-                    await updateDoc(
-                        doc(db, "calls", callDoc.id),
-                        {
-                            status: "accepted"
-                        }
-                    );
+    await updateDoc(
+        doc(db, "calls", callDoc.id),
+        {
+            status: "accepted"
+        }
+    );
 
-                    console.log(
-                        "✅ CALL ACCEPTED:",
-                        callDoc.id
-                    );
+    console.log(
+        "✅ CALL ACCEPTED:",
+        callDoc.id
+    );
+
+    // Start receiver WebRTC
+    await startReceiverWebRTC(
+        callDoc.id,
+        call.type
+    );
+
+                }
 
                 } else {
 
