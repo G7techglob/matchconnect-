@@ -253,6 +253,7 @@ const videoFeed =
 const savedVideosQuery = query(
     collection(db, "liveStreams"),
     where("status", "==", "ended"),
+    where("videoSaved", "==", true),
     orderBy("endedAt", "desc")
 );
 
