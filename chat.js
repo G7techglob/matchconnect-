@@ -75,6 +75,7 @@ if(profileSnap.exists()){
   await loadReceiver();
   loadMessages();
   listenTyping();
+  listenForIncomingCalls();
 });
 
 async function loadReceiver() {
