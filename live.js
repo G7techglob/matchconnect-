@@ -1438,8 +1438,6 @@ if (
     }
 
 }
-
-
 // =====================================================
 // BACK
 // =====================================================
@@ -1473,18 +1471,43 @@ backBtn.addEventListener(
         // HOST
         // =========================================
 
-        const confirmLeave =
-            confirm(
-                "Your live stream is running. End it?"
-            );
+        /*
+         * IMPORTANT:
+         * Going back does NOT end the live.
+         *
+         * The live remains active in Firestore.
+         *
+         * The host can return to this same
+         * live stream later.
+         */
 
+        if (localStream) {
 
-        if (!confirmLeave) {
-            return;
+            localStream
+                .getTracks()
+                .forEach(track => {
+                    track.stop();
+                });
+
+            localStream = null;
+
         }
 
 
-        await endLive();
+        Object.values(
+            peerConnections
+        ).forEach(pc => {
+
+            pc.close();
+
+        });
+
+
+        peerConnections = {};
+
+
+        window.location.href =
+            "stream.html";
 
     }
 );
