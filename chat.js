@@ -522,3 +522,22 @@ if (inboxSettingsBtn) {
         window.location.href = `inbox-settings.html?uid=${receiverUid}`;
     });
 }
+
+// =====================================================
+// MATCHCONNECT CALL BUTTONS — STEP 1
+// =====================================================
+
+const callBtn = document.getElementById("callBtn");
+const videoCallBtn = document.getElementById("videoCallBtn");
+
+if (callBtn) {
+    callBtn.addEventListener("click", () => {
+        console.log("📞 Voice call button clicked");
+    });
+}
+
+if (videoCallBtn) {
+    videoCallBtn.addEventListener("click", () => {
+        console.log("📹 Video call button clicked");
+    });
+}
