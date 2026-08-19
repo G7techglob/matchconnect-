@@ -1076,4 +1076,653 @@ micBtn.addEventListener(
 );
 
 
-// ==========
+// =====================================================
+// CAMERA
+// =====================================================
+
+cameraBtn.addEventListener(
+    "click",
+    () => {
+
+        if (!localStream) {
+            return;
+        }
+
+
+        localStream
+            .getVideoTracks()
+            .forEach(track => {
+
+                track.enabled =
+                    !track.enabled;
+
+                cameraEnabled =
+                    track.enabled;
+
+            });
+
+
+        cameraBtn.textContent =
+            cameraEnabled
+                ? "📷"
+                : "🚫";
+
+    }
+);
+
+
+// =====================================================
+// SWITCH CAMERA
+// =====================================================
+
+switchCameraBtn.addEventListener(
+    "click",
+    async () => {
+
+        usingFrontCamera =
+            !usingFrontCamera;
+
+
+        await startCamera();
+
+
+        const newVideoTrack =
+            localStream.getVideoTracks()[0];
+
+
+        Object.values(
+            peerConnections
+        ).forEach(pc => {
+
+            const sender =
+                pc.getSenders()
+                    .find(
+                        s =>
+                            s.track &&
+                            s.track.kind ===
+                            "video"
+                    );
+
+
+            if (sender) {
+
+                sender.replaceTrack(
+                    newVideoTrack
+                );
+
+            }
+
+        });
+
+    }
+);
+
+
+// =====================================================
+// END LIVE BUTTON
+// =====================================================
+
+endLiveBtn.addEventListener(
+    "click",
+    async () => {
+
+        if (isEnding) {
+            return;
+        }
+
+
+        const confirmed =
+            confirm(
+                "Do you want to end your live stream?"
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        shouldSaveVideo =
+            confirm(
+                "Do you want to save this live video?\n\n" +
+                "OK = Save Video\n" +
+                "Cancel = Discard Video"
+            );
+
+
+        await endLive();
+
+    }
+);
+
+
+// =====================================================
+// END LIVE
+// =====================================================
+
+async function endLive() {
+
+    if (isEnding) {
+        return;
+    }
+
+
+    try {
+
+        isEnding = true;
+
+
+        endLiveBtn.disabled =
+            true;
+
+
+        endLiveBtn.textContent =
+            "Ending...";
+
+
+        // =================================================
+        // STOP RECORDING
+        // =================================================
+
+        if (
+            mediaRecorder &&
+            mediaRecorder.state !== "inactive"
+        ) {
+
+            await new Promise(resolve => {
+
+                mediaRecorder.addEventListener(
+                    "stop",
+                    resolve,
+                    {
+                        once: true
+                    }
+                );
+
+
+                mediaRecorder.stop();
+
+            });
+
+        }
+
+
+        // =================================================
+        // SAVE VIDEO
+        // =================================================
+
+        if (
+            shouldSaveVideo &&
+            recordedVideoBlob
+        ) {
+
+            await saveLiveRecording();
+
+        } else {
+
+            recordedChunks = [];
+
+            recordedVideoBlob = null;
+
+            console.log(
+                "🗑️ Live recording discarded"
+            );
+
+        }
+
+
+        // =================================================
+        // STOP CAMERA
+        // =================================================
+
+        if (localStream) {
+
+            localStream
+                .getTracks()
+                .forEach(track => {
+                    track.stop();
+                });
+
+            localStream = null;
+
+        }
+
+
+        // =================================================
+        // CLOSE VIEWER CONNECTIONS
+        // =================================================
+
+        Object.values(
+            peerConnections
+        ).forEach(pc => {
+
+            try {
+                pc.close();
+            } catch {}
+
+        });
+
+
+        peerConnections = {};
+
+
+        // =================================================
+        // MARK STREAM ENDED
+        // =================================================
+
+        await updateDoc(
+
+            doc(
+                db,
+                "liveStreams",
+                streamId
+            ),
+
+            {
+
+                status:
+                    "ended",
+
+                endedAt:
+                    serverTimestamp(),
+
+                viewerCount:
+                    0
+
+            }
+
+        );
+
+
+        console.log(
+            "🛑 LIVE ENDED:",
+            streamId
+        );
+
+
+        window.location.replace(
+            "stream.html"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "❌ End live error:",
+            error
+        );
+
+
+        alert(
+            "Unable to end the live stream."
+        );
+
+
+        isEnding = false;
+
+
+        endLiveBtn.disabled =
+            false;
+
+
+        endLiveBtn.textContent =
+            "🛑 End Live";
+
+    }
+
+}
+
+
+// =====================================================
+// BACK BUTTON — HOST ONLY
+// =====================================================
+
+backBtn.addEventListener(
+    "click",
+    () => {
+
+        /*
+         * IMPORTANT:
+         * Back does NOT end the live.
+         *
+         * The stream remains:
+         *
+         * status = "live"
+         *
+         * The host can return to it later.
+         */
+
+
+        if (localStream) {
+
+            localStream
+                .getTracks()
+                .forEach(track => {
+                    track.stop();
+                });
+
+            localStream = null;
+
+        }
+
+
+        Object.values(
+            peerConnections
+        ).forEach(pc => {
+
+            try {
+                pc.close();
+            } catch {}
+
+        });
+
+
+        peerConnections = {};
+
+
+        window.location.replace(
+            "stream.html"
+        );
+
+    }
+);
+
+
+// =====================================================
+// LIVE CHAT
+// =====================================================
+
+function startLiveChat() {
+
+    if (!streamId) {
+        return;
+    }
+
+
+    const messagesRef =
+        collection(
+            db,
+            "liveStreams",
+            streamId,
+            "messages"
+        );
+
+
+    onSnapshot(
+        messagesRef,
+        (snapshot) => {
+
+            const messages = [];
+
+
+            snapshot.forEach(
+                messageDoc => {
+
+                    messages.push({
+                        id:
+                            messageDoc.id,
+
+                        ...messageDoc.data()
+
+                    });
+
+                }
+            );
+
+
+            messages.sort(
+                (a, b) => {
+
+                    const timeA =
+                        a.createdAt
+                            ?.toMillis?.() || 0;
+
+                    const timeB =
+                        b.createdAt
+                            ?.toMillis?.() || 0;
+
+                    return timeA - timeB;
+
+                }
+            );
+
+
+            chatMessages.innerHTML = "";
+
+
+            messages.forEach(
+                message => {
+
+                    const messageDiv =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    messageDiv.className =
+                        "live-chat-message";
+
+
+                    const username =
+                        document.createElement(
+                            "strong"
+                        );
+
+
+                    username.textContent =
+                        message.username ||
+                        "User";
+
+
+                    const text =
+                        document.createElement(
+                            "span"
+                        );
+
+
+                    text.textContent =
+                        message.text || "";
+
+
+                    messageDiv.appendChild(
+                        username
+                    );
+
+
+                    messageDiv.appendChild(
+                        document.createTextNode(
+                            " "
+                        )
+                    );
+
+
+                    messageDiv.appendChild(
+                        text
+                    );
+
+
+                    chatMessages.appendChild(
+                        messageDiv
+                    );
+
+                }
+            );
+
+
+            chatMessages.scrollTop =
+                chatMessages.scrollHeight;
+
+        },
+
+
+        error => {
+
+            console.error(
+                "Live chat listener error:",
+                error
+            );
+
+        }
+
+    );
+
+}
+
+
+// =====================================================
+// SEND CHAT
+// =====================================================
+
+async function sendChatMessage() {
+
+    const user =
+        auth.currentUser;
+
+
+    if (!user) {
+
+        alert(
+            "Please log in to chat."
+        );
+
+        return;
+
+    }
+
+
+    const text =
+        chatInput.value.trim();
+
+
+    if (!text) {
+        return;
+    }
+
+
+    try {
+
+        sendChatBtn.disabled =
+            true;
+
+
+        await addDoc(
+
+            collection(
+                db,
+                "liveStreams",
+                streamId,
+                "messages"
+            ),
+
+            {
+
+                userId:
+                    user.uid,
+
+                username:
+                    user.displayName ||
+                    user.email ||
+                    "MatchConnect User",
+
+                photoURL:
+                    user.photoURL || "",
+
+                text:
+                    text,
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+
+        );
+
+
+        chatInput.value = "";
+
+
+    } catch (error) {
+
+        console.error(
+            "Send live chat error:",
+            error
+        );
+
+
+        alert(
+            "Unable to send your message."
+        );
+
+
+    } finally {
+
+        sendChatBtn.disabled =
+            false;
+
+        chatInput.focus();
+
+    }
+
+}
+
+
+// =====================================================
+// CHAT EVENTS
+// =====================================================
+
+sendChatBtn.addEventListener(
+    "click",
+    sendChatMessage
+);
+
+
+chatInput.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Enter" &&
+            !event.shiftKey
+        ) {
+
+            event.preventDefault();
+
+            sendChatMessage();
+
+        }
+
+    }
+);
+
+
+// =====================================================
+// CLEANUP
+// =====================================================
+
+window.addEventListener(
+    "beforeunload",
+    () => {
+
+        if (localStream) {
+
+            localStream
+                .getTracks()
+                .forEach(track => {
+                    track.stop();
+                });
+
+        }
+
+
+        Object.values(
+            peerConnections
+        ).forEach(pc => {
+
+            try {
+                pc.close();
+            } catch {}
+
+        });
+
+    }
+);
