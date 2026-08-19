@@ -6,7 +6,9 @@ import {
     getDocs,
     doc,
     setDoc,
-    serverTimestamp
+    serverTimestamp,
+      query,
+    where
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 
@@ -285,6 +287,68 @@ startLiveBtn.addEventListener(
             return;
 
         }
+
+        /* =================================================
+   CHECK FOR EXISTING ACTIVE LIVE
+================================================= */
+
+const activeLiveQuery =
+    query(
+        collection(db, "liveStreams"),
+        where("hostId", "==", user.uid),
+        where("status", "==", "live")
+    );
+
+const activeLiveSnapshot =
+    await getDocs(activeLiveQuery);
+
+
+if (!activeLiveSnapshot.empty) {
+
+    const existingLive =
+        activeLiveSnapshot.docs[0];
+
+    const existingStreamId =
+        existingLive.id;
+
+
+    console.log(
+        "🔴 User already has an active live:",
+        existingStreamId
+    );
+
+
+    if (cameraStream) {
+
+        cameraStream
+            .getTracks()
+            .forEach(track => {
+                track.stop();
+            });
+
+    }
+
+
+    const returnToLive =
+        confirm(
+            "You already have an active live stream.\n\n" +
+            "Do you want to return to your live?"
+        );
+
+
+    if (returnToLive) {
+
+        window.location.href =
+            `live.html?streamId=${encodeURIComponent(
+                existingStreamId
+            )}`;
+
+    }
+
+
+    return;
+
+}
 
 
         try {
