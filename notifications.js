@@ -180,7 +180,7 @@ wrapper.addEventListener("click", () => {
     }
 
     window.location.href =
-      `live.html?streamId=${encodeURIComponent(
+      `watch-live.html?streamId=${encodeURIComponent(
         notification.streamId
       )}`;
 
