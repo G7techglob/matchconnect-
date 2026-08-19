@@ -524,20 +524,90 @@ if (inboxSettingsBtn) {
 }
 
 // =====================================================
-// MATCHCONNECT CALL BUTTONS — STEP 1
+// MATCHCONNECT CALL SCREEN TEST
 // =====================================================
 
 const callBtn = document.getElementById("callBtn");
 const videoCallBtn = document.getElementById("videoCallBtn");
 
+const callScreen = document.getElementById("callScreen");
+const callStatus = document.getElementById("callStatus");
+
+const localVideo = document.getElementById("localVideo");
+const remoteVideo = document.getElementById("remoteVideo");
+
+const cameraBtn = document.getElementById("cameraBtn");
+const switchCameraBtn = document.getElementById("switchCameraBtn");
+
+const endCallBtn = document.getElementById("endCallBtn");
+
+
+// =====================================================
+// VOICE CALL TEST
+// =====================================================
+
 if (callBtn) {
+
     callBtn.addEventListener("click", () => {
-        console.log("📞 Voice call button clicked");
+
+        callScreen.classList.remove("hidden");
+
+        callStatus.textContent =
+            `Calling ${chatUserName.textContent}...`;
+
+        // Voice call = hide video
+        localVideo.style.display = "none";
+        remoteVideo.style.display = "none";
+
+        cameraBtn.style.display = "none";
+        switchCameraBtn.style.display = "none";
+
     });
+
 }
 
+
+// =====================================================
+// VIDEO CALL TEST
+// =====================================================
+
 if (videoCallBtn) {
+
     videoCallBtn.addEventListener("click", () => {
-        console.log("📹 Video call button clicked");
+
+        callScreen.classList.remove("hidden");
+
+        callStatus.textContent =
+            `Calling ${chatUserName.textContent}...`;
+
+        // Video call = show video
+        localVideo.style.display = "block";
+        remoteVideo.style.display = "block";
+
+        cameraBtn.style.display = "inline-flex";
+        switchCameraBtn.style.display = "inline-flex";
+
     });
+
+}
+
+
+// =====================================================
+// CLOSE TEST CALL
+// =====================================================
+
+if (endCallBtn) {
+
+    endCallBtn.addEventListener("click", () => {
+
+        callScreen.classList.add("hidden");
+
+        callStatus.textContent =
+            "Calling...";
+
+        localVideo.srcObject = null;
+        remoteVideo.srcObject = null;
+
+    });
+
 }
