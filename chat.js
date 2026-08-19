@@ -548,6 +548,106 @@ const endCallBtn = document.getElementById("endCallBtn");
 
 
 // =====================================================
+// MATCHCONNECT — PERMANENT WEBRTC VARIABLES
+// =====================================================
+
+let peerConnection = null;
+let localStream = null;
+let currentCallId = null;
+let currentCallType = null;
+
+const rtcConfiguration = {
+    iceServers: [
+        {
+            urls: "stun:stun.l.google.com:19302"
+        }
+    ]
+};
+
+
+// =====================================================
+// MATCHCONNECT — CREATE WEBRTC CONNECTION
+// =====================================================
+
+function createPeerConnection(callId, isCaller) {
+
+    peerConnection = new RTCPeerConnection(rtcConfiguration);
+
+    console.log("🌐 WebRTC connection created:", callId);
+
+    // Receive the other person's audio/video
+    peerConnection.ontrack = (event) => {
+
+        console.log("📡 Remote media received");
+
+        if (remoteVideo) {
+            remoteVideo.srcObject = event.streams[0];
+
+            remoteVideo.autoplay = true;
+            remoteVideo.playsInline = true;
+
+            if (currentCallType === "video") {
+                remoteVideo.style.display = "block";
+            }
+        }
+    };
+
+    // ICE candidate handling will be added in the next step
+    peerConnection.onicecandidate = async (event) => {
+
+    if (!event.candidate) return;
+
+    try {
+
+        const candidateCollection =
+            isCaller
+            ? "callerCandidates"
+            : "receiverCandidates";
+
+        await addDoc(
+            collection(
+                db,
+                "calls",
+                callId,
+                candidateCollection
+            ),
+            event.candidate.toJSON()
+        );
+
+        console.log(
+            "🧊 ICE candidate saved:",
+            candidateCollection
+        );
+
+    } catch (error) {
+
+        console.error(
+            "❌ Failed to save ICE candidate:",
+            error
+        );
+
+    }
+};
+
+    // Add microphone/camera tracks
+    if (localStream) {
+
+        localStream.getTracks().forEach((track) => {
+
+            peerConnection.addTrack(
+                track,
+                localStream
+            );
+
+        });
+
+    }
+
+    return peerConnection;
+}
+
+
+// =====================================================
 // VOICE CALL 
 // =====================================================
 
@@ -714,6 +814,55 @@ async function createCall(type) {
 }
 
 
+
+// =====================================================
+// MATCHCONNECT — START CALLER WEBRTC
+// =====================================================
+
+async function startCallerWebRTC(callId, type) {
+
+    try {
+
+        currentCallId = callId;
+        currentCallType = type;
+
+        console.log("📞 Starting caller WebRTC:", callId);
+
+        createPeerConnection(callId, true);
+
+        const offer =
+            await peerConnection.createOffer();
+
+        await peerConnection.setLocalDescription(
+            offer
+        );
+
+        await updateDoc(
+            doc(db, "calls", callId),
+            {
+                offer: {
+                    type: offer.type,
+                    sdp: offer.sdp
+                }
+            }
+        );
+
+        console.log("📤 WebRTC offer sent");
+
+    } catch (error) {
+
+        console.error(
+            "❌ Caller WebRTC error:",
+            error
+        );
+
+        alert(
+            "Unable to connect the call."
+        );
+
+    }
+
+}
 // =====================================================
 // MATCHCONNECT — LISTEN FOR INCOMING CALLS
 // =====================================================
@@ -820,4 +969,83 @@ function listenForIncomingCalls() {
 
         }
     );
+}
+
+// =====================================================
+// MATCHCONNECT — START RECEIVER WEBRTC
+// =====================================================
+
+async function startReceiverWebRTC(callId, type) {
+
+    try {
+
+        currentCallId = callId;
+        currentCallType = type;
+
+        console.log(
+            "📞 Starting receiver WebRTC:",
+            callId
+        );
+
+        // Create receiver connection
+        createPeerConnection(callId, false);
+
+        // Get the call document
+        const callSnap = await getDoc(
+            doc(db, "calls", callId)
+        );
+
+        if (!callSnap.exists()) {
+            console.error("❌ Call no longer exists.");
+            return;
+        }
+
+        const callData = callSnap.data();
+
+        if (!callData.offer) {
+            console.error("❌ No WebRTC offer found.");
+            return;
+        }
+
+        // Set caller's offer
+        await peerConnection.setRemoteDescription(
+            new RTCSessionDescription(callData.offer)
+        );
+
+        console.log("📥 Caller offer received.");
+
+        // Create receiver answer
+        const answer =
+            await peerConnection.createAnswer();
+
+        await peerConnection.setLocalDescription(
+            answer
+        );
+
+        // Save answer to Firestore
+        await updateDoc(
+            doc(db, "calls", callId),
+            {
+                answer: {
+                    type: answer.type,
+                    sdp: answer.sdp
+                }
+            }
+        );
+
+        console.log("📤 Receiver answer sent.");
+
+    } catch (error) {
+
+        console.error(
+            "❌ Receiver WebRTC error:",
+            error
+        );
+
+        alert(
+            "Unable to connect to the caller."
+        );
+
+    }
+
 }
