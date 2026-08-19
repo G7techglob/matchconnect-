@@ -11,7 +11,8 @@ import {
   getDoc,
   updateDoc,
   setDoc,
-  deleteDoc
+  deleteDoc,
+  where
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import {
   ref,
@@ -561,6 +562,10 @@ if (callBtn) {
                     video: false
                 });
 
+            const callId = await createCall("audio");
+
+if (!callId) return;
+          
             localVideo.srcObject = stream;
 
             callScreen.classList.remove("hidden");
@@ -606,6 +611,10 @@ if (videoCallBtn) {
                     audio: true,
                     video: true
                 });
+
+          const callId = await createCall("video");
+
+if (!callId) return;
 
             localVideo.srcObject = stream;
           localVideo.muted = true;
@@ -657,5 +666,48 @@ if (endCallBtn) {
         remoteVideo.srcObject = null;
 
     });
+
+}
+
+// =====================================================
+// MATCHCONNECT — CREATE CALL
+// =====================================================
+
+async function createCall(type) {
+
+    if (!currentUser || !receiverUid) {
+        alert("Unable to start call.");
+        return;
+    }
+
+    try {
+
+        const callRef = await addDoc(
+            collection(db, "calls"),
+            {
+                callerId: currentUser.uid,
+                receiverId: receiverUid,
+
+                type: type,
+
+                status: "ringing",
+
+                createdAt: serverTimestamp()
+            }
+        );
+
+        console.log("📞 Call created:", callRef.id);
+
+        return callRef.id;
+
+    } catch (error) {
+
+        console.error("Create call error:", error);
+
+        alert(
+            "Unable to start the call. Please try again."
+        );
+
+    }
 
 }
