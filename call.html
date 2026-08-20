@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Call - MatchConnect</title>
+
+    <link
+        rel="stylesheet"
+        href="call.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+</head>
+
+<body>
+
+    <!-- =====================================================
+         CALL HEADER
+    ====================================================== -->
+
+    <header class="call-header">
+
+        <button
+            id="backBtn"
+            class="back-btn"
+            type="button"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <div class="caller-info">
+
+            <img
+                id="callerPhoto"
+                src="images/default-avatar.png"
+                alt="User"
+            >
+
+            <div>
+
+                <h3 id="callerName">
+                    Calling...
+                </h3>
+
+                <p id="callStatus">
+                    Connecting...
+                </p>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         VIDEO AREA
+    ====================================================== -->
+
+    <main
+        id="videoContainer"
+        class="video-container"
+    >
+
+        <!-- Remote user's video -->
+
+        <video
+            id="remoteVideo"
+            autoplay
+            playsinline
+        ></video>
+
+
+        <!-- Local user's video -->
+
+        <video
+            id="localVideo"
+            autoplay
+            muted
+            playsinline
+        ></video>
+
+
+        <!-- Voice-call avatar -->
+
+        <div
+            id="voiceAvatar"
+            class="voice-avatar"
+        >
+
+            <img
+                id="voiceAvatarPhoto"
+                src="images/default-avatar.png"
+                alt="User"
+            >
+
+            <h2 id="voiceAvatarName">
+                Calling...
+            </h2>
+
+        </div>
+
+    </main>
+
+
+    <!-- =====================================================
+         CALL CONTROLS
+    ====================================================== -->
+
+    <div class="call-controls">
+
+        <button
+            id="muteBtn"
+            class="call-control"
+            type="button"
+            title="Mute microphone"
+        >
+
+            <i class="fa-solid fa-microphone"></i>
+
+        </button>
+
+
+        <button
+            id="cameraBtn"
+            class="call-control"
+            type="button"
+            title="Camera"
+        >
+
+            <i class="fa-solid fa-video"></i>
+
+        </button>
+
+
+        <button
+            id="switchCameraBtn"
+            class="call-control"
+            type="button"
+            title="Switch camera"
+        >
+
+            <i class="fa-solid fa-camera-rotate"></i>
+
+        </button>
+
+
+        <button
+            id="endCallBtn"
+            class="end-call-btn"
+            type="button"
+            title="End call"
+        >
+
+            <i class="fa-solid fa-phone-slash"></i>
+
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script
+        type="module"
+        src="call.js"
+    ></script>
+
+</body>
+
+  </html>
