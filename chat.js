@@ -526,7 +526,8 @@ if (inboxSettingsBtn) {
 }
 
 // =====================================================
-// MATCHCONNECT CALL SCREEN TEST
+// MATCHCONNECT — PERMANENT CALL SYSTEM
+// STEP 1: WEBRTC FOUNDATION
 // =====================================================
 
 const callBtn = document.getElementById("callBtn");
@@ -537,9 +538,6 @@ const callStatus = document.getElementById("callStatus");
 
 const localVideo = document.getElementById("localVideo");
 const remoteVideo = document.getElementById("remoteVideo");
-console.log("Local video element:", localVideo);
-console.log("Remote video element:", remoteVideo);
-console.log("MediaDevices:", navigator.mediaDevices);
 
 const cameraBtn = document.getElementById("cameraBtn");
 const switchCameraBtn = document.getElementById("switchCameraBtn");
@@ -548,13 +546,23 @@ const endCallBtn = document.getElementById("endCallBtn");
 
 
 // =====================================================
-// MATCHCONNECT — PERMANENT WEBRTC VARIABLES
+// WEBRTC VARIABLES
 // =====================================================
 
 let peerConnection = null;
 let localStream = null;
+
 let currentCallId = null;
 let currentCallType = null;
+
+let callerCandidateUnsubscribe = null;
+let receiverCandidateUnsubscribe = null;
+let callDocumentUnsubscribe = null;
+
+
+// =====================================================
+// WEBRTC CONFIGURATION
+// =====================================================
 
 const rtcConfiguration = {
     iceServers: [
@@ -566,291 +574,640 @@ const rtcConfiguration = {
 
 
 // =====================================================
-// MATCHCONNECT — CREATE WEBRTC CONNECTION
+// HELPER — SHOW CALL SCREEN
+// =====================================================
+
+function showCallScreen(statusText) {
+
+    if (!callScreen) return;
+
+    callScreen.classList.remove("hidden");
+
+    if (callStatus) {
+        callStatus.textContent = statusText;
+    }
+}
+
+
+// =====================================================
+// HELPER — CLOSE MEDIA STREAM
+// =====================================================
+
+function stopLocalStream() {
+
+    if (!localStream) return;
+
+    localStream.getTracks().forEach((track) => {
+        track.stop();
+    });
+
+    localStream = null;
+
+}
+
+
+// =====================================================
+// HELPER — CLEAN UP WEBRTC
+// =====================================================
+
+async function cleanupCall() {
+
+    console.log("🧹 Cleaning up MatchConnect call");
+
+
+    // Stop listeners
+    if (callerCandidateUnsubscribe) {
+        callerCandidateUnsubscribe();
+        callerCandidateUnsubscribe = null;
+    }
+
+    if (receiverCandidateUnsubscribe) {
+        receiverCandidateUnsubscribe();
+        receiverCandidateUnsubscribe = null;
+    }
+
+    if (callDocumentUnsubscribe) {
+        callDocumentUnsubscribe();
+        callDocumentUnsubscribe = null;
+    }
+
+
+    // Close peer connection
+    if (peerConnection) {
+
+        peerConnection.ontrack = null;
+        peerConnection.onicecandidate = null;
+        peerConnection.onconnectionstatechange = null;
+
+        peerConnection.close();
+
+        peerConnection = null;
+    }
+
+
+    // Stop microphone/camera
+    stopLocalStream();
+
+
+    // Clear videos
+    if (localVideo) {
+        localVideo.srcObject = null;
+    }
+
+    if (remoteVideo) {
+        remoteVideo.srcObject = null;
+    }
+
+
+    currentCallId = null;
+    currentCallType = null;
+
+
+    if (callScreen) {
+        callScreen.classList.add("hidden");
+    }
+
+}
+
+
+// =====================================================
+// CREATE WEBRTC CONNECTION
 // =====================================================
 
 function createPeerConnection(callId, isCaller) {
 
-    peerConnection = new RTCPeerConnection(rtcConfiguration);
+    console.log(
+        "🌐 Creating WebRTC connection:",
+        callId,
+        isCaller ? "CALLER" : "RECEIVER"
+    );
 
-    console.log("🌐 WebRTC connection created:", callId);
 
-    // Receive the other person's audio/video
+    peerConnection =
+        new RTCPeerConnection(rtcConfiguration);
+
+
+    // =================================================
+    // RECEIVE REMOTE MEDIA
+    // =================================================
+
     peerConnection.ontrack = (event) => {
 
         console.log("📡 Remote media received");
 
-        if (remoteVideo) {
-            remoteVideo.srcObject = event.streams[0];
+        if (!remoteVideo) return;
 
-            remoteVideo.autoplay = true;
-            remoteVideo.playsInline = true;
+        if (event.streams && event.streams[0]) {
 
-            if (currentCallType === "video") {
-                remoteVideo.style.display = "block";
-            }
+            remoteVideo.srcObject =
+                event.streams[0];
+
         }
+
+        remoteVideo.autoplay = true;
+        remoteVideo.playsInline = true;
+
+        if (currentCallType === "video") {
+
+            remoteVideo.style.display =
+                "block";
+
+        }
+
     };
 
-    // ICE candidate handling will be added in the next step
-    peerConnection.onicecandidate = async (event) => {
 
-    if (!event.candidate) return;
+    // =================================================
+    // ICE CANDIDATE
+    // =================================================
 
-    try {
+    peerConnection.onicecandidate =
+        async (event) => {
 
-        const candidateCollection =
-            isCaller
-            ? "callerCandidates"
-            : "receiverCandidates";
+        if (!event.candidate) return;
 
-        await addDoc(
-            collection(
-                db,
-                "calls",
-                callId,
+        try {
+
+            const candidateCollection =
+                isCaller
+                ? "callerCandidates"
+                : "receiverCandidates";
+
+
+            await addDoc(
+                collection(
+                    db,
+                    "calls",
+                    callId,
+                    candidateCollection
+                ),
+                event.candidate.toJSON()
+            );
+
+
+            console.log(
+                "🧊 ICE candidate saved:",
                 candidateCollection
-            ),
-            event.candidate.toJSON()
-        );
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "❌ ICE candidate error:",
+                error
+            );
+
+        }
+
+    };
+
+
+    // =================================================
+    // CONNECTION STATE
+    // =================================================
+
+    peerConnection.onconnectionstatechange =
+        () => {
+
+        if (!peerConnection) return;
 
         console.log(
-            "🧊 ICE candidate saved:",
-            candidateCollection
+            "🔗 WebRTC state:",
+            peerConnection.connectionState
         );
 
-    } catch (error) {
 
-        console.error(
-            "❌ Failed to save ICE candidate:",
-            error
+        if (
+            peerConnection.connectionState ===
+            "connected"
+        ) {
+
+            if (callStatus) {
+                callStatus.textContent =
+                    "Connected";
+            }
+
+        }
+
+
+        if (
+            peerConnection.connectionState ===
+            "failed"
+        ) {
+
+            console.error(
+                "❌ WebRTC connection failed"
+            );
+
+        }
+
+
+        if (
+            peerConnection.connectionState ===
+            "disconnected"
+        ) {
+
+            console.log(
+                "⚠️ WebRTC disconnected"
+            );
+
+        }
+
+    };
+
+
+    // =================================================
+    // ADD LOCAL MEDIA TRACKS
+    // =================================================
+
+    if (localStream) {
+
+        localStream
+            .getTracks()
+            .forEach((track) => {
+
+                peerConnection.addTrack(
+                    track,
+                    localStream
+                );
+
+            });
+
+        console.log(
+            "🎤📹 Local tracks added"
         );
 
     }
-};
 
-    // Add microphone/camera tracks
-    if (localStream) {
 
-        localStream.getTracks().forEach((track) => {
+    return peerConnection;
 
-            peerConnection.addTrack(
-                track,
-                localStream
-            );
+}
+
+
+// =====================================================
+// MATCHCONNECT — LISTEN FOR REMOTE ICE CANDIDATES
+// =====================================================
+
+function listenForIceCandidates(callId, isCaller) {
+
+    const candidateCollection =
+        isCaller
+            ? "receiverCandidates"
+            : "callerCandidates";
+
+    const candidatesRef = collection(
+        db,
+        "calls",
+        callId,
+        candidateCollection
+    );
+
+    onSnapshot(candidatesRef, (snapshot) => {
+
+        snapshot.docChanges().forEach(async (change) => {
+
+            if (change.type !== "added") return;
+
+            try {
+
+                const candidate =
+                    new RTCIceCandidate(change.doc.data());
+
+                if (peerConnection) {
+
+                    await peerConnection.addIceCandidate(
+                        candidate
+                    );
+
+                    console.log(
+                        "🧊 Remote ICE candidate added"
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "❌ Failed to add remote ICE candidate:",
+                    error
+                );
+
+            }
 
         });
 
+    });
+
+}
+
+// =====================================================
+// LISTEN FOR REMOTE ICE CANDIDATES
+// =====================================================
+
+function listenForRemoteCandidates(
+    callId,
+    isCaller
+) {
+
+    const candidateCollection =
+        isCaller
+        ? "receiverCandidates"
+        : "callerCandidates";
+
+
+    console.log(
+        "🧊 Listening for:",
+        candidateCollection
+    );
+
+
+    const candidatesRef =
+        collection(
+            db,
+            "calls",
+            callId,
+            candidateCollection
+        );
+
+
+    const unsubscribe =
+        onSnapshot(
+            candidatesRef,
+            async (snapshot) => {
+
+                if (!peerConnection) return;
+
+
+                for (
+                    const candidateDoc
+                    of snapshot.docChanges()
+                ) {
+
+                    if (
+                        candidateDoc.type !==
+                        "added"
+                    ) {
+                        continue;
+                    }
+
+
+                    try {
+
+                        const candidate =
+                            new RTCIceCandidate(
+                                candidateDoc.doc.data()
+                            );
+
+
+                        await peerConnection
+                            .addIceCandidate(
+                                candidate
+                            );
+
+
+                        console.log(
+                            "🧊 Remote ICE candidate added"
+                        );
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "❌ Failed to add remote ICE candidate:",
+                            error
+                        );
+
+                    }
+
+                }
+
+            }
+        );
+
+
+    if (isCaller) {
+
+        receiverCandidateUnsubscribe =
+            unsubscribe;
+
+    } else {
+
+        callerCandidateUnsubscribe =
+            unsubscribe;
+
     }
 
-    return peerConnection;
 }
 
 
 // =====================================================
-// VOICE CALL 
-// =====================================================
-
-if (callBtn) {
-
-    callBtn.addEventListener("click", async () => {
-
-        try {
-
-            localStream =
-    await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: false
-    });
-
-            const callId = await createCall("audio");
-
-if (!callId) return;
-          await startCallerWebRTC(callId, "audio");
-          
-            localVideo.srcObject = localStream;
-
-            callScreen.classList.remove("hidden");
-
-            callStatus.textContent =
-                `Calling ${chatUserName.textContent}...`;
-
-            localVideo.style.display = "none";
-            remoteVideo.style.display = "none";
-
-            cameraBtn.style.display = "none";
-            switchCameraBtn.style.display = "none";
-
-            console.log("🎤 Microphone connected");
-
-        } catch (error) {
-
-            console.error("Microphone error:", error);
-
-            alert(
-                "MatchConnect needs microphone permission to make voice calls."
-            );
-
-        }
-
-    });
-
-}
-
-
-// =====================================================
-// VIDEO CALL TEST
-// =====================================================
-
-if (videoCallBtn) {
-
-    videoCallBtn.addEventListener("click", async () => {
-
-        try {
-
-            localStream =
-    await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true
-    });
-
-          const callId = await createCall("video");
-
-if (!callId) return;
-          await startCallerWebRTC(callId, "video");
-
-            localVideo.srcObject = localStream;
-          localVideo.muted = true;
-localVideo.autoplay = true;
-localVideo.playsInline = true;
-
-            callScreen.classList.remove("hidden");
-
-            callStatus.textContent =
-                `Calling ${chatUserName.textContent}...`;
-
-            localVideo.style.display = "block";
-            remoteVideo.style.display = "block";
-
-            cameraBtn.style.display = "inline-flex";
-            switchCameraBtn.style.display = "inline-flex";
-
-            console.log("🎤📹 Camera and microphone connected");
-
-        } catch (error) {
-
-            console.error("Camera/microphone error:", error);
-
-            alert(
-                "MatchConnect needs camera and microphone permission for video calls."
-            );
-
-        }
-
-    });
-
-}
-
-
-// =====================================================
-// CLOSE TEST CALL
-// =====================================================
-
-if (endCallBtn) {
-
-    endCallBtn.addEventListener("click", () => {
-
-        callScreen.classList.add("hidden");
-
-        callStatus.textContent =
-            "Calling...";
-
-        localVideo.srcObject = null;
-        remoteVideo.srcObject = null;
-
-    });
-
-}
-
-// =====================================================
-// MATCHCONNECT — CREATE CALL
+// CREATE CALL DOCUMENT
 // =====================================================
 
 async function createCall(type) {
 
     if (!currentUser || !receiverUid) {
-        alert("Unable to start call.");
-        return;
+
+        alert(
+            "Unable to start the call."
+        );
+
+        return null;
     }
+
 
     try {
 
-        const callRef = await addDoc(
-            collection(db, "calls"),
-            {
-                callerId: currentUser.uid,
-                receiverId: receiverUid,
+        const callRef =
+            await addDoc(
+                collection(db, "calls"),
+                {
 
-                type: type,
+                    callerId:
+                        currentUser.uid,
 
-                status: "ringing",
+                    receiverId:
+                        receiverUid,
 
-                createdAt: serverTimestamp()
-            }
+                    type: type,
+
+                    status: "ringing",
+
+                    createdAt:
+                        serverTimestamp()
+
+                }
+            );
+
+
+        console.log(
+            "📞 Call created:",
+            callRef.id
         );
 
-        console.log("📞 Call created:", callRef.id);
 
         return callRef.id;
 
+
     } catch (error) {
 
-        console.error("Create call error:", error);
+        console.error(
+            "❌ Create call error:",
+            error
+        );
+
 
         alert(
-            "Unable to start the call. Please try again."
+            "Unable to start the call."
         );
+
+
+        return null;
 
     }
 
 }
 
 
-
 // =====================================================
-// MATCHCONNECT — START CALLER WEBRTC
+// START CALLER WEBRTC
 // =====================================================
 
-async function startCallerWebRTC(callId, type) {
+async function startCallerWebRTC(
+    callId,
+    type
+) {
 
     try {
 
         currentCallId = callId;
         currentCallType = type;
 
-        console.log("📞 Starting caller WebRTC:", callId);
 
-        createPeerConnection(callId, true);
-
-        const offer =
-            await peerConnection.createOffer();
-
-        await peerConnection.setLocalDescription(
-            offer
+        createPeerConnection(
+            callId,
+            true
         );
 
+
+        // Listen for receiver ICE
+        listenForRemoteCandidates(
+            callId,
+            true
+        );
+
+
+        // Create offer
+        const offer =
+            await peerConnection
+                .createOffer();
+
+
+        await peerConnection
+            .setLocalDescription(
+                offer
+            );
+
+
+        // Save offer
         await updateDoc(
-            doc(db, "calls", callId),
+            doc(
+                db,
+                "calls",
+                callId
+            ),
             {
+
                 offer: {
-                    type: offer.type,
-                    sdp: offer.sdp
+                    type:
+                        offer.type,
+
+                    sdp:
+                        offer.sdp
                 }
+
             }
         );
 
-        console.log("📤 WebRTC offer sent");
-      listenForCallerAnswer(callId);
+
+        console.log(
+            "📤 Caller offer sent"
+        );
+
+
+        // Listen for answer
+        callDocumentUnsubscribe =
+            onSnapshot(
+                doc(
+                    db,
+                    "calls",
+                    callId
+                ),
+                async (snapshot) => {
+
+                    if (
+                        !snapshot.exists()
+                    ) {
+                        return;
+                    }
+
+
+                    const call =
+                        snapshot.data();
+
+
+                    if (
+                        call.answer &&
+                        peerConnection &&
+                        !peerConnection
+                            .currentRemoteDescription
+                    ) {
+
+                        try {
+
+                            await peerConnection
+                                .setRemoteDescription(
+                                    new RTCSessionDescription(
+                                        call.answer
+                                    )
+                                );
+
+
+                            console.log(
+                                "📥 Receiver answer received"
+                            );
+
+
+                        } catch (error) {
+
+                            console.error(
+                                "❌ Failed to set remote answer:",
+                                error
+                            );
+
+                        }
+
+                    }
+
+
+                    if (
+                        call.status ===
+                        "rejected"
+                    ) {
+
+                        alert(
+                            "Call was rejected."
+                        );
+
+                        await cleanupCall();
+
+                    }
+
+                }
+            );
+
 
     } catch (error) {
 
@@ -859,52 +1216,313 @@ async function startCallerWebRTC(callId, type) {
             error
         );
 
+
         alert(
             "Unable to connect the call."
         );
+
+
+        await cleanupCall();
 
     }
 
 }
 
+
 // =====================================================
-// MATCHCONNECT — LISTEN FOR CALLER ANSWER
+// START RECEIVER WEBRTC
 // =====================================================
 
-function listenForCallerAnswer(callId) {
+async function startReceiverWebRTC(
+    callId,
+    type
+) {
 
-    onSnapshot(
-        doc(db, "calls", callId),
-        async (snapshot) => {
+    try {
 
-            if (!snapshot.exists()) return;
+        currentCallId = callId;
+        currentCallType = type;
 
-            const callData = snapshot.data();
 
-            if (
-                callData.answer &&
-                peerConnection &&
-                !peerConnection.currentRemoteDescription
-            ) {
+        // =================================================
+        // GET RECEIVER MEDIA FIRST
+        // =================================================
 
-                try {
+        if (type === "video") {
 
-                    await peerConnection.setRemoteDescription(
-                        new RTCSessionDescription(
-                            callData.answer
-                        )
+            localStream =
+                await navigator
+                    .mediaDevices
+                    .getUserMedia({
+                        audio: true,
+                        video: true
+                    });
+
+        } else {
+
+            localStream =
+                await navigator
+                    .mediaDevices
+                    .getUserMedia({
+                        audio: true,
+                        video: false
+                    });
+
+        }
+
+
+        console.log(
+            "🎤📹 Receiver media ready"
+        );
+
+
+        // Local video
+        if (
+            localVideo &&
+            type === "video"
+        ) {
+
+            localVideo.srcObject =
+                localStream;
+
+            localVideo.muted = true;
+            localVideo.autoplay = true;
+            localVideo.playsInline = true;
+
+            localVideo.style.display =
+                "block";
+
+        }
+
+
+        // Create connection
+        createPeerConnection(
+            callId,
+            false
+        );
+
+
+        // Listen for caller ICE
+        listenForRemoteCandidates(
+            callId,
+            false
+        );
+
+
+        // Get call
+        const callSnap =
+            await getDoc(
+                doc(
+                    db,
+                    "calls",
+                    callId
+                )
+            );
+
+
+        if (!callSnap.exists()) {
+
+            console.error(
+                "❌ Call does not exist"
+            );
+
+            return;
+        }
+
+
+        const callData =
+            callSnap.data();
+
+
+        if (!callData.offer) {
+
+            console.error(
+                "❌ Caller offer missing"
+            );
+
+            return;
+        }
+
+
+        // Set caller offer
+        await peerConnection
+            .setRemoteDescription(
+                new RTCSessionDescription(
+                    callData.offer
+                )
+            );
+
+
+        console.log(
+            "📥 Caller offer received"
+        );
+
+
+        // Create answer
+        const answer =
+            await peerConnection
+                .createAnswer();
+
+
+        await peerConnection
+            .setLocalDescription(
+                answer
+            );
+
+
+        // Save answer
+        await updateDoc(
+            doc(
+                db,
+                "calls",
+                callId
+            ),
+            {
+
+                answer: {
+                    type:
+                        answer.type,
+
+                    sdp:
+                        answer.sdp
+                },
+
+                status:
+                    "accepted"
+
+            }
+        );
+
+
+        console.log(
+            "📤 Receiver answer sent"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "❌ Receiver WebRTC error:",
+            error
+        );
+
+
+        alert(
+            "Unable to connect to the caller."
+        );
+
+
+        await cleanupCall();
+
+    }
+
+}
+
+
+// =====================================================
+// START VOICE CALL
+// =====================================================
+
+if (callBtn) {
+
+    callBtn.addEventListener(
+        "click",
+        async () => {
+
+            try {
+
+                if (peerConnection) {
+
+                    alert(
+                        "You are already in a call."
                     );
 
-                    console.log("📥 Receiver answer received.");
+                    return;
+                }
 
-                } catch (error) {
 
-                    console.error(
-                        "❌ Failed to set receiver answer:",
-                        error
+                localStream =
+                    await navigator
+                        .mediaDevices
+                        .getUserMedia({
+                            audio: true,
+                            video: false
+                        });
+
+
+                console.log(
+                    "🎤 Microphone ready"
+                );
+
+
+                const callId =
+                    await createCall(
+                        "audio"
                     );
+
+
+                if (!callId) {
+
+                    stopLocalStream();
+
+                    return;
+                }
+
+
+                showCallScreen(
+                    `Calling ${chatUserName.textContent}...`
+                );
+
+
+                if (localVideo) {
+
+                    localVideo.style.display =
+                        "none";
 
                 }
+
+                if (remoteVideo) {
+
+                    remoteVideo.style.display =
+                        "none";
+
+                }
+
+                if (cameraBtn) {
+
+                    cameraBtn.style.display =
+                        "none";
+
+                }
+
+                if (switchCameraBtn) {
+
+                    switchCameraBtn.style.display =
+                        "none";
+
+                }
+
+
+                await startCallerWebRTC(
+                    callId,
+                    "audio"
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "❌ Voice call error:",
+                    error
+                );
+
+
+                alert(
+                    "MatchConnect needs microphone permission to make voice calls."
+                );
+
+
+                await cleanupCall();
 
             }
 
@@ -912,109 +1530,286 @@ function listenForCallerAnswer(callId) {
     );
 
 }
+
+
 // =====================================================
-// MATCHCONNECT — LISTEN FOR INCOMING CALLS
+// START VIDEO CALL
+// =====================================================
+
+if (videoCallBtn) {
+
+    videoCallBtn.addEventListener(
+        "click",
+        async () => {
+
+            try {
+
+                if (peerConnection) {
+
+                    alert(
+                        "You are already in a call."
+                    );
+
+                    return;
+                }
+
+
+                localStream =
+                    await navigator
+                        .mediaDevices
+                        .getUserMedia({
+                            audio: true,
+                            video: true
+                        });
+
+
+                console.log(
+                    "🎤📹 Camera and microphone ready"
+                );
+
+
+                const callId =
+                    await createCall(
+                        "video"
+                    );
+
+
+                if (!callId) {
+
+                    stopLocalStream();
+
+                    return;
+                }
+
+
+                currentCallType =
+                    "video";
+
+
+                if (localVideo) {
+
+                    localVideo.srcObject =
+                        localStream;
+
+                    localVideo.muted = true;
+                    localVideo.autoplay = true;
+                    localVideo.playsInline = true;
+
+                    localVideo.style.display =
+                        "block";
+                }
+
+
+                if (remoteVideo) {
+
+                    remoteVideo.style.display =
+                        "block";
+                }
+
+
+                if (cameraBtn) {
+
+                    cameraBtn.style.display =
+                        "inline-flex";
+                }
+
+
+                if (switchCameraBtn) {
+
+                    switchCameraBtn.style.display =
+                        "inline-flex";
+                }
+
+
+                showCallScreen(
+                    `Calling ${chatUserName.textContent}...`
+                );
+
+
+                await startCallerWebRTC(
+                    callId,
+                    "video"
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "❌ Video call error:",
+                    error
+                );
+
+
+                alert(
+                    "MatchConnect needs camera and microphone permission for video calls."
+                );
+
+
+                await cleanupCall();
+
+            }
+
+        }
+    );
+
+}
+
+
+// =====================================================
+// INCOMING CALL LISTENER
 // =====================================================
 
 function listenForIncomingCalls() {
 
     if (!currentUser) return;
 
-    console.log("📡 Listening for incoming calls...");
 
-    const callsQuery = query(
-        collection(db, "calls"),
-        where("receiverId", "==", currentUser.uid)
+    console.log(
+        "📡 Listening for incoming calls..."
     );
+
+
+    const callsQuery =
+        query(
+            collection(db, "calls"),
+            where(
+                "receiverId",
+                "==",
+                currentUser.uid
+            )
+        );
+
 
     onSnapshot(
         callsQuery,
         async (snapshot) => {
 
-            for (const callDoc of snapshot.docs) {
+            for (
+                const callDoc
+                of snapshot.docs
+            ) {
 
-                const call = callDoc.data();
+                const call =
+                    callDoc.data();
 
-                // Only process ringing calls
-                if (call.status !== "ringing") {
+
+                if (
+                    call.status !==
+                    "ringing"
+                ) {
                     continue;
                 }
 
-                // Ignore calls created by ourselves
-                if (call.callerId === currentUser.uid) {
+
+                if (
+                    call.callerId ===
+                    currentUser.uid
+                ) {
                     continue;
                 }
+
+
+                // Prevent answering another call
+                if (peerConnection) {
+                    continue;
+                }
+
 
                 console.log(
-                    "📞 INCOMING CALL DETECTED:",
-                    callDoc.id,
-                    call.type
+                    "📞 Incoming call:",
+                    callDoc.id
                 );
 
-                // Get caller's profile
-                const callerSnap = await getDoc(
-                    doc(db, "users", call.callerId)
-                );
 
-                let callerName = "MatchConnect User";
+                const callerSnap =
+                    await getDoc(
+                        doc(
+                            db,
+                            "users",
+                            call.callerId
+                        )
+                    );
 
-                if (callerSnap.exists()) {
 
-                    const callerData = callerSnap.data();
+                let callerName =
+                    "MatchConnect User";
+
+
+                if (
+                    callerSnap.exists()
+                ) {
+
+                    const callerData =
+                        callerSnap.data();
+
 
                     callerName =
                         callerData.name ||
                         callerData.username ||
                         "MatchConnect User";
+
                 }
+
 
                 const callType =
                     call.type === "video"
                     ? "📹 Video Call"
                     : "📞 Voice Call";
 
-                const answer = confirm(
-                    `${callerName} is calling you.\n\n` +
-                    `${callType}\n\n` +
-                    `Press OK to answer.`
-                );
 
-                if (answer) {
-
-    await updateDoc(
-        doc(db, "calls", callDoc.id),
-        {
-            status: "accepted"
-        }
-    );
-
-    console.log(
-        "✅ CALL ACCEPTED:",
-        callDoc.id
-    );
-
-    // Start receiver WebRTC
-    await startReceiverWebRTC(
-        callDoc.id,
-        call.type
-    );
+                const answer =
+                    confirm(
+                        `${callerName} is calling you.\n\n` +
+                        `${callType}\n\n` +
+                        `Press OK to answer.`
+                    );
 
 
-                } else {
+                if (!answer) {
 
                     await updateDoc(
-                        doc(db, "calls", callDoc.id),
+                        doc(
+                            db,
+                            "calls",
+                            callDoc.id
+                        ),
                         {
-                            status: "rejected"
+                            status:
+                                "rejected"
                         }
                     );
 
-                    console.log(
-                        "❌ CALL REJECTED:",
-                        callDoc.id
-                    );
+
+                    continue;
                 }
+
+
+                // Accept
+                await updateDoc(
+                    doc(
+                        db,
+                        "calls",
+                        callDoc.id
+                    ),
+                    {
+                        status:
+                            "accepted"
+                    }
+                );
+
+
+                showCallScreen(
+                    `${callerName} is calling...`
+                );
+
+
+                await startReceiverWebRTC(
+                    callDoc.id,
+                    call.type
+                );
+
             }
+
         },
         (error) => {
 
@@ -1025,83 +1820,81 @@ function listenForIncomingCalls() {
 
         }
     );
+
 }
 
+
 // =====================================================
-// MATCHCONNECT — START RECEIVER WEBRTC
+// END CALL
 // =====================================================
 
-async function startReceiverWebRTC(callId, type) {
+if (endCallBtn) {
 
-    try {
+    endCallBtn.addEventListener(
+        "click",
+        async () => {
 
-        currentCallId = callId;
-        currentCallType = type;
+            console.log(
+                "📴 Ending call"
+            );
 
-        console.log(
-            "📞 Starting receiver WebRTC:",
-            callId
-        );
 
-        // Create receiver connection
-        createPeerConnection(callId, false);
+            if (currentCallId) {
 
-        // Get the call document
-        const callSnap = await getDoc(
-            doc(db, "calls", callId)
-        );
+                try {
 
-        if (!callSnap.exists()) {
-            console.error("❌ Call no longer exists.");
-            return;
-        }
+                    await updateDoc(
+                        doc(
+                            db,
+                            "calls",
+                            currentCallId
+                        ),
+                        {
+                            status:
+                                "ended",
 
-        const callData = callSnap.data();
+                            endedAt:
+                                serverTimestamp()
+                        }
+                    );
 
-        if (!callData.offer) {
-            console.error("❌ No WebRTC offer found.");
-            return;
-        }
+                } catch (error) {
 
-        // Set caller's offer
-        await peerConnection.setRemoteDescription(
-            new RTCSessionDescription(callData.offer)
-        );
+                    console.error(
+                        "❌ Failed to update call:",
+                        error
+                    );
 
-        console.log("📥 Caller offer received.");
-
-        // Create receiver answer
-        const answer =
-            await peerConnection.createAnswer();
-
-        await peerConnection.setLocalDescription(
-            answer
-        );
-
-        // Save answer to Firestore
-        await updateDoc(
-            doc(db, "calls", callId),
-            {
-                answer: {
-                    type: answer.type,
-                    sdp: answer.sdp
                 }
+
             }
-        );
 
-        console.log("📤 Receiver answer sent.");
 
-    } catch (error) {
+            await cleanupCall();
 
-        console.error(
-            "❌ Receiver WebRTC error:",
-            error
-        );
+        }
+    );
 
-        alert(
-            "Unable to connect to the caller."
-        );
+}
+
+
+// =====================================================
+// CLEANUP WHEN PAGE IS CLOSED
+// =====================================================
+
+window.addEventListener(
+    "beforeunload",
+    () => {
+
+        stopLocalStream();
+
+        if (peerConnection) {
+
+            peerConnection.close();
+
+            peerConnection = null;
+
+        }
 
     }
-
-}
+);
