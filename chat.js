@@ -1135,18 +1135,28 @@ async function startCallerWebRTC(
                     }
 
 
-                    if (
-                        call.status ===
-                        "rejected"
-                    ) {
+                   // =============================================
+// CALL STATUS CHANGES
+// =============================================
 
-                        alert(
-                            "Call was rejected."
-                        );
+if (call.status === "rejected") {
 
-                        await cleanupCall();
+    alert("Call was rejected.");
 
-                    }
+    await cleanupCall();
+
+    return;
+}
+
+
+if (call.status === "ended") {
+
+    alert("Call ended.");
+
+    await cleanupCall();
+
+    return;
+} 
 
                 }
             );
@@ -1275,7 +1285,39 @@ async function startReceiverWebRTC(
 
         const callData =
             callSnap.data();
+      
 
+      // =============================================
+// LISTEN FOR CALL END / REJECTION
+// =============================================
+
+callDocumentUnsubscribe = onSnapshot(
+    doc(db, "calls", callId),
+    async (snapshot) => {
+
+        if (!snapshot.exists()) {
+            await cleanupCall();
+            return;
+        }
+
+        const call = snapshot.data();
+
+        if (call.status === "ended") {
+
+            alert("Call ended.");
+
+            await cleanupCall();
+
+        }
+
+        if (call.status === "rejected") {
+
+            await cleanupCall();
+
+        }
+
+    }
+);
 
         if (!callData.offer) {
 
