@@ -55,6 +55,9 @@ const params =
 const groupId =
     params.get("groupId");
 
+const callId =
+    params.get("callId");
+
 const callType =
     params.get("type") === "voice"
         ? "voice"
@@ -68,8 +71,6 @@ const callType =
 let currentUser = null;
 
 let groupData = null;
-
-let callId = null;
 
 let localStream = null;
 
@@ -1539,12 +1540,16 @@ function listenForParticipants() {
 
 }
 
-
 // =====================================================
-// JOIN GROUP CALL
+// LISTEN FOR GROUP CALL STATUS
 // =====================================================
 
-async function joinGroupCall() {
+function listenForGroupCall() {
+
+    if (!groupId) {
+        return;
+    }
+
 
     const callRef =
         doc(
@@ -1554,33 +1559,138 @@ async function joinGroupCall() {
         );
 
 
-    await setDoc(
-        callRef,
-        {
+    const unsubscribe =
+        onSnapshot(
+            callRef,
+            (snapshot) => {
 
-            groupId:
-                groupId,
+                if (!snapshot.exists()) {
 
-            type:
-                callType,
+                    return;
 
-            hostId:
-                isHost
-                    ? currentUser.uid
-                    : groupData.ownerId ||
-                      currentUser.uid,
+                }
 
-            status:
-                "active",
 
-            createdAt:
-                serverTimestamp()
+                const call =
+                    snapshot.data();
 
-        },
-        {
-            merge: true
-        }
+
+                // =====================================
+                // CALL ENDED
+                // =====================================
+
+                if (
+                    call.status ===
+                    "ended"
+                ) {
+
+                    if (
+                        !callEnded
+                    ) {
+
+                        alert(
+                            "The group call has ended."
+                        );
+
+                        leaveGroupCall();
+
+                    }
+
+                    return;
+
+                }
+
+
+                // =====================================
+                // CALL ACTIVE
+                // =====================================
+
+                if (
+                    call.status ===
+                    "active"
+                ) {
+
+                    console.log(
+                        "Group call is active:",
+                        callId
+                    );
+
+                }
+
+            },
+            (error) => {
+
+                console.error(
+                    "Group call listener error:",
+                    error
+                );
+
+            }
+        );
+
+
+    unsubscribeFunctions.push(
+        unsubscribe
     );
+
+}
+
+// =====================================================
+// JOIN GROUP CALL
+// =====================================================
+
+async function joinGroupCall() {
+
+    const callRef =
+    doc(
+        db,
+        "groupCalls",
+        callId
+    );
+
+
+const callSnap =
+    await getDoc(
+        callRef
+    );
+
+
+if (!callSnap.exists()) {
+
+    throw new Error(
+        "This call session no longer exists."
+    );
+
+}
+
+
+const existingCall =
+    callSnap.data();
+
+
+if (
+    existingCall.groupId !==
+    groupId
+) {
+
+    throw new Error(
+        "This call does not belong to this group."
+    );
+
+
+}
+
+
+if (
+    existingCall.type !==
+    callType
+) {
+
+    throw new Error(
+        "Call type does not match."
+    );
+
+}
 
 
     await setDoc(
@@ -2162,15 +2272,22 @@ onAuthStateChanged(
 
         }
 
+        if (!callId) {
+
+    alert(
+        "Call session is missing."
+    );
+
+    window.history.back();
+
+    return;
+
+        }
+
 
         try {
 
             await loadGroup();
-
-
-            callId =
-                `${groupId}_${callType}`;
-
 
             await getLocalMedia();
 
