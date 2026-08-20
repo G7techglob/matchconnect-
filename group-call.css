@@ -1,0 +1,297 @@
+/* =====================================================
+   MATCHCONNECT GROUP CALL
+===================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    background: #000;
+    color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.group-call-header {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 65px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 10px 16px;
+
+    background: rgba(0, 0, 0, 0.75);
+
+    z-index: 50;
+}
+
+.group-call-header h3 {
+    font-size: 17px;
+}
+
+.group-call-header p {
+    margin-top: 4px;
+
+    font-size: 12px;
+
+    color: #aaa;
+}
+
+
+/* =====================================================
+   PARTICIPANT GRID
+===================================================== */
+
+.participants-grid {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 3px;
+
+    padding: 3px;
+
+    background: #000;
+
+    overflow-y: auto;
+}
+
+
+/* =====================================================
+   PARTICIPANT TILE
+===================================================== */
+
+.participant-tile {
+    position: relative;
+
+    min-width: 0;
+    min-height: 0;
+
+    background: #151515;
+
+    overflow: hidden;
+
+    border-radius: 5px;
+}
+
+.participant-tile video {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    background: #111;
+}
+
+.participant-tile audio {
+    display: none;
+}
+
+
+/* =====================================================
+   PARTICIPANT NAME
+===================================================== */
+
+.participant-name {
+    position: absolute;
+
+    left: 10px;
+    bottom: 10px;
+
+    padding: 5px 9px;
+
+    border-radius: 8px;
+
+    background: rgba(0, 0, 0, 0.65);
+
+    color: #fff;
+
+    font-size: 13px;
+
+    z-index: 5;
+}
+
+
+/* =====================================================
+   VOICE AVATAR
+===================================================== */
+
+.participant-avatar {
+    width: 85px;
+    height: 85px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+}
+
+.voice-participant {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+
+    background: #111;
+}
+
+
+/* =====================================================
+   MICROPHONE STATUS
+===================================================== */
+
+.participant-mic {
+    position: absolute;
+
+    top: 10px;
+    right: 10px;
+
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(0, 0, 0, 0.65);
+
+    font-size: 13px;
+
+    z-index: 6;
+}
+
+
+/* =====================================================
+   CONTROLS
+===================================================== */
+
+.group-call-controls {
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    bottom: 20px;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 15px;
+
+    z-index: 100;
+}
+
+.group-call-control,
+.group-end-call-btn {
+    width: 56px;
+    height: 56px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    color: #fff;
+
+    font-size: 19px;
+
+    cursor: pointer;
+}
+
+.group-call-control {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.group-call-control.active {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.group-end-call-btn {
+    background: #e53935;
+}
+
+.group-call-control:active,
+.group-end-call-btn:active {
+    transform: scale(0.94);
+}
+
+
+/* =====================================================
+   VOICE MODE
+===================================================== */
+
+body.voice-mode .participant-tile video {
+    display: none;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+    .participants-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .group-call-controls {
+        bottom: 15px;
+
+        gap: 10px;
+    }
+
+    .group-call-control,
+    .group-end-call-btn {
+        width: 52px;
+        height: 52px;
+    }
+
+}
+
+
+/* =====================================================
+   LARGE SCREENS
+===================================================== */
+
+@media (min-width: 900px) {
+
+    .participants-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+}
