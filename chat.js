@@ -845,63 +845,6 @@ function createPeerConnection(callId, isCaller) {
 
 }
 
-
-// =====================================================
-// MATCHCONNECT — LISTEN FOR REMOTE ICE CANDIDATES
-// =====================================================
-
-function listenForIceCandidates(callId, isCaller) {
-
-    const candidateCollection =
-        isCaller
-            ? "receiverCandidates"
-            : "callerCandidates";
-
-    const candidatesRef = collection(
-        db,
-        "calls",
-        callId,
-        candidateCollection
-    );
-
-    onSnapshot(candidatesRef, (snapshot) => {
-
-        snapshot.docChanges().forEach(async (change) => {
-
-            if (change.type !== "added") return;
-
-            try {
-
-                const candidate =
-                    new RTCIceCandidate(change.doc.data());
-
-                if (peerConnection) {
-
-                    await peerConnection.addIceCandidate(
-                        candidate
-                    );
-
-                    console.log(
-                        "🧊 Remote ICE candidate added"
-                    );
-
-                }
-
-            } catch (error) {
-
-                console.error(
-                    "❌ Failed to add remote ICE candidate:",
-                    error
-                );
-
-            }
-
-        });
-
-    });
-
-}
-
 // =====================================================
 // LISTEN FOR REMOTE ICE CANDIDATES
 // =====================================================
