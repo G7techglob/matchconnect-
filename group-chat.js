@@ -632,15 +632,138 @@ if (recordBtn) {
 // VOICE CALL
 // =====================================================
 
+// =====================================================
+// VOICE CALL
+// =====================================================
+
 if (voiceCallBtn) {
 
     voiceCallBtn.addEventListener(
         "click",
-        () => {
+        async () => {
 
-            alert(
-                "Voice calling coming next."
-            );
+            const user =
+                auth.currentUser;
+
+
+            if (!user) {
+
+                alert(
+                    "Please log in first."
+                );
+
+                return;
+
+            }
+
+
+            if (!groupId) {
+
+                alert(
+                    "Group not found."
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                // =====================================
+                // CREATE NEW GROUP CALL
+                // =====================================
+
+                const callRef =
+                    doc(
+                        collection(
+                            db,
+                            "groupCalls"
+                        )
+                    );
+
+
+                const callId =
+                    callRef.id;
+
+
+                // =====================================
+                // SAVE CALL SESSION
+                // =====================================
+
+                await setDoc(
+                    callRef,
+                    {
+
+                        groupId:
+                            groupId,
+
+                        type:
+                            "voice",
+
+                        hostId:
+                            user.uid,
+
+                        status:
+                            "active",
+
+                        createdAt:
+                            serverTimestamp()
+
+                    }
+                );
+
+
+                // =====================================
+                // ADD CALLER AS PARTICIPANT
+                // =====================================
+
+                await setDoc(
+                    doc(
+                        db,
+                        "groupCalls",
+                        callId,
+                        "participants",
+                        user.uid
+                    ),
+                    {
+
+                        uid:
+                            user.uid,
+
+                        joinedAt:
+                            serverTimestamp(),
+
+                        muted:
+                            false,
+
+                        cameraOn:
+                            false
+
+                    }
+                );
+
+
+                // =====================================
+                // OPEN GROUP VOICE CALL
+                // =====================================
+
+                window.location.href =
+                    `group-call.html?groupId=${encodeURIComponent(groupId)}&callId=${encodeURIComponent(callId)}&type=voice`;
+
+            } catch (error) {
+
+                console.error(
+                    "Start group voice call error:",
+                    error
+                );
+
+
+                alert(
+                    "Unable to start group voice call."
+                );
+
+            }
 
         }
     );
