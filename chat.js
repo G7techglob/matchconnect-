@@ -867,91 +867,161 @@ peerConnection.ontrack = (event) => {
     return peerConnection;
 
 }
-
 // =====================================================
 // LISTEN FOR REMOTE ICE CANDIDATES
+// PERMANENT VERSION
 // =====================================================
 
-function listenForRemoteCandidates(
-    callId,
-    isCaller
-) {
+function listenForRemoteCandidates(callId, isCaller) {
 
     const candidateCollection =
         isCaller
-        ? "receiverCandidates"
-        : "callerCandidates";
-
+            ? "receiverCandidates"
+            : "callerCandidates";
 
     console.log(
-        "🧊 Listening for:",
+        "🧊 Listening for remote ICE:",
         candidateCollection
     );
 
 
-    const candidatesRef =
-        collection(
-            db,
-            "calls",
-            callId,
-            candidateCollection
-        );
+    const candidatesRef = collection(
+        db,
+        "calls",
+        callId,
+        candidateCollection
+    );
 
 
-    const unsubscribe =
-        onSnapshot(
-            candidatesRef,
-            async (snapshot) => {
+    const unsubscribe = onSnapshot(
+        candidatesRef,
+        async (snapshot) => {
 
-                if (!peerConnection) return;
+            if (!peerConnection) {
+                console.warn(
+                    "⚠️ PeerConnection not ready yet"
+                );
+                return;
+            }
 
 
-                for (
-                    const candidateDoc
-                    of snapshot.docChanges()
+            for (
+                const change
+                of snapshot.docChanges()
+            ) {
+
+                if (
+                    change.type !==
+                    "added"
                 ) {
+                    continue;
+                }
+
+
+                try {
+
+                    const candidateData =
+                        change.doc.data();
+
+
+                    console.log(
+                        "🧊 Remote ICE candidate received"
+                    );
+
+
+                    // ---------------------------------
+                    // WAIT UNTIL REMOTE DESCRIPTION
+                    // IS READY
+                    // ---------------------------------
 
                     if (
-                        candidateDoc.type !==
-                        "added"
+                        !peerConnection
+                            .remoteDescription
                     ) {
-                        continue;
-                    }
-
-
-                    try {
-
-                        const candidate =
-                            new RTCIceCandidate(
-                                candidateDoc.doc.data()
-                            );
-
-
-                        await peerConnection
-                            .addIceCandidate(
-                                candidate
-                            );
-
 
                         console.log(
-                            "🧊 Remote ICE candidate added"
+                            "⏳ Waiting for remote description..."
                         );
 
 
-                    } catch (error) {
+                        // Wait briefly for the
+                        // remote description
+                        // before adding ICE.
 
-                        console.error(
-                            "❌ Failed to add remote ICE candidate:",
-                            error
-                        );
+                        let attempts = 0;
+
+                        while (
+                            peerConnection &&
+                            !peerConnection
+                                .remoteDescription &&
+                            attempts < 50
+                        ) {
+
+                            await new Promise(
+                                resolve =>
+                                    setTimeout(
+                                        resolve,
+                                        100
+                                    )
+                            );
+
+                            attempts++;
+
+                        }
 
                     }
+
+
+                    if (
+                        !peerConnection ||
+                        !peerConnection
+                            .remoteDescription
+                    ) {
+
+                        console.warn(
+                            "⚠️ Remote description still unavailable"
+                        );
+
+                        continue;
+
+                    }
+
+
+                    // ---------------------------------
+                    // ADD REMOTE ICE CANDIDATE
+                    // ---------------------------------
+
+                    await peerConnection
+                        .addIceCandidate(
+                            new RTCIceCandidate(
+                                candidateData
+                            )
+                        );
+
+
+                    console.log(
+                        "✅ Remote ICE candidate added"
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "❌ Remote ICE candidate error:",
+                        error
+                    );
 
                 }
 
             }
-        );
 
+        }
+    );
+
+
+    // ---------------------------------------------
+    // SAVE UNSUBSCRIBE FUNCTION
+    // ---------------------------------------------
 
     if (isCaller) {
 
@@ -966,7 +1036,6 @@ function listenForRemoteCandidates(
     }
 
 }
-
 
 // =====================================================
 // CREATE CALL DOCUMENT
