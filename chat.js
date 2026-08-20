@@ -687,35 +687,58 @@ function createPeerConnection(callId, isCaller) {
         new RTCPeerConnection(rtcConfiguration);
 
 
+   
     // =================================================
-    // RECEIVE REMOTE MEDIA
-    // =================================================
+// RECEIVE REMOTE MEDIA
+// =================================================
 
-    peerConnection.ontrack = (event) => {
+peerConnection.ontrack = (event) => {
 
-        console.log("📡 Remote media received");
+    console.log("📡 REMOTE TRACK RECEIVED:", event.track.kind);
 
-        if (!remoteVideo) return;
+    if (!remoteVideo) {
+        console.error("❌ remoteVideo element not found");
+        return;
+    }
 
-        if (event.streams && event.streams[0]) {
+    // Create a remote stream if necessary
+    if (!remoteVideo.srcObject) {
+        remoteVideo.srcObject = new MediaStream();
+    }
 
-            remoteVideo.srcObject =
-                event.streams[0];
+    // Add the incoming track
+    const remoteStream = remoteVideo.srcObject;
 
-        }
+    const alreadyAdded = remoteStream
+        .getTracks()
+        .some(track => track.id === event.track.id);
 
-        remoteVideo.autoplay = true;
-        remoteVideo.playsInline = true;
+    if (!alreadyAdded) {
+        remoteStream.addTrack(event.track);
+    }
 
-        if (currentCallType === "video") {
+    // Video settings
+    remoteVideo.autoplay = true;
+    remoteVideo.playsInline = true;
+    remoteVideo.muted = false;
 
-            remoteVideo.style.display =
-                "block";
+    if (currentCallType === "video") {
+        remoteVideo.style.display = "block";
+    }
 
-        }
+    // Try to start playback
+    remoteVideo.play()
+        .then(() => {
+            console.log("▶️ Remote video playing");
+        })
+        .catch((error) => {
+            console.warn(
+                "⚠️ Remote video play requires user interaction:",
+                error
+            );
+        });
 
-    };
-
+};
 
     // =================================================
     // ICE CANDIDATE
