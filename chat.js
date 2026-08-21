@@ -189,16 +189,12 @@ ${mine ? (msg.seen ? " ✓✓" : " ✓") : ""}
 </div>
 
 `;
-
-    }
-
 document.querySelectorAll(".message").forEach((msg) => {
 
   let pressTimer = null;
 
   let startX = 0;
   let startY = 0;
-
   let currentX = 0;
 
   let isSwiping = false;
@@ -206,6 +202,9 @@ document.querySelectorAll(".message").forEach((msg) => {
 
   const replyThreshold = 70;
 
+  // Sent message = swipe RIGHT → LEFT
+  // Received message = swipe LEFT → RIGHT
+  const isMine = msg.classList.contains("sent");
 
   // =====================================================
   // TOUCH START
@@ -219,20 +218,14 @@ document.querySelectorAll(".message").forEach((msg) => {
 
     startX = touch.clientX;
     startY = touch.clientY;
-
     currentX = startX;
 
     isSwiping = false;
     longPressTriggered = false;
 
-
-    // ---------------------------------------------
     // LONG PRESS
-    // ---------------------------------------------
-
     pressTimer = setTimeout(() => {
 
-      // Don't open menu while swiping
       if (isSwiping) return;
 
       longPressTriggered = true;
@@ -258,17 +251,10 @@ document.querySelectorAll(".message").forEach((msg) => {
 
     currentX = touch.clientX;
 
-    const deltaX =
-      currentX - startX;
+    const deltaX = currentX - startX;
+    const deltaY = touch.clientY - startY;
 
-    const deltaY =
-      touch.clientY - startY;
-
-
-    // ---------------------------------------------
-    // DETECT SWIPE DIRECTION
-    // ---------------------------------------------
-
+    // Detect horizontal swipe
     if (
       Math.abs(deltaX) > 10 &&
       Math.abs(deltaX) > Math.abs(deltaY)
@@ -281,67 +267,91 @@ document.querySelectorAll(".message").forEach((msg) => {
     }
 
 
-    // ---------------------------------------------
-    // ONLY ALLOW LEFT → RIGHT
-    // ---------------------------------------------
+    // =====================================================
+    // RECEIVED MESSAGE
+    // LEFT → RIGHT
+    // =====================================================
 
-    if (
-  isSwiping &&
-  deltaX > 0
-) {
+    if (!isMine && isSwiping && deltaX > 0) {
 
-  // Allow BOTH received and sent messages
-  const movement =
-    Math.min(deltaX, 90);
+      const movement = Math.min(deltaX, 90);
 
+      msg.style.transform =
+        `translateX(${movement}px)`;
 
-  // Move the entire message
-  msg.style.transform =
-    `translateX(${movement}px)`;
+      msg.classList.add("swiping-message");
 
 
-  msg.classList.add(
-    "swiping-message"
-  );
+      let replyIndicator =
+        msg.querySelector(".swipe-reply-indicator");
 
 
-  // ---------------------------------------------
-  // REPLY INDICATOR
-  // ---------------------------------------------
+      if (!replyIndicator) {
 
-  let replyIndicator =
-    msg.querySelector(
-      ".swipe-reply-indicator"
-    );
+        replyIndicator =
+          document.createElement("div");
 
+        replyIndicator.className =
+          "swipe-reply-indicator";
 
-  if (!replyIndicator) {
+        replyIndicator.textContent = "↩";
 
-    replyIndicator =
-      document.createElement("div");
+        msg.prepend(replyIndicator);
 
-    replyIndicator.className =
-      "swipe-reply-indicator";
-
-    replyIndicator.textContent =
-      "↩";
+      }
 
 
-    // Put indicator inside message
-    msg.prepend(
-      replyIndicator
-    );
+      replyIndicator.style.opacity =
+        Math.min(
+          movement / replyThreshold,
+          1
+        );
 
-  }
+    }
 
 
-  replyIndicator.style.opacity =
-    Math.min(
-      movement / replyThreshold,
-      1
-    );
+    // =====================================================
+    // SENT MESSAGE
+    // RIGHT → LEFT
+    // =====================================================
 
-}
+    if (isMine && isSwiping && deltaX < 0) {
+
+      const movement =
+        Math.max(deltaX, -90);
+
+      msg.style.transform =
+        `translateX(${movement}px)`;
+
+      msg.classList.add("swiping-message");
+
+
+      let replyIndicator =
+        msg.querySelector(".swipe-reply-indicator");
+
+
+      if (!replyIndicator) {
+
+        replyIndicator =
+          document.createElement("div");
+
+        replyIndicator.className =
+          "swipe-reply-indicator";
+
+        replyIndicator.textContent = "↩";
+
+        msg.prepend(replyIndicator);
+
+      }
+
+
+      replyIndicator.style.opacity =
+        Math.min(
+          Math.abs(movement) / replyThreshold,
+          1
+        );
+
+    }
 
   }, { passive: true });
 
@@ -354,16 +364,17 @@ document.querySelectorAll(".message").forEach((msg) => {
 
     clearTimeout(pressTimer);
 
-
     const deltaX =
       currentX - startX;
 
 
-    // ---------------------------------------------
-    // SWIPE RIGHT → REPLY
-    // ---------------------------------------------
+    // =====================================================
+    // RECEIVED MESSAGE
+    // LEFT → RIGHT → REPLY
+    // =====================================================
 
     if (
+      !isMine &&
       isSwiping &&
       deltaX >= replyThreshold
     ) {
@@ -375,12 +386,27 @@ document.querySelectorAll(".message").forEach((msg) => {
     }
 
 
-    // ---------------------------------------------
-    // RESET MESSAGE POSITION
-    // ---------------------------------------------
+    // =====================================================
+    // SENT MESSAGE
+    // RIGHT → LEFT → REPLY
+    // =====================================================
 
-    msg.style.transform =
-      "translateX(0)";
+    if (
+      isMine &&
+      isSwiping &&
+      deltaX <= -replyThreshold
+    ) {
+
+      await activateReply(
+        msg.dataset.id
+      );
+
+    }
+
+
+    // RESET POSITION
+
+    msg.style.transform = "translateX(0)";
 
     msg.classList.remove(
       "swiping-message"
@@ -411,12 +437,12 @@ document.querySelectorAll(".message").forEach((msg) => {
 
     clearTimeout(pressTimer);
 
-    msg.style.transform =
-      "translateX(0)";
+    msg.style.transform = "translateX(0)";
 
     msg.classList.remove(
       "swiping-message"
     );
+
 
     const indicator =
       msg.querySelector(
@@ -427,13 +453,12 @@ document.querySelectorAll(".message").forEach((msg) => {
       indicator.remove();
     }
 
+
     isSwiping = false;
 
   });
 
 });
-    
-
 
     messages.scrollTop = messages.scrollHeight;
 
