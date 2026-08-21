@@ -142,15 +142,15 @@ const rtcConfiguration = {
 // =====================================================
 // CALL ID
 // =====================================================
+// Each new call gets a NEW unique ID.
+// This prevents an old "ended" call from affecting
+// a new call between the same two users.
 
-function createCallId(uid1, uid2) {
+function createCallId() {
 
-    return [
-        uid1,
-        uid2
-    ]
-        .sort()
-        .join("_");
+    return `${currentUser.uid}_${Date.now()}_${Math.random()
+        .toString(36)
+        .substring(2, 10)}`;
 
 }
 
