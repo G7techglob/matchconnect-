@@ -1009,11 +1009,26 @@ async function startReceiverCall() {
     pendingCandidates = [];
 
 
-    callId =
-        createCallId(
-            currentUser.uid,
-            receiverId
+    // IMPORTANT:
+    // callId has already been found by the
+    // incoming-call search.
+    //
+    // Do NOT create a new call ID here.
+
+    if (!callId) {
+
+        console.error(
+            "❌ Receiver started without a call ID."
         );
+
+        return;
+
+    }
+
+    console.log(
+        "📞 RECEIVER USING CALL ID:",
+        callId
+    );
 
 
     if (callStatus) {
@@ -1477,6 +1492,7 @@ if (switchCameraBtn) {
 // =====================================================
 
 async function endCall() {
+    console.error("🚨 END CALL FUNCTION WAS CALLED");
 
     if (callEnded) {
         return;
@@ -1534,7 +1550,12 @@ async function endCall() {
 // =====================================================
 
 function cleanupCall() {
-
+console.error("🚨 CLEANUP CALL WAS CALLED", {
+    callId,
+    isCaller,
+    callEnded,
+    currentUser: currentUser?.uid
+});
     if (callEnded === false) {
         callEnded = true;
     }
@@ -1746,14 +1767,9 @@ onAuthStateChanged(
 
             await getLocalMedia();
 
-
-            
 // =================================================
 // CHECK FOR AN INCOMING CALL
 // =================================================
-// The receiver no longer guesses the call ID.
-// Instead, Firestore finds a ringing call
-// addressed to this user.
 
 const incomingCallsQuery =
     query(
@@ -1772,13 +1788,46 @@ const incomingCallsQuery =
 
 
 const incomingCallsSnapshot =
-    await getDoc(
-        doc(
-            db,
-            "calls",
-            "PLACEHOLDER"
-        )
+    await getDocs(
+        incomingCallsQuery
     );
+
+
+if (
+    !incomingCallsSnapshot.empty
+) {
+
+    const incomingCallDoc =
+        incomingCallsSnapshot.docs[0];
+
+
+    callId =
+        incomingCallDoc.id;
+
+
+    const incomingCallData =
+        incomingCallDoc.data();
+
+
+    console.log(
+        "📞 INCOMING CALL FOUND:",
+        callId,
+        incomingCallData
+    );
+
+
+    await startReceiverCall();
+
+    return;
+
+}
+
+
+// =================================================
+// START NEW CALL
+// =================================================
+
+await startCallerCall();
             
 
         } catch (error) {
