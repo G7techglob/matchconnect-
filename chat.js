@@ -72,10 +72,27 @@ if(profileSnap.exists()){
 
   chatId = createChatId(user.uid, receiverUid);
 
-  await loadReceiver();
-  loadMessages();
-  listenTyping();
-  listenForIncomingCalls();
+  console.log("1️⃣ Authenticated user:", currentUser.uid);
+
+chatId = createChatId(user.uid, receiverUid);
+
+console.log("2️⃣ Chat ID created:", chatId);
+
+await loadReceiver();
+
+console.log("3️⃣ Receiver loaded");
+
+loadMessages();
+
+console.log("4️⃣ loadMessages() started");
+
+listenTyping();
+
+console.log("5️⃣ Typing listener started");
+
+listenForIncomingCalls();
+
+console.log("6️⃣ Incoming call listener started");
 });
 
 async function loadReceiver() {
@@ -96,12 +113,19 @@ async function loadReceiver() {
 }
 function loadMessages(){
 
+  console.log("🔵 loadMessages() ENTERED");
+  console.log("🔵 Current chatId:", chatId);
+
   const q = query(
+    
     collection(db, "chats", chatId, "messages"),
     orderBy("time")
   );
 
-  onSnapshot(q, (snapshot) => {
+    onSnapshot(q, (snapshot) => {
+
+    console.log("🟢 Firestore messages snapshot received");
+    console.log("🟢 Number of messages:", snapshot.docs.length);
 
     messages.innerHTML = "";
 
