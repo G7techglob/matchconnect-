@@ -186,8 +186,6 @@ ${mine ? (msg.seen ? " ✓✓" : " ✓") : ""}
 
 </div>
 
-</div>
-
 `;
 document.querySelectorAll(".message").forEach((msg) => {
 
