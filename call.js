@@ -8,7 +8,9 @@ import {
     addDoc,
     collection,
     onSnapshot,
-    serverTimestamp
+    serverTimestamp,
+    query,
+    where
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import {
@@ -772,26 +774,25 @@ async function flushPendingCandidates() {
 
 }
 
-
 // =====================================================
-// CREATE CALL DOCUMENT
+// CREATE NEW UNIQUE CALL DOCUMENT
 // =====================================================
 
 async function createCallDocument() {
 
-    callId =
-        createCallId(
-            currentUser.uid,
-            receiverId
+    // Create a completely new Firestore document ID
+    // for every call.
+    const newCallRef =
+        doc(
+            collection(db, "calls")
         );
+
+    callId =
+        newCallRef.id;
 
 
     await setDoc(
-        doc(
-            db,
-            "calls",
-            callId
-        ),
+        newCallRef,
         {
 
             callerId:
@@ -819,10 +820,15 @@ async function createCallDocument() {
     );
 
 
+    console.log(
+        "📞 NEW CALL CREATED:",
+        callId
+    );
+
+
     return callId;
 
 }
-
 
 // =====================================================
 // CALLER
@@ -1741,60 +1747,39 @@ onAuthStateChanged(
             await getLocalMedia();
 
 
-            // =================================================
-            // CHECK FOR EXISTING INCOMING CALL
-            // =================================================
+            
+// =================================================
+// CHECK FOR AN INCOMING CALL
+// =================================================
+// The receiver no longer guesses the call ID.
+// Instead, Firestore finds a ringing call
+// addressed to this user.
 
-            const existingCallId =
-                createCallId(
-                    currentUser.uid,
-                    receiverId
-                );
-
-
-            const existingCallSnap =
-                await getDoc(
-                    doc(
-                        db,
-                        "calls",
-                        existingCallId
-                    )
-                );
-
-
-            if (
-                existingCallSnap.exists()
-            ) {
-
-                const data =
-                    existingCallSnap.data();
+const incomingCallsQuery =
+    query(
+        collection(db, "calls"),
+        where(
+            "receiverId",
+            "==",
+            currentUser.uid
+        ),
+        where(
+            "status",
+            "==",
+            "ringing"
+        )
+    );
 
 
-                if (
-                    data.receiverId ===
-                    currentUser.uid &&
-                    data.status ===
-                    "ringing"
-                ) {
-
-                    callId =
-                        existingCallId;
-
-
-                    await startReceiverCall();
-
-                    return;
-
-                }
-
-            }
-
-
-            // =================================================
-            // START NEW CALL
-            // =================================================
-
-            await startCallerCall();
+const incomingCallsSnapshot =
+    await getDoc(
+        doc(
+            db,
+            "calls",
+            "PLACEHOLDER"
+        )
+    );
+            
 
         } catch (error) {
 
