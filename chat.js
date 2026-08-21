@@ -414,44 +414,244 @@ window.addEventListener("beforeunload", async () => {
   );
 });
 
-function showMessageOptions(id){
+function showMessageOptions(id) {
+
+  // Remove an existing menu first
+  const oldMenu = document.querySelector(".message-reaction-menu");
+
+  if (oldMenu) {
+    oldMenu.remove();
+  }
+
+  const menu = document.createElement("div");
+
+  menu.className = "message-reaction-menu";
+
+  menu.innerHTML = `
+    <div class="reaction-row">
+
+      <button data-reaction="❤️">❤️</button>
+      <button data-reaction="😂">😂</button>
+      <button data-reaction="👍">👍</button>
+      <button data-reaction="😮">😮</button>
+      <button data-reaction="😢">😢</button>
+
+    </div>
+
+    <div class="message-option-row">
+
+      <button class="forward-option">
+        ↗ Forward
+      </button>
+
+      ${
+        document.querySelector(
+          `.message[data-id="${id}"]`
+        )?.classList.contains("sent")
+        ?
+        `
+        <button class="delete-option">
+          🗑 Delete
+        </button>
+        `
+        :
+        ""
+      }
+
+    </div>
+  `;
+
+  document.body.appendChild(menu);
 
 
-    const option = prompt(
-    "Message options:\n\n1. Like ❤️\n2. Forward ↗\n3. Delete 🗑"
+  // --------------------------------
+  // POSITION MENU
+  // --------------------------------
+
+  const messageElement =
+    document.querySelector(
+      `.message[data-id="${id}"]`
     );
 
+  if (messageElement) {
 
-    if(option === "1"){
+    const rect =
+      messageElement.getBoundingClientRect();
 
-        alert("Message liked ❤️");
+    menu.style.position = "fixed";
 
-    }
+    menu.style.top =
+      Math.max(10, rect.top - 65) + "px";
 
+    menu.style.left =
+      Math.max(10, rect.left) + "px";
 
-    if(option === "2"){
-
-        alert("Forward feature coming soon");
-
-    }
-
-
-    if(option === "3"){
+  }
 
 
-        const confirmDelete =
-        confirm("Delete this message?");
+  // --------------------------------
+  // REACTION BUTTONS
+  // --------------------------------
 
+  menu.querySelectorAll(
+    ".reaction-row button"
+  ).forEach((button) => {
 
-        if(confirmDelete){
+    button.addEventListener(
+      "click",
+      async () => {
 
-            deleteDoc(
-            doc(db,"chats",chatId,"messages",id)
-            );
+        const reaction =
+          button.dataset.reaction;
+
+        try {
+
+          await setDoc(
+            doc(
+              db,
+              "chats",
+              chatId,
+              "messages",
+              id,
+              "reactions",
+              currentUser.uid
+            ),
+            {
+              reaction,
+              userId:
+                currentUser.uid
+            },
+            {
+              merge: true
+            }
+          );
+
+          menu.remove();
+
+        } catch (error) {
+
+          console.error(
+            "❌ Reaction error:",
+            error
+          );
 
         }
 
-    }
+      }
+    );
+
+  });
+
+
+  // --------------------------------
+  // DELETE
+  // --------------------------------
+
+  const deleteButton =
+    menu.querySelector(
+      ".delete-option"
+    );
+
+  if (deleteButton) {
+
+    deleteButton.addEventListener(
+      "click",
+      async () => {
+
+        const confirmDelete =
+          confirm(
+            "Delete this message?"
+          );
+
+        if (!confirmDelete) {
+          return;
+        }
+
+        try {
+
+          await deleteDoc(
+            doc(
+              db,
+              "chats",
+              chatId,
+              "messages",
+              id
+            )
+          );
+
+          menu.remove();
+
+        } catch (error) {
+
+          console.error(
+            "❌ Delete message error:",
+            error
+          );
+
+        }
+
+      }
+    );
+
+  }
+
+
+  // --------------------------------
+  // FORWARD
+  // --------------------------------
+
+  const forwardButton =
+    menu.querySelector(
+      ".forward-option"
+    );
+
+  if (forwardButton) {
+
+    forwardButton.addEventListener(
+      "click",
+      () => {
+
+        alert(
+          "Forward feature coming soon."
+        );
+
+        menu.remove();
+
+      }
+    );
+
+  }
+
+
+  // --------------------------------
+  // CLOSE WHEN CLICKING OUTSIDE
+  // --------------------------------
+
+  setTimeout(() => {
+
+    const closeMenu = (event) => {
+
+      if (
+        !menu.contains(event.target)
+      ) {
+
+        menu.remove();
+
+        document.removeEventListener(
+          "click",
+          closeMenu
+        );
+
+      }
+
+    };
+
+    document.addEventListener(
+      "click",
+      closeMenu
+    );
+
+  }, 50);
 
 }
 
