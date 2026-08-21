@@ -172,33 +172,6 @@ escapeHTML(msg.text || "")
 }
 
 
-<div class="message-buttons">
-
-<button class="reply-msg" data-id="${messageDoc.id}">
-↩ Reply
-</button>
-
-
-${
-mine
-?
-`
-<button class="delete-msg" data-id="${messageDoc.id}">
-🗑 Delete
-</button>
-`
-:
-""
-}
-
-
-<button class="react-btn" data-id="${messageDoc.id}" data-reaction="❤️">❤️</button>
-
-<button class="react-btn" data-id="${messageDoc.id}" data-reaction="😂">😂</button>
-
-<button class="react-btn" data-id="${messageDoc.id}" data-reaction="👍">👍</button>
-
-
 </div>
 
 
@@ -417,35 +390,6 @@ document.addEventListener("click", async (e) => {
   if (!confirmDelete) return;
 
   await deleteDoc(doc(db, "chats", chatId, "messages", id));
-});
-
-document.addEventListener("click", async (e) => {
-  if (!e.target.classList.contains("reply-msg")) return;
-
-  const id = e.target.dataset.id;
-  const messageSnap = await getDoc(doc(db, "chats", chatId, "messages", id));
-
-  if (messageSnap.exists()) {
-    const data = messageSnap.data();
-    input.value = "Reply: " + (data.text || "");
-    input.focus();
-  }
-});
-
-document.addEventListener("click", async (e) => {
-  if (!e.target.classList.contains("react-btn")) return;
-
-  const id = e.target.dataset.id;
-  const reaction = e.target.dataset.reaction;
-
-  await setDoc(
-    doc(db, "chats", chatId, "messages", id, "reactions", currentUser.uid),
-    {
-      reaction,
-      userId: currentUser.uid,
-    },
-    { merge: true }
-  );
 });
 
 window.addEventListener("beforeunload", async () => {
