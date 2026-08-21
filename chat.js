@@ -286,54 +286,62 @@ document.querySelectorAll(".message").forEach((msg) => {
     // ---------------------------------------------
 
     if (
-      isSwiping &&
-      deltaX > 0
-    ) {
+  isSwiping &&
+  deltaX > 0
+) {
 
-      // Limit movement
-      const movement =
-        Math.min(deltaX, 90);
-
-      msg.style.transform =
-        `translateX(${movement}px)`;
-
-      msg.classList.add(
-        "swiping-message"
-      );
+  // Allow BOTH received and sent messages
+  const movement =
+    Math.min(deltaX, 90);
 
 
-      // Show reply indicator
-      let replyIndicator =
-        msg.querySelector(
-          ".swipe-reply-indicator"
-        );
+  // Move the entire message
+  msg.style.transform =
+    `translateX(${movement}px)`;
 
 
-      if (!replyIndicator) {
-
-        replyIndicator =
-          document.createElement("div");
-
-        replyIndicator.className =
-          "swipe-reply-indicator";
-
-        replyIndicator.textContent =
-          "↩";
-
-        msg.prepend(
-          replyIndicator
-        );
-
-      }
+  msg.classList.add(
+    "swiping-message"
+  );
 
 
-      replyIndicator.style.opacity =
-        Math.min(
-          movement / replyThreshold,
-          1
-        );
+  // ---------------------------------------------
+  // REPLY INDICATOR
+  // ---------------------------------------------
 
-    }
+  let replyIndicator =
+    msg.querySelector(
+      ".swipe-reply-indicator"
+    );
+
+
+  if (!replyIndicator) {
+
+    replyIndicator =
+      document.createElement("div");
+
+    replyIndicator.className =
+      "swipe-reply-indicator";
+
+    replyIndicator.textContent =
+      "↩";
+
+
+    // Put indicator inside message
+    msg.prepend(
+      replyIndicator
+    );
+
+  }
+
+
+  replyIndicator.style.opacity =
+    Math.min(
+      movement / replyThreshold,
+      1
+    );
+
+}
 
   }, { passive: true });
 
