@@ -192,49 +192,301 @@ ${mine ? (msg.seen ? " ✓✓" : " ✓") : ""}
 
     }
 
+document.querySelectorAll(".message").forEach((msg) => {
 
-    document.querySelectorAll(".message").forEach((msg)=>{
+  let pressTimer = null;
 
-      let pressTimer;
+  let startX = 0;
+  let startY = 0;
 
+  let currentX = 0;
 
-      const startPress = ()=>{
+  let isSwiping = false;
+  let longPressTriggered = false;
 
-        const id = msg.dataset.id;
-
-        pressTimer = setTimeout(()=>{
-
-          showMessageOptions(id);
-
-        },700);
-
-      };
+  const replyThreshold = 70;
 
 
-      const cancelPress = ()=>{
+  // =====================================================
+  // TOUCH START
+  // =====================================================
 
-        clearTimeout(pressTimer);
+  msg.addEventListener("touchstart", (e) => {
 
-      };
+    if (!e.touches || !e.touches[0]) return;
+
+    const touch = e.touches[0];
+
+    startX = touch.clientX;
+    startY = touch.clientY;
+
+    currentX = startX;
+
+    isSwiping = false;
+    longPressTriggered = false;
 
 
-      msg.addEventListener("mousedown",startPress);
-      msg.addEventListener("mouseup",cancelPress);
-      msg.addEventListener("mouseleave",cancelPress);
+    // ---------------------------------------------
+    // LONG PRESS
+    // ---------------------------------------------
+
+    pressTimer = setTimeout(() => {
+
+      // Don't open menu while swiping
+      if (isSwiping) return;
+
+      longPressTriggered = true;
+
+      showMessageOptions(
+        msg.dataset.id
+      );
+
+    }, 700);
+
+  }, { passive: true });
 
 
-      msg.addEventListener("touchstart",startPress);
-      msg.addEventListener("touchend",cancelPress);
-      msg.addEventListener("touchmove",cancelPress);
+  // =====================================================
+  // TOUCH MOVE
+  // =====================================================
+
+  msg.addEventListener("touchmove", (e) => {
+
+    if (!e.touches || !e.touches[0]) return;
+
+    const touch = e.touches[0];
+
+    currentX = touch.clientX;
+
+    const deltaX =
+      currentX - startX;
+
+    const deltaY =
+      touch.clientY - startY;
 
 
-    });
+    // ---------------------------------------------
+    // DETECT SWIPE DIRECTION
+    // ---------------------------------------------
+
+    if (
+      Math.abs(deltaX) > 10 &&
+      Math.abs(deltaX) > Math.abs(deltaY)
+    ) {
+
+      isSwiping = true;
+
+      clearTimeout(pressTimer);
+
+    }
+
+
+    // ---------------------------------------------
+    // ONLY ALLOW LEFT → RIGHT
+    // ---------------------------------------------
+
+    if (
+      isSwiping &&
+      deltaX > 0
+    ) {
+
+      // Limit movement
+      const movement =
+        Math.min(deltaX, 90);
+
+      msg.style.transform =
+        `translateX(${movement}px)`;
+
+      msg.classList.add(
+        "swiping-message"
+      );
+
+
+      // Show reply indicator
+      let replyIndicator =
+        msg.querySelector(
+          ".swipe-reply-indicator"
+        );
+
+
+      if (!replyIndicator) {
+
+        replyIndicator =
+          document.createElement("div");
+
+        replyIndicator.className =
+          "swipe-reply-indicator";
+
+        replyIndicator.textContent =
+          "↩";
+
+        msg.prepend(
+          replyIndicator
+        );
+
+      }
+
+
+      replyIndicator.style.opacity =
+        Math.min(
+          movement / replyThreshold,
+          1
+        );
+
+    }
+
+  }, { passive: true });
+
+
+  // =====================================================
+  // TOUCH END
+  // =====================================================
+
+  msg.addEventListener("touchend", async () => {
+
+    clearTimeout(pressTimer);
+
+
+    const deltaX =
+      currentX - startX;
+
+
+    // ---------------------------------------------
+    // SWIPE RIGHT → REPLY
+    // ---------------------------------------------
+
+    if (
+      isSwiping &&
+      deltaX >= replyThreshold
+    ) {
+
+      await activateReply(
+        msg.dataset.id
+      );
+
+    }
+
+
+    // ---------------------------------------------
+    // RESET MESSAGE POSITION
+    // ---------------------------------------------
+
+    msg.style.transform =
+      "translateX(0)";
+
+    msg.classList.remove(
+      "swiping-message"
+    );
+
+
+    const indicator =
+      msg.querySelector(
+        ".swipe-reply-indicator"
+      );
+
+    if (indicator) {
+      indicator.remove();
+    }
+
+
+    isSwiping = false;
+    longPressTriggered = false;
+
+  });
+
+
+  // =====================================================
+  // TOUCH CANCEL
+  // =====================================================
+
+  msg.addEventListener("touchcancel", () => {
+
+    clearTimeout(pressTimer);
+
+    msg.style.transform =
+      "translateX(0)";
+
+    msg.classList.remove(
+      "swiping-message"
+    );
+
+    const indicator =
+      msg.querySelector(
+        ".swipe-reply-indicator"
+      );
+
+    if (indicator) {
+      indicator.remove();
+    }
+
+    isSwiping = false;
+
+  });
+
+});
+    
 
 
     messages.scrollTop = messages.scrollHeight;
 
 
   });
+
+}
+
+// =====================================================
+// MATCHCONNECT — ACTIVATE MESSAGE REPLY
+// =====================================================
+
+async function activateReply(id) {
+
+  try {
+
+    const messageSnap =
+      await getDoc(
+        doc(
+          db,
+          "chats",
+          chatId,
+          "messages",
+          id
+        )
+      );
+
+
+    if (!messageSnap.exists()) {
+      return;
+    }
+
+
+    const data =
+      messageSnap.data();
+
+
+    // Save the message being replied to
+    input.dataset.replyTo = id;
+
+
+    // Show reply text inside input
+    input.value =
+      "Reply: " +
+      (
+        data.text ||
+        "📷 Image"
+      );
+
+
+    input.focus();
+
+
+  } catch (error) {
+
+    console.error(
+      "❌ Reply error:",
+      error
+    );
+
+  }
 
 }
 
