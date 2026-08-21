@@ -1493,8 +1493,7 @@ if (switchCameraBtn) {
 // =====================================================
 
 async function endCall() {
-    console.error("🚨 END CALL FUNCTION WAS CALLED");
-
+    
     if (callEnded) {
         return;
     }
@@ -1551,12 +1550,6 @@ async function endCall() {
 // =====================================================
 
 function cleanupCall() {
-console.error("🚨 CLEANUP CALL WAS CALLED", {
-    callId,
-    isCaller,
-    callEnded,
-    currentUser: currentUser?.uid
-});
     if (callEnded === false) {
         callEnded = true;
     }
