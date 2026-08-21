@@ -510,3 +510,45 @@ body {
   }
 
 }
+
+/* =====================================================
+   MATCHCONNECT — SWIPE TO REPLY
+   Works for BOTH sent and received messages
+   ===================================================== */
+
+.message.swiping-message {
+  transition: none !important;
+}
+
+
+/* Reply icon */
+
+.swipe-reply-indicator {
+  position: absolute;
+
+  left: -45px;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #1877f2;
+
+  color: #ffffff;
+
+  font-size: 18px;
+
+  pointer-events: none;
+
+  z-index: 10;
+}
