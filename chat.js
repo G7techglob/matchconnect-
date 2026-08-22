@@ -671,8 +671,7 @@ if (inboxSettingsBtn) {
 }
 
 // =====================================================
-// MATCHCONNECT — ONE-TO-ONE CALL BUTTONS
-// CONNECT CHAT TO SEPARATE CALL PAGE
+// MATCHCONNECT — SEPARATE VOICE & VIDEO CALLS
 // =====================================================
 
 const callBtn = document.getElementById("callBtn");
@@ -693,7 +692,7 @@ if (callBtn) {
         }
 
         window.location.href =
-            `call.html?receiverId=${encodeURIComponent(receiverUid)}&type=voice`;
+            `voice-call.html?receiverId=${encodeURIComponent(receiverUid)}`;
 
     });
 
@@ -714,8 +713,9 @@ if (videoCallBtn) {
         }
 
         window.location.href =
-            `call.html?receiverId=${encodeURIComponent(receiverUid)}&type=video`;
+            `video-call.html?receiverId=${encodeURIComponent(receiverUid)}`;
 
     });
 
 }
+
