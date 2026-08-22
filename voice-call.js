@@ -1899,7 +1899,7 @@ onAuthStateChanged(
 
 
             window.location.href =
-                "chats.html";
+                "chat.html";
 
 
             return;
@@ -1918,7 +1918,7 @@ onAuthStateChanged(
 
 
             window.location.href =
-                "chats.html";
+                "chat.html";
 
 
             return;
