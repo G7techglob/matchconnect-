@@ -719,7 +719,6 @@ if (videoCallBtn) {
 
 }
 
-
 // =====================================================
 // MATCHCONNECT — LISTEN FOR INCOMING CALLS
 // =====================================================
@@ -730,66 +729,132 @@ function listenForIncomingCalls() {
         return;
     }
 
-    const callsRef = collection(db, "calls");
-
-    const incomingQuery = query(
-        callsRef,
-        where("receiverId", "==", currentUser.uid),
-        where("status", "==", "ringing")
+    console.log(
+        "📡 Listening for incoming calls for:",
+        currentUser.uid
     );
 
-    onSnapshot(incomingQuery, async (snapshot) => {
+    // We only query by receiverId.
+    // This avoids requiring a Firestore composite index.
+    const incomingQuery = query(
+        collection(db, "calls"),
+        where(
+            "receiverId",
+            "==",
+            currentUser.uid
+        )
+    );
 
-        for (const callDoc of snapshot.docs) {
+    onSnapshot(
+        incomingQuery,
+        (snapshot) => {
 
-            const callData = callDoc.data();
+            snapshot.docChanges().forEach(
+                (change) => {
 
-            // Ignore calls made by the current user
-            if (callData.callerId === currentUser.uid) {
-                continue;
-            }
+                    if (change.type !== "added") {
+                        return;
+                    }
 
-            // =================================================
-            // VOICE CALL
-            // =================================================
+                    const callDoc =
+                        change.doc;
 
-            if (callData.type === "voice") {
+                    const callData =
+                        callDoc.data();
 
-                console.log(
-                    "📲 Incoming voice call:",
-                    callDoc.id
-                );
+                    // Ignore calls that are no longer ringing
+                    if (
+                        callData.status !==
+                        "ringing"
+                    ) {
+                        return;
+                    }
 
-                window.location.href =
-                    `voice-call.html?receiverId=${encodeURIComponent(
-                        callData.callerId
-                    )}`;
+                    // Ignore invalid call records
+                    if (
+                        !callData.callerId ||
+                        !callData.type
+                    ) {
+                        return;
+                    }
 
-                return;
-            }
+                    // Never handle our own call
+                    if (
+                        callData.callerId ===
+                        currentUser.uid
+                    ) {
+                        return;
+                    }
+
+                    const callId =
+                        callDoc.id;
+
+                    console.log(
+                        "📲 Incoming call detected:",
+                        callId,
+                        callData.type
+                    );
 
 
-            // =================================================
-            // VIDEO CALL
-            // =================================================
+                    // =========================================
+                    // VOICE CALL
+                    // =========================================
 
-            if (callData.type === "video") {
+                    if (
+                        callData.type ===
+                        "voice"
+                    ) {
 
-                console.log(
-                    "📹 Incoming video call:",
-                    callDoc.id
-                );
+                        window.location.href =
+                            `voice-call.html?receiverId=${
+                                encodeURIComponent(
+                                    callData.callerId
+                                )
+                            }&callId=${
+                                encodeURIComponent(
+                                    callId
+                                )
+                            }`;
 
-                window.location.href =
-                    `video-call.html?receiverId=${encodeURIComponent(
-                        callData.callerId
-                    )}`;
+                        return;
+                    }
 
-                return;
-            }
+
+                    // =========================================
+                    // VIDEO CALL
+                    // =========================================
+
+                    if (
+                        callData.type ===
+                        "video"
+                    ) {
+
+                        window.location.href =
+                            `video-call.html?receiverId=${
+                                encodeURIComponent(
+                                    callData.callerId
+                                )
+                            }&callId=${
+                                encodeURIComponent(
+                                    callId
+                                )
+                            }`;
+
+                        return;
+                    }
+
+                }
+            );
+
+        },
+        (error) => {
+
+            console.error(
+                "❌ Incoming call listener error:",
+                error
+            );
 
         }
-
-    });
+    );
 
 }
