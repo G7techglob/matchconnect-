@@ -1,0 +1,257 @@
+/* =====================================================
+   MATCHCONNECT — VOICE CALL
+===================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: #fff;
+    overflow: hidden;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.voice-call-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 10px 15px;
+
+    background: #151515;
+
+    z-index: 10;
+}
+
+
+.back-btn {
+    width: 42px;
+    height: 42px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: #fff;
+
+    font-size: 20px;
+
+    cursor: pointer;
+}
+
+
+.caller-info {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-left: 8px;
+}
+
+
+.caller-info img {
+    width: 46px;
+    height: 46px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+}
+
+
+.caller-info h3 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+
+.caller-info p {
+    margin-top: 3px;
+
+    font-size: 13px;
+
+    opacity: 0.7;
+}
+
+
+/* =====================================================
+   VOICE CALL AREA
+===================================================== */
+
+.voice-call-container {
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 80px 20px 130px;
+}
+
+
+.voice-avatar {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+}
+
+
+.voice-avatar img {
+    width: 150px;
+    height: 150px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    margin-bottom: 20px;
+}
+
+
+.voice-avatar h2 {
+    font-size: 23px;
+
+    margin-bottom: 8px;
+}
+
+
+.voice-avatar p {
+    font-size: 14px;
+
+    opacity: 0.65;
+}
+
+
+/* =====================================================
+   CONTROLS
+===================================================== */
+
+.voice-call-controls {
+    position: fixed;
+
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+
+    height: 110px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 35px;
+
+    background: #151515;
+
+    z-index: 10;
+}
+
+
+.call-control,
+.end-call-btn {
+    width: 58px;
+    height: 58px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    font-size: 21px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.call-control {
+    background: #333;
+
+    color: #fff;
+}
+
+
+.call-control.active {
+    background: #fff;
+
+    color: #111;
+}
+
+
+.end-call-btn {
+    background: #d62828;
+
+    color: #fff;
+}
+
+
+.end-call-btn:active,
+.call-control:active {
+    transform: scale(0.94);
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+    .voice-avatar img {
+        width: 130px;
+        height: 130px;
+    }
+
+
+    .voice-avatar h2 {
+        font-size: 21px;
+    }
+
+
+    .voice-call-controls {
+        height: 100px;
+
+        gap: 28px;
+    }
+
+}
