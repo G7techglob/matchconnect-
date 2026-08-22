@@ -1736,7 +1736,7 @@ if (callEnded === false) {
             () => {
 
                 window.location.href =
-                    "chats.html";
+                    "chat.html";
 
             },
             700
@@ -2077,8 +2077,9 @@ onAuthStateChanged(
     );
 
     setCallStatus(
-        "Unable to start call"
-    );
+    "Unable to start: " +
+    (error.message || "Unknown error")
+);
 
         }
 
