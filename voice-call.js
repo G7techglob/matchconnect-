@@ -972,19 +972,17 @@ function listenForCallStatus() {
 
 
                 if (
-                    data.status ===
-                    "ended"
-                ) {
+    data.status ===
+    "ended"
+) {
 
-                    if (!callEnded) {
+    console.log(
+        "📞 REMOTE USER ENDED THE CALL"
+    );
 
-                        cleanupCall(
-                            true
-                        );
+    cleanupCall(true);
 
-                    }
-
-                    return;
+    return;
 
                 }
 
