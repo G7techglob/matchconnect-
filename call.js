@@ -1765,9 +1765,29 @@ onAuthStateChanged(
 // CHECK FOR AN INCOMING CALL
 // =================================================
 
+// =================================================
+// CHECK FOR AN INCOMING CALL FROM THIS USER
+// =================================================
+//
+// receiverId is the other person.
+// Therefore an incoming call must have:
+//
+// callerId   = receiverId
+// receiverId = currentUser.uid
+// status     = ringing
+//
+// This prevents MatchConnect from accidentally
+// joining an unrelated old ringing call.
+//
+
 const incomingCallsQuery =
     query(
         collection(db, "calls"),
+        where(
+            "callerId",
+            "==",
+            receiverId
+        ),
         where(
             "receiverId",
             "==",
@@ -1794,13 +1814,11 @@ if (
     const incomingCallDoc =
         incomingCallsSnapshot.docs[0];
 
+    const incomingCallData =
+        incomingCallDoc.data();
 
     callId =
         incomingCallDoc.id;
-
-
-    const incomingCallData =
-        incomingCallDoc.data();
 
 
     console.log(
@@ -1815,6 +1833,18 @@ if (
     return;
 
 }
+
+
+// =================================================
+// NO INCOMING CALL
+// START A NEW OUTGOING CALL
+// =================================================
+
+console.log(
+    "📞 NO INCOMING CALL — STARTING OUTGOING CALL"
+);
+
+
 
 
 // =================================================
