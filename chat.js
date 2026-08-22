@@ -719,3 +719,77 @@ if (videoCallBtn) {
 
 }
 
+
+// =====================================================
+// MATCHCONNECT — LISTEN FOR INCOMING CALLS
+// =====================================================
+
+function listenForIncomingCalls() {
+
+    if (!currentUser) {
+        return;
+    }
+
+    const callsRef = collection(db, "calls");
+
+    const incomingQuery = query(
+        callsRef,
+        where("receiverId", "==", currentUser.uid),
+        where("status", "==", "ringing")
+    );
+
+    onSnapshot(incomingQuery, async (snapshot) => {
+
+        for (const callDoc of snapshot.docs) {
+
+            const callData = callDoc.data();
+
+            // Ignore calls made by the current user
+            if (callData.callerId === currentUser.uid) {
+                continue;
+            }
+
+            // =================================================
+            // VOICE CALL
+            // =================================================
+
+            if (callData.type === "voice") {
+
+                console.log(
+                    "📲 Incoming voice call:",
+                    callDoc.id
+                );
+
+                window.location.href =
+                    `voice-call.html?receiverId=${encodeURIComponent(
+                        callData.callerId
+                    )}`;
+
+                return;
+            }
+
+
+            // =================================================
+            // VIDEO CALL
+            // =================================================
+
+            if (callData.type === "video") {
+
+                console.log(
+                    "📹 Incoming video call:",
+                    callDoc.id
+                );
+
+                window.location.href =
+                    `video-call.html?receiverId=${encodeURIComponent(
+                        callData.callerId
+                    )}`;
+
+                return;
+            }
+
+        }
+
+    });
+
+}
