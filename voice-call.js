@@ -1771,7 +1771,15 @@ if (muteBtn) {
 
             if (!localStream) {
 
-                return;
+    console.log(
+        "⚠️ MUTE: MICROPHONE NOT READY"
+    );
+
+    setCallStatus(
+        "Microphone not ready"
+    );
+
+    return;
 
             }
 
@@ -1839,22 +1847,31 @@ if (endCallBtn) {
         async event => {
 
             event.preventDefault();
-
             event.stopPropagation();
-
 
             console.log(
                 "🛑 END BUTTON CLICKED"
             );
 
+            try {
 
-            await endCall();
+                await endCall();
+
+            } catch (error) {
+
+                console.error(
+                    "❌ END BUTTON ERROR:",
+                    error
+                );
+
+                cleanupCall(true);
+
+            }
 
         }
     );
 
 }
-
 
 // =====================================================
 // BACK BUTTON
