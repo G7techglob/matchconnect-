@@ -1739,7 +1739,7 @@ if (goBack) {
             if (remoteUserId) {
 
                 window.location.href =
-                    "chat.html?receiverId=" +
+                    "chat.html?uid=" +
                     encodeURIComponent(remoteUserId);
 
             } else {
