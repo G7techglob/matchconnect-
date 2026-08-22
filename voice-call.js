@@ -66,10 +66,6 @@ const params =
 const receiverId =
     params.get("receiverId");
 
-
-// THIS IS VERY IMPORTANT
-// Incoming calls will now pass the exact call ID.
-
 const incomingCallId =
     params.get("callId");
 
@@ -80,7 +76,8 @@ const incomingCallId =
 
 let currentUser = null;
 
-let callId = incomingCallId || null;
+let callId =
+    incomingCallId || null;
 
 let peerConnection = null;
 
@@ -95,6 +92,9 @@ let callEnded = false;
 let remoteDescriptionReady = false;
 
 let pendingCandidates = [];
+
+let addedRemoteCandidateIds =
+    new Set();
 
 let unsubscribeCall = null;
 
@@ -114,11 +114,13 @@ const rtcConfiguration = {
     iceServers: [
 
         {
-            urls: "stun:stun.l.google.com:19302"
+            urls:
+                "stun:stun.l.google.com:19302"
         },
 
         {
-            urls: "stun:stun1.l.google.com:19302"
+            urls:
+                "stun:stun1.l.google.com:19302"
         }
 
     ]
@@ -148,6 +150,20 @@ function setCallStatus(status) {
 
 async function loadUser(uid) {
 
+    if (!uid) {
+
+        return {
+
+            name: "User",
+
+            photoURL:
+                "images/default-avatar.png"
+
+        };
+
+    }
+
+
     try {
 
         const snap =
@@ -159,18 +175,24 @@ async function loadUser(uid) {
                 )
             );
 
+
         if (!snap.exists()) {
 
             return {
+
                 name: "User",
+
                 photoURL:
                     "images/default-avatar.png"
+
             };
 
         }
 
+
         const data =
             snap.data();
+
 
         return {
 
@@ -185,12 +207,14 @@ async function loadUser(uid) {
 
         };
 
+
     } catch (error) {
 
         console.error(
             "❌ LOAD USER ERROR:",
             error
         );
+
 
         return {
 
@@ -207,15 +231,14 @@ async function loadUser(uid) {
 
 
 // =====================================================
-// DISPLAY USER
+// DISPLAY REMOTE USER
 // =====================================================
 
-async function loadRemoteUser() {
+async function loadRemoteUser(uid) {
 
     const user =
-        await loadUser(
-            receiverId
-        );
+        await loadUser(uid);
+
 
     if (callerName) {
 
@@ -224,6 +247,7 @@ async function loadRemoteUser() {
 
     }
 
+
     if (callerPhoto) {
 
         callerPhoto.src =
@@ -231,12 +255,14 @@ async function loadRemoteUser() {
 
     }
 
+
     if (voiceAvatarName) {
 
         voiceAvatarName.textContent =
             user.name;
 
     }
+
 
     if (voiceAvatarPhoto) {
 
@@ -260,6 +286,19 @@ async function getMicrophone() {
 
     }
 
+
+    if (
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+    ) {
+
+        throw new Error(
+            "Microphone is not supported by this browser."
+        );
+
+    }
+
+
     try {
 
         localStream =
@@ -267,17 +306,28 @@ async function getMicrophone() {
                 .mediaDevices
                 .getUserMedia({
 
-                    audio: true,
+                    audio: {
+
+                        echoCancellation: true,
+
+                        noiseSuppression: true,
+
+                        autoGainControl: true
+
+                    },
 
                     video: false
 
                 });
 
+
         console.log(
             "🎤 MICROPHONE READY"
         );
 
+
         return localStream;
+
 
     } catch (error) {
 
@@ -286,9 +336,11 @@ async function getMicrophone() {
             error
         );
 
+
         setCallStatus(
             "Microphone permission denied"
         );
+
 
         throw error;
 
@@ -309,6 +361,7 @@ function createPeerConnection() {
 
     }
 
+
     console.log(
         "🔗 CREATING PEER CONNECTION"
     );
@@ -324,6 +377,10 @@ function createPeerConnection() {
         new MediaStream();
 
 
+    // =================================================
+    // REMOTE AUDIO
+    // =================================================
+
     if (remoteAudio) {
 
         remoteAudio.autoplay =
@@ -331,6 +388,9 @@ function createPeerConnection() {
 
         remoteAudio.playsInline =
             true;
+
+        remoteAudio.muted =
+            false;
 
         remoteAudio.srcObject =
             remoteStream;
@@ -346,28 +406,32 @@ function createPeerConnection() {
         async event => {
 
             console.log(
-                "🔊 REMOTE AUDIO RECEIVED"
+                "🔊 REMOTE TRACK RECEIVED"
             );
 
 
-            if (event.track) {
+            if (!event.track) {
 
-                const alreadyAdded =
-                    remoteStream
-                        .getTracks()
-                        .some(
-                            track =>
-                                track.id ===
-                                event.track.id
-                        );
+                return;
 
-                if (!alreadyAdded) {
+            }
 
-                    remoteStream.addTrack(
-                        event.track
+
+            const exists =
+                remoteStream
+                    .getTracks()
+                    .some(
+                        track =>
+                            track.id ===
+                            event.track.id
                     );
 
-                }
+
+            if (!exists) {
+
+                remoteStream.addTrack(
+                    event.track
+                );
 
             }
 
@@ -377,25 +441,22 @@ function createPeerConnection() {
                 remoteAudio.srcObject =
                     remoteStream;
 
+
                 try {
 
                     await remoteAudio.play();
 
+
                 } catch (error) {
 
                     console.warn(
-                        "⚠️ AUDIO PLAY ERROR:",
+                        "⚠️ REMOTE AUDIO PLAY:",
                         error
                     );
 
                 }
 
             }
-
-
-            setCallStatus(
-                "Connected"
-            );
 
         };
 
@@ -409,12 +470,14 @@ function createPeerConnection() {
 
             if (
                 !event.candidate ||
-                !callId
+                !callId ||
+                callEnded
             ) {
 
                 return;
 
             }
+
 
             const collectionName =
                 isCaller
@@ -425,13 +488,16 @@ function createPeerConnection() {
             try {
 
                 await addDoc(
+
                     collection(
                         db,
                         "calls",
                         callId,
                         collectionName
                     ),
+
                     event.candidate.toJSON()
+
                 );
 
 
@@ -439,6 +505,7 @@ function createPeerConnection() {
                     "🧊 ICE SENT:",
                     collectionName
                 );
+
 
             } catch (error) {
 
@@ -465,6 +532,7 @@ function createPeerConnection() {
 
             }
 
+
             const state =
                 peerConnection.connectionState;
 
@@ -475,56 +543,60 @@ function createPeerConnection() {
             );
 
 
-            if (state === "new") {
+            switch (state) {
 
-                setCallStatus(
-                    "Connecting..."
-                );
+                case "new":
 
-            }
+                    setCallStatus(
+                        "Connecting..."
+                    );
 
-
-            if (state === "connecting") {
-
-                setCallStatus(
-                    "Connecting..."
-                );
-
-            }
+                    break;
 
 
-            if (state === "connected") {
+                case "connecting":
 
-                setCallStatus(
-                    "Connected"
-                );
+                    setCallStatus(
+                        "Connecting..."
+                    );
 
-            }
-
-
-            if (state === "disconnected") {
-
-                setCallStatus(
-                    "Connection interrupted"
-                );
-
-            }
+                    break;
 
 
-            if (state === "failed") {
+                case "connected":
 
-                setCallStatus(
-                    "Connection failed"
-                );
+                    setCallStatus(
+                        "Connected"
+                    );
 
-            }
+                    break;
 
 
-            if (state === "closed") {
+                case "disconnected":
 
-                setCallStatus(
-                    "Call ended"
-                );
+                    setCallStatus(
+                        "Connection interrupted"
+                    );
+
+                    break;
+
+
+                case "failed":
+
+                    setCallStatus(
+                        "Connection failed"
+                    );
+
+                    break;
+
+
+                case "closed":
+
+                    setCallStatus(
+                        "Call ended"
+                    );
+
+                    break;
 
             }
 
@@ -544,16 +616,29 @@ function createPeerConnection() {
 
             }
 
+
             console.log(
                 "🧊 ICE STATE:",
                 peerConnection.iceConnectionState
             );
 
+
+            if (
+                peerConnection.iceConnectionState ===
+                "failed"
+            ) {
+
+                setCallStatus(
+                    "Connection failed"
+                );
+
+            }
+
         };
 
 
     // =================================================
-    // ADD MICROPHONE
+    // ADD LOCAL MICROPHONE
     // =================================================
 
     if (localStream) {
@@ -580,7 +665,7 @@ function createPeerConnection() {
 
 
 // =====================================================
-// LISTEN REMOTE ICE
+// LISTEN FOR REMOTE ICE
 // =====================================================
 
 function listenForRemoteCandidates() {
@@ -588,7 +673,7 @@ function listenForRemoteCandidates() {
     if (!callId) {
 
         console.error(
-            "❌ Cannot listen for ICE: no callId"
+            "❌ NO CALL ID FOR ICE"
         );
 
         return;
@@ -635,9 +720,32 @@ function listenForRemoteCandidates() {
                     }
 
 
+                    const candidateId =
+                        change.doc.id;
+
+
+                    // Prevent duplicate ICE
+                    if (
+                        addedRemoteCandidateIds
+                            .has(candidateId)
+                    ) {
+
+                        continue;
+
+                    }
+
+
+                    addedRemoteCandidateIds
+                        .add(candidateId);
+
+
                     const candidate =
                         change.doc.data();
 
+
+                    // =================================================
+                    // REMOTE DESCRIPTION NOT READY
+                    // =================================================
 
                     if (
                         !peerConnection ||
@@ -648,14 +756,20 @@ function listenForRemoteCandidates() {
                             candidate
                         );
 
+
                         console.log(
                             "⏳ ICE QUEUED"
                         );
+
 
                         continue;
 
                     }
 
+
+                    // =================================================
+                    // ADD ICE
+                    // =================================================
 
                     try {
 
@@ -671,6 +785,7 @@ function listenForRemoteCandidates() {
                             "✅ REMOTE ICE ADDED"
                         );
 
+
                     } catch (error) {
 
                         console.error(
@@ -681,6 +796,15 @@ function listenForRemoteCandidates() {
                     }
 
                 }
+
+            },
+
+            error => {
+
+                console.error(
+                    "❌ ICE LISTENER ERROR:",
+                    error
+                );
 
             }
 
@@ -705,6 +829,12 @@ async function flushPendingCandidates() {
     }
 
 
+    console.log(
+        "🧊 FLUSHING ICE:",
+        pendingCandidates.length
+    );
+
+
     while (
         pendingCandidates.length > 0
     ) {
@@ -727,6 +857,7 @@ async function flushPendingCandidates() {
                 "✅ QUEUED ICE ADDED"
             );
 
+
         } catch (error) {
 
             console.error(
@@ -742,7 +873,7 @@ async function flushPendingCandidates() {
 
 
 // =====================================================
-// CREATE OUTGOING CALL DOCUMENT
+// CREATE CALL
 // =====================================================
 
 async function createCall() {
@@ -798,7 +929,7 @@ async function createCall() {
 
 
 // =====================================================
-// LISTEN CALL DOCUMENT
+// LISTEN CALL STATUS
 // =====================================================
 
 function listenForCallStatus() {
@@ -842,25 +973,38 @@ function listenForCallStatus() {
 
                 if (
                     data.status ===
-                    "connected"
+                    "ended"
                 ) {
 
-                    setCallStatus(
-                        "Connected"
-                    );
+                    if (!callEnded) {
+
+                        cleanupCall(
+                            true
+                        );
+
+                    }
+
+                    return;
 
                 }
 
 
                 if (
                     data.status ===
-                    "ended" &&
-                    !callEnded
+                    "connected"
                 ) {
 
-                    cleanupCall(
-                        true
-                    );
+                    if (
+                        peerConnection &&
+                        peerConnection.connectionState !==
+                        "connected"
+                    ) {
+
+                        console.log(
+                            "📞 SIGNALING CONNECTED — WAITING FOR WEBRTC"
+                        );
+
+                    }
 
                 }
 
@@ -869,7 +1013,7 @@ function listenForCallStatus() {
             error => {
 
                 console.error(
-                    "❌ CALL LISTENER ERROR:",
+                    "❌ CALL STATUS ERROR:",
                     error
                 );
 
@@ -886,14 +1030,20 @@ function listenForCallStatus() {
 
 async function startCallerCall() {
 
-    isCaller = true;
+    isCaller =
+        true;
 
-    callEnded = false;
+    callEnded =
+        false;
 
     remoteDescriptionReady =
         false;
 
-    pendingCandidates = [];
+    pendingCandidates =
+        [];
+
+    addedRemoteCandidateIds =
+        new Set();
 
 
     setCallStatus(
@@ -901,29 +1051,39 @@ async function startCallerCall() {
     );
 
 
+    // =================================================
     // 1. MICROPHONE
+    // =================================================
 
     await getMicrophone();
 
 
-    // 2. CREATE CALL DOCUMENT
+    // =================================================
+    // 2. CREATE CALL
+    // =================================================
 
     await createCall();
 
 
+    // =================================================
     // 3. CREATE PEER
+    // =================================================
 
     createPeerConnection();
 
 
-    // 4. START LISTENERS
+    // =================================================
+    // 4. START LISTENERS BEFORE OFFER
+    // =================================================
 
     listenForRemoteCandidates();
 
     listenForCallStatus();
 
 
+    // =================================================
     // 5. CREATE OFFER
+    // =================================================
 
     const offer =
         await peerConnection
@@ -936,9 +1096,12 @@ async function startCallerCall() {
         );
 
 
+    // =================================================
     // 6. SAVE OFFER
+    // =================================================
 
     await setDoc(
+
         doc(
             db,
             "calls",
@@ -946,6 +1109,7 @@ async function startCallerCall() {
             "offer",
             "data"
         ),
+
         {
 
             type:
@@ -955,6 +1119,7 @@ async function startCallerCall() {
                 offer.sdp
 
         }
+
     );
 
 
@@ -964,7 +1129,9 @@ async function startCallerCall() {
     );
 
 
+    // =================================================
     // 7. LISTEN FOR ANSWER
+    // =================================================
 
     unsubscribeAnswer =
         onSnapshot(
@@ -1006,11 +1173,18 @@ async function startCallerCall() {
                         snapshot.data();
 
 
+                    console.log(
+                        "📥 ANSWER RECEIVED"
+                    );
+
+
                     await peerConnection
                         .setRemoteDescription(
+
                             new RTCSessionDescription(
                                 answer
                             )
+
                         );
 
 
@@ -1022,13 +1196,9 @@ async function startCallerCall() {
 
 
                     console.log(
-                        "📥 ANSWER RECEIVED"
+                        "✅ REMOTE DESCRIPTION READY"
                     );
 
-
-                    setCallStatus(
-                        "Connected"
-                    );
 
                 } catch (error) {
 
@@ -1036,6 +1206,7 @@ async function startCallerCall() {
                         "❌ ANSWER ERROR:",
                         error
                     );
+
 
                     setCallStatus(
                         "Connection failed"
@@ -1065,14 +1236,20 @@ async function startCallerCall() {
 
 async function startReceiverCall() {
 
-    isCaller = false;
+    isCaller =
+        false;
 
-    callEnded = false;
+    callEnded =
+        false;
 
     remoteDescriptionReady =
         false;
 
-    pendingCandidates = [];
+    pendingCandidates =
+        [];
+
+    addedRemoteCandidateIds =
+        new Set();
 
 
     if (!callId) {
@@ -1095,24 +1272,32 @@ async function startReceiverCall() {
     );
 
 
+    // =================================================
     // 1. MICROPHONE
+    // =================================================
 
     await getMicrophone();
 
 
+    // =================================================
     // 2. CREATE PEER
+    // =================================================
 
     createPeerConnection();
 
 
-    // 3. LISTENERS
+    // =================================================
+    // 3. START LISTENERS
+    // =================================================
 
     listenForRemoteCandidates();
 
     listenForCallStatus();
 
 
+    // =================================================
     // 4. LISTEN FOR OFFER
+    // =================================================
 
     unsubscribeOffer =
         onSnapshot(
@@ -1159,13 +1344,17 @@ async function startReceiverCall() {
                     );
 
 
-                    // 5. REMOTE OFFER
+                    // =================================================
+                    // 5. SET REMOTE OFFER
+                    // =================================================
 
                     await peerConnection
                         .setRemoteDescription(
+
                             new RTCSessionDescription(
                                 offer
                             )
+
                         );
 
 
@@ -1176,7 +1365,9 @@ async function startReceiverCall() {
                     await flushPendingCandidates();
 
 
+                    // =================================================
                     // 6. CREATE ANSWER
+                    // =================================================
 
                     const answer =
                         await peerConnection
@@ -1189,9 +1380,12 @@ async function startReceiverCall() {
                         );
 
 
+                    // =================================================
                     // 7. SAVE ANSWER
+                    // =================================================
 
                     await setDoc(
+
                         doc(
                             db,
                             "calls",
@@ -1199,6 +1393,7 @@ async function startReceiverCall() {
                             "answer",
                             "data"
                         ),
+
                         {
 
                             type:
@@ -1208,26 +1403,33 @@ async function startReceiverCall() {
                                 answer.sdp
 
                         }
+
                     );
 
 
-                    // 8. MARK CONNECTED
+                    // =================================================
+                    // 8. MARK SIGNALING CONNECTED
+                    // =================================================
 
                     await setDoc(
+
                         doc(
                             db,
                             "calls",
                             callId
                         ),
+
                         {
 
                             status:
                                 "connected"
 
                         },
+
                         {
                             merge: true
                         }
+
                     );
 
 
@@ -1236,16 +1438,13 @@ async function startReceiverCall() {
                     );
 
 
-                    setCallStatus(
-                        "Connected"
-                    );
-
                 } catch (error) {
 
                     console.error(
                         "❌ RECEIVER ERROR:",
                         error
                     );
+
 
                     setCallStatus(
                         "Connection failed"
@@ -1287,7 +1486,8 @@ async function endCall() {
     }
 
 
-    callEnded = true;
+    callEnded =
+        true;
 
 
     setCallStatus(
@@ -1295,19 +1495,18 @@ async function endCall() {
     );
 
 
-    // ALWAYS CLEAN UP LOCALLY
-    // even if Firestore fails.
-
     if (callId) {
 
         try {
 
             await setDoc(
+
                 doc(
                     db,
                     "calls",
                     callId
                 ),
+
                 {
 
                     status:
@@ -1322,9 +1521,11 @@ async function endCall() {
                             : null
 
                 },
+
                 {
                     merge: true
                 }
+
             );
 
 
@@ -1332,10 +1533,11 @@ async function endCall() {
                 "✅ CALL MARKED ENDED"
             );
 
+
         } catch (error) {
 
             console.error(
-                "❌ FIRESTORE END ERROR:",
+                "❌ END CALL FIRESTORE ERROR:",
                 error
             );
 
@@ -1359,10 +1561,17 @@ function cleanupCall(
     goBack = true
 ) {
 
-    callEnded = true;
+    if (callEnded === false) {
+
+        callEnded =
+            true;
+
+    }
 
 
-    // LISTENERS
+    // =================================================
+    // STOP CALL LISTENER
+    // =================================================
 
     if (unsubscribeCall) {
 
@@ -1374,6 +1583,10 @@ function cleanupCall(
     }
 
 
+    // =================================================
+    // STOP ANSWER LISTENER
+    // =================================================
+
     if (unsubscribeAnswer) {
 
         unsubscribeAnswer();
@@ -1383,6 +1596,10 @@ function cleanupCall(
 
     }
 
+
+    // =================================================
+    // STOP OFFER LISTENER
+    // =================================================
 
     if (unsubscribeOffer) {
 
@@ -1394,6 +1611,10 @@ function cleanupCall(
     }
 
 
+    // =================================================
+    // STOP ICE LISTENER
+    // =================================================
+
     if (unsubscribeRemoteCandidates) {
 
         unsubscribeRemoteCandidates();
@@ -1404,16 +1625,22 @@ function cleanupCall(
     }
 
 
-    // MICROPHONE
+    // =================================================
+    // STOP MICROPHONE
+    // =================================================
 
     if (localStream) {
 
         localStream
             .getTracks()
             .forEach(
-                track =>
-                    track.stop()
+                track => {
+
+                    track.stop();
+
+                }
             );
+
 
         localStream =
             null;
@@ -1421,16 +1648,22 @@ function cleanupCall(
     }
 
 
-    // REMOTE STREAM
+    // =================================================
+    // STOP REMOTE AUDIO
+    // =================================================
 
     if (remoteStream) {
 
         remoteStream
             .getTracks()
             .forEach(
-                track =>
-                    track.stop()
+                track => {
+
+                    track.stop();
+
+                }
             );
+
 
         remoteStream =
             null;
@@ -1438,7 +1671,9 @@ function cleanupCall(
     }
 
 
-    // AUDIO
+    // =================================================
+    // CLEAR AUDIO
+    // =================================================
 
     if (remoteAudio) {
 
@@ -1450,7 +1685,9 @@ function cleanupCall(
     }
 
 
-    // PEER
+    // =================================================
+    // CLOSE PEER
+    // =================================================
 
     if (peerConnection) {
 
@@ -1465,6 +1702,9 @@ function cleanupCall(
     pendingCandidates =
         [];
 
+    addedRemoteCandidateIds =
+        new Set();
+
     remoteDescriptionReady =
         false;
 
@@ -1473,6 +1713,10 @@ function cleanupCall(
         "Call ended"
     );
 
+
+    // =================================================
+    // RETURN TO CHATS
+    // =================================================
 
     if (goBack) {
 
@@ -1520,7 +1764,7 @@ if (muteBtn) {
             }
 
 
-            const enabled =
+            const currentlyEnabled =
                 tracks[0].enabled;
 
 
@@ -1528,7 +1772,7 @@ if (muteBtn) {
                 track => {
 
                     track.enabled =
-                        !enabled;
+                        !currentlyEnabled;
 
                 }
             );
@@ -1536,20 +1780,23 @@ if (muteBtn) {
 
             muteBtn.classList.toggle(
                 "active",
-                enabled
+                currentlyEnabled
             );
 
 
-            muteBtn.innerHTML =
-                enabled
+            if (
+                currentlyEnabled
+            ) {
 
-                    ?
+                muteBtn.innerHTML =
+                    '<i class="fa-solid fa-microphone-slash"></i>';
 
-                '<i class="fa-solid fa-microphone-slash"></i>'
+            } else {
 
-                    :
+                muteBtn.innerHTML =
+                    '<i class="fa-solid fa-microphone"></i>';
 
-                '<i class="fa-solid fa-microphone"></i>';
+            }
 
         }
     );
@@ -1558,7 +1805,7 @@ if (muteBtn) {
 
 
 // =====================================================
-// END CALL BUTTON
+// END BUTTON
 // =====================================================
 
 if (endCallBtn) {
@@ -1571,9 +1818,11 @@ if (endCallBtn) {
 
             event.stopPropagation();
 
+
             console.log(
                 "🛑 END BUTTON CLICKED"
             );
+
 
             await endCall();
 
@@ -1597,6 +1846,7 @@ if (backBtn) {
 
             event.stopPropagation();
 
+
             await endCall();
 
         }
@@ -1610,7 +1860,9 @@ if (backBtn) {
 // =====================================================
 
 onAuthStateChanged(
+
     auth,
+
     async user => {
 
         if (!user) {
@@ -1633,8 +1885,10 @@ onAuthStateChanged(
                 "No user selected."
             );
 
+
             window.location.href =
                 "chats.html";
+
 
             return;
 
@@ -1650,8 +1904,10 @@ onAuthStateChanged(
                 "You cannot call yourself."
             );
 
+
             window.location.href =
                 "chats.html";
+
 
             return;
 
@@ -1659,9 +1915,6 @@ onAuthStateChanged(
 
 
         try {
-
-            await loadRemoteUser();
-
 
             // =================================================
             // INCOMING CALL
@@ -1677,11 +1930,13 @@ onAuthStateChanged(
 
                 const callSnap =
                     await getDoc(
+
                         doc(
                             db,
                             "calls",
                             incomingCallId
                         )
+
                     );
 
 
@@ -1700,17 +1955,9 @@ onAuthStateChanged(
                     callSnap.data();
 
 
-                if (
-                    callData.status ===
-                    "ended"
-                ) {
-
-                    throw new Error(
-                        "Call already ended"
-                    );
-
-                }
-
+                // =================================================
+                // VERIFY CALL
+                // =================================================
 
                 if (
                     callData.receiverId !==
@@ -1724,11 +1971,59 @@ onAuthStateChanged(
                 }
 
 
+                if (
+                    callData.callerId ===
+                    currentUser.uid
+                ) {
+
+                    throw new Error(
+                        "Invalid call"
+                    );
+
+                }
+
+
+                if (
+                    callData.type !==
+                    "voice"
+                ) {
+
+                    throw new Error(
+                        "Invalid voice call"
+                    );
+
+                }
+
+
+                if (
+                    callData.status ===
+                    "ended"
+                ) {
+
+                    throw new Error(
+                        "Call already ended"
+                    );
+
+                }
+
+
+                // =================================================
+                // IMPORTANT:
+                // For incoming calls, the remote user
+                // is the CALLER, not receiverId.
+                // =================================================
+
+                await loadRemoteUser(
+                    callData.callerId
+                );
+
+
                 callId =
                     incomingCallId;
 
 
                 await startReceiverCall();
+
 
                 return;
 
@@ -1744,7 +2039,13 @@ onAuthStateChanged(
             );
 
 
+            await loadRemoteUser(
+                receiverId
+            );
+
+
             await startCallerCall();
+
 
         } catch (error) {
 
@@ -1766,6 +2067,7 @@ onAuthStateChanged(
         }
 
     }
+
 );
 
 
