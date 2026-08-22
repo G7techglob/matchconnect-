@@ -1729,24 +1729,22 @@ if (callEnded === false) {
     // =================================================
     // RETURN TO CHATS
     // =================================================
-
-    if (goBack) {
+if (goBack) {
 
     setTimeout(
         () => {
 
-            const chatUserId =
-                isCaller
-                    ? receiverId
-                    : params.get("receiverId");
-
-            if (chatUserId) {
+            if (remoteUserId) {
 
                 window.location.href =
                     "chat.html?receiverId=" +
-                    encodeURIComponent(chatUserId);
+                    encodeURIComponent(remoteUserId);
 
             } else {
+
+                console.error(
+                    "❌ NO REMOTE USER ID FOR CHAT RETURN"
+                );
 
                 window.location.href =
                     "chats.html";
@@ -1757,8 +1755,8 @@ if (callEnded === false) {
         700
     );
 
-    }
-  }
+}
+ }
 // =====================================================
 // MUTE
 // =====================================================
@@ -1920,18 +1918,16 @@ onAuthStateChanged(
             user;
 
 
-        if (!receiverId) {
+        if (!receiverId && !incomingCallId) {
 
-            alert(
-                "No user selected."
-            );
+    alert(
+        "No user selected."
+    );
 
+    window.location.href =
+        "chats.html";
 
-            window.location.href =
-                "chat.html";
-
-
-            return;
+    return;
 
         }
 
@@ -2059,6 +2055,9 @@ onAuthStateChanged(
                 );
 
 
+                remoteUserId =
+    callData.callerId;
+                
                 callId =
                     incomingCallId;
 
@@ -2079,6 +2078,9 @@ onAuthStateChanged(
                 "📞 OUTGOING CALL"
             );
 
+
+            remoteUserId =
+    receiverId;
 
             await loadRemoteUser(
                 receiverId
