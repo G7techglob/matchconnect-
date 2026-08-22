@@ -1732,20 +1732,32 @@ if (callEnded === false) {
 
     if (goBack) {
 
-        setTimeout(
-            () => {
+    setTimeout(
+        () => {
+
+            const chatUserId =
+                isCaller
+                    ? receiverId
+                    : params.get("receiverId");
+
+            if (chatUserId) {
 
                 window.location.href =
-                    "chat.html";
+                    "chat.html?receiverId=" +
+                    encodeURIComponent(chatUserId);
 
-            },
-            700
-        );
+            } else {
+
+                window.location.href =
+                    "chats.html";
+
+            }
+
+        },
+        700
+    );
 
     }
-
-}
-
 
 // =====================================================
 // MUTE
