@@ -970,6 +970,10 @@ function listenForCallStatus() {
                     data.status
                 );
 
+                console.log(
+    "📞 FIRESTORE CALL STATUS RECEIVED:",
+    data.status
+);
 
                 if (
     data.status ===
@@ -1559,12 +1563,22 @@ function cleanupCall(
     goBack = true
 ) {
 
-    if (callEnded === false) {
-
-        callEnded =
-            true;
-
+    console.log(
+    "🧹 CLEANUP CALL TRIGGERED",
+    {
+        callId: callId,
+        callEnded: callEnded,
+        isCaller: isCaller,
+        goBack: goBack
     }
+);
+
+if (callEnded === false) {
+
+    callEnded =
+        true;
+
+}
 
 
     // =================================================
@@ -2047,20 +2061,24 @@ onAuthStateChanged(
 
         } catch (error) {
 
-            console.error(
-                "❌ VOICE CALL ERROR:",
-                error
-            );
+    console.error(
+        "❌ VOICE CALL START ERROR:",
+        error
+    );
 
+    console.error(
+        "❌ ERROR MESSAGE:",
+        error?.message
+    );
 
-            setCallStatus(
-                "Unable to start call"
-            );
+    console.error(
+        "❌ ERROR CODE:",
+        error?.code
+    );
 
-
-            cleanupCall(
-                true
-            );
+    setCallStatus(
+        "Unable to start call"
+    );
 
         }
 
