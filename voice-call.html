@@ -24,21 +24,24 @@
 
 </head>
 
+
 <body>
+
 
     <!-- =====================================================
          VOICE CALL HEADER
     ====================================================== -->
 
-    <header class="voice-call-header">
+    <header class="call-header">
 
         <button
             id="backBtn"
             class="back-btn"
             type="button"
-            aria-label="Back"
         >
+
             <i class="fa-solid fa-arrow-left"></i>
+
         </button>
 
 
@@ -49,6 +52,7 @@
                 src="images/default-avatar.png"
                 alt="User"
             >
+
 
             <div>
 
@@ -67,11 +71,15 @@
     </header>
 
 
+
     <!-- =====================================================
          VOICE CALL AREA
     ====================================================== -->
 
-    <main class="voice-call-container">
+    <main
+        id="videoContainer"
+        class="video-container"
+    >
 
         <div
             id="voiceAvatar"
@@ -84,38 +92,45 @@
                 alt="User"
             >
 
+
             <h2 id="voiceAvatarName">
                 Calling...
             </h2>
 
-            <p id="voiceConnectionStatus">
-                Connecting...
-            </p>
-
         </div>
 
+
+        <!-- Hidden audio element for remote voice -->
+
+        <audio
+            id="remoteAudio"
+            autoplay
+        ></audio>
+
     </main>
+
 
 
     <!-- =====================================================
          VOICE CALL CONTROLS
     ====================================================== -->
 
-    <div class="voice-call-controls">
+    <div class="call-controls">
 
-        <!-- MUTE -->
+
+        <!-- MICROPHONE -->
 
         <button
             id="muteBtn"
             class="call-control"
             type="button"
             title="Mute microphone"
-            aria-label="Mute microphone"
         >
 
             <i class="fa-solid fa-microphone"></i>
 
         </button>
+
 
 
         <!-- END CALL -->
@@ -125,14 +140,15 @@
             class="end-call-btn"
             type="button"
             title="End call"
-            aria-label="End call"
         >
 
             <i class="fa-solid fa-phone-slash"></i>
 
         </button>
 
+
     </div>
+
 
 
     <!-- =====================================================
@@ -143,6 +159,7 @@
         type="module"
         src="voice-call.js"
     ></script>
+
 
 </body>
 
