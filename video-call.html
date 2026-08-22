@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Video Call - MatchConnect</title>
+
+    <link
+        rel="stylesheet"
+        href="video-call.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         VIDEO CALL HEADER
+    ====================================================== -->
+
+    <header class="call-header">
+
+        <button
+            id="backBtn"
+            class="back-btn"
+            type="button"
+        >
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+        </button>
+
+
+        <div class="caller-info">
+
+            <img
+                id="callerPhoto"
+                src="images/default-avatar.png"
+                alt="User"
+            >
+
+
+            <div>
+
+                <h3 id="callerName">
+                    Calling...
+                </h3>
+
+                <p id="callStatus">
+                    Connecting...
+                </p>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         VIDEO AREA
+    ====================================================== -->
+
+    <main
+        id="videoContainer"
+        class="video-container"
+    >
+
+        <!-- REMOTE USER -->
+
+        <video
+            id="remoteVideo"
+            autoplay
+            playsinline
+        ></video>
+
+
+        <!-- LOCAL USER -->
+
+        <video
+            id="localVideo"
+            autoplay
+            muted
+            playsinline
+        ></video>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         VIDEO CALL CONTROLS
+    ====================================================== -->
+
+    <div class="call-controls">
+
+
+        <!-- MICROPHONE -->
+
+        <button
+            id="muteBtn"
+            class="call-control"
+            type="button"
+            title="Mute microphone"
+        >
+
+            <i class="fa-solid fa-microphone"></i>
+
+        </button>
+
+
+
+        <!-- CAMERA -->
+
+        <button
+            id="cameraBtn"
+            class="call-control"
+            type="button"
+            title="Camera"
+        >
+
+            <i class="fa-solid fa-video"></i>
+
+        </button>
+
+
+
+        <!-- SWITCH CAMERA -->
+
+        <button
+            id="switchCameraBtn"
+            class="call-control"
+            type="button"
+            title="Switch camera"
+        >
+
+            <i class="fa-solid fa-camera-rotate"></i>
+
+        </button>
+
+
+
+        <!-- END CALL -->
+
+        <button
+            id="endCallBtn"
+            class="end-call-btn"
+            type="button"
+            title="End call"
+        >
+
+            <i class="fa-solid fa-phone-slash"></i>
+
+        </button>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script
+        type="module"
+        src="video-call.js"
+    ></script>
+
+
+</body>
+
+</html>
