@@ -76,6 +76,8 @@ const incomingCallId =
 
 let currentUser = null;
 
+let remoteUserId = null;
+
 let callId =
     incomingCallId || null;
 
