@@ -3,11 +3,8 @@ import { auth, db } from "./firebase.js";
 import {
     collection,
     doc,
-    addDoc,
     getDoc,
-    getDocs,
-    query,
-    where,
+    addDoc,
     setDoc,
     onSnapshot,
     serverTimestamp
@@ -21,6 +18,7 @@ import {
 // =====================================================
 // MATCHCONNECT
 // ONE-TO-ONE VOICE CALL
+// STABLE WEBRTC + FIRESTORE SIGNALING
 // =====================================================
 
 
@@ -52,9 +50,12 @@ const endCallBtn =
 const backBtn =
     document.getElementById("backBtn");
 
+const remoteAudio =
+    document.getElementById("remoteAudio");
+
 
 // =====================================================
-// URL
+// URL PARAMETERS
 // =====================================================
 
 const params =
@@ -66,21 +67,26 @@ const receiverId =
     params.get("receiverId");
 
 
+// THIS IS VERY IMPORTANT
+// Incoming calls will now pass the exact call ID.
+
+const incomingCallId =
+    params.get("callId");
+
+
 // =====================================================
 // VARIABLES
 // =====================================================
 
 let currentUser = null;
 
-let callId = null;
+let callId = incomingCallId || null;
 
 let peerConnection = null;
 
 let localStream = null;
 
 let remoteStream = null;
-
-let remoteAudio = null;
 
 let isCaller = false;
 
@@ -100,7 +106,7 @@ let unsubscribeRemoteCandidates = null;
 
 
 // =====================================================
-// WEBRTC
+// WEBRTC CONFIGURATION
 // =====================================================
 
 const rtcConfiguration = {
@@ -182,7 +188,7 @@ async function loadUser(uid) {
     } catch (error) {
 
         console.error(
-            "Profile error:",
+            "❌ LOAD USER ERROR:",
             error
         );
 
@@ -267,12 +273,16 @@ async function getMicrophone() {
 
                 });
 
+        console.log(
+            "🎤 MICROPHONE READY"
+        );
+
         return localStream;
 
     } catch (error) {
 
         console.error(
-            "❌ Microphone error:",
+            "❌ MICROPHONE ERROR:",
             error
         );
 
@@ -299,6 +309,10 @@ function createPeerConnection() {
 
     }
 
+    console.log(
+        "🔗 CREATING PEER CONNECTION"
+    );
+
 
     peerConnection =
         new RTCPeerConnection(
@@ -310,25 +324,7 @@ function createPeerConnection() {
         new MediaStream();
 
 
-    // =================================================
-    // REMOTE AUDIO
-    // =================================================
-
-    remoteAudio =
-        document.getElementById(
-            "remoteAudio"
-        );
-
-
-    if (!remoteAudio) {
-
-        remoteAudio =
-            document.createElement(
-                "audio"
-            );
-
-        remoteAudio.id =
-            "remoteAudio";
+    if (remoteAudio) {
 
         remoteAudio.autoplay =
             true;
@@ -336,21 +332,10 @@ function createPeerConnection() {
         remoteAudio.playsInline =
             true;
 
-        document.body.appendChild(
-            remoteAudio
-        );
+        remoteAudio.srcObject =
+            remoteStream;
 
     }
-
-
-    remoteAudio.autoplay =
-        true;
-
-    remoteAudio.playsInline =
-        true;
-
-    remoteAudio.srcObject =
-        remoteStream;
 
 
     // =================================================
@@ -358,30 +343,28 @@ function createPeerConnection() {
     // =================================================
 
     peerConnection.ontrack =
-        event => {
+        async event => {
 
             console.log(
                 "🔊 REMOTE AUDIO RECEIVED"
             );
 
 
-            for (
-                const track
-                of event.streams[0]?.getTracks() || []
-            ) {
+            if (event.track) {
 
-                if (
-                    !remoteStream
+                const alreadyAdded =
+                    remoteStream
                         .getTracks()
                         .some(
-                            existing =>
-                                existing.id ===
-                                track.id
-                        )
-                ) {
+                            track =>
+                                track.id ===
+                                event.track.id
+                        );
+
+                if (!alreadyAdded) {
 
                     remoteStream.addTrack(
-                        track
+                        event.track
                     );
 
                 }
@@ -389,40 +372,25 @@ function createPeerConnection() {
             }
 
 
-            if (
-                event.track &&
-                !remoteStream
-                    .getTracks()
-                    .some(
-                        track =>
-                            track.id ===
-                            event.track.id
-                    )
-            ) {
+            if (remoteAudio) {
 
-                remoteStream.addTrack(
-                    event.track
-                );
+                remoteAudio.srcObject =
+                    remoteStream;
+
+                try {
+
+                    await remoteAudio.play();
+
+                } catch (error) {
+
+                    console.warn(
+                        "⚠️ AUDIO PLAY ERROR:",
+                        error
+                    );
+
+                }
 
             }
-
-
-            remoteAudio.srcObject =
-                remoteStream;
-
-
-            remoteAudio
-                .play()
-                .catch(
-                    error => {
-
-                        console.warn(
-                            "Audio autoplay:",
-                            error
-                        );
-
-                    }
-                );
 
 
             setCallStatus(
@@ -433,7 +401,7 @@ function createPeerConnection() {
 
 
     // =================================================
-    // LOCAL ICE
+    // LOCAL ICE CANDIDATES
     // =================================================
 
     peerConnection.onicecandidate =
@@ -447,7 +415,6 @@ function createPeerConnection() {
                 return;
 
             }
-
 
             const collectionName =
                 isCaller
@@ -469,14 +436,14 @@ function createPeerConnection() {
 
 
                 console.log(
-                    "🧊 ICE saved:",
+                    "🧊 ICE SENT:",
                     collectionName
                 );
 
             } catch (error) {
 
                 console.error(
-                    "❌ ICE save error:",
+                    "❌ ICE SEND ERROR:",
                     error
                 );
 
@@ -489,8 +456,7 @@ function createPeerConnection() {
     // CONNECTION STATE
     // =================================================
 
-    peerConnection
-        .onconnectionstatechange =
+    peerConnection.onconnectionstatechange =
         () => {
 
             if (!peerConnection) {
@@ -499,22 +465,17 @@ function createPeerConnection() {
 
             }
 
-
             const state =
-                peerConnection
-                    .connectionState;
+                peerConnection.connectionState;
 
 
             console.log(
-                "🔗 CONNECTION:",
+                "🔗 CONNECTION STATE:",
                 state
             );
 
 
-            if (
-                state ===
-                "connecting"
-            ) {
+            if (state === "new") {
 
                 setCallStatus(
                     "Connecting..."
@@ -523,10 +484,16 @@ function createPeerConnection() {
             }
 
 
-            if (
-                state ===
-                "connected"
-            ) {
+            if (state === "connecting") {
+
+                setCallStatus(
+                    "Connecting..."
+                );
+
+            }
+
+
+            if (state === "connected") {
 
                 setCallStatus(
                     "Connected"
@@ -535,10 +502,7 @@ function createPeerConnection() {
             }
 
 
-            if (
-                state ===
-                "disconnected"
-            ) {
+            if (state === "disconnected") {
 
                 setCallStatus(
                     "Connection interrupted"
@@ -547,13 +511,19 @@ function createPeerConnection() {
             }
 
 
-            if (
-                state ===
-                "failed"
-            ) {
+            if (state === "failed") {
 
                 setCallStatus(
                     "Connection failed"
+                );
+
+            }
+
+
+            if (state === "closed") {
+
+                setCallStatus(
+                    "Call ended"
                 );
 
             }
@@ -562,17 +532,21 @@ function createPeerConnection() {
 
 
     // =================================================
-    // ICE STATE
+    // ICE CONNECTION STATE
     // =================================================
 
-    peerConnection
-        .oniceconnectionstatechange =
+    peerConnection.oniceconnectionstatechange =
         () => {
+
+            if (!peerConnection) {
+
+                return;
+
+            }
 
             console.log(
                 "🧊 ICE STATE:",
-                peerConnection
-                    ?.iceConnectionState
+                peerConnection.iceConnectionState
             );
 
         };
@@ -613,6 +587,10 @@ function listenForRemoteCandidates() {
 
     if (!callId) {
 
+        console.error(
+            "❌ Cannot listen for ICE: no callId"
+        );
+
         return;
 
     }
@@ -624,14 +602,22 @@ function listenForRemoteCandidates() {
             : "callerCandidates";
 
 
+    console.log(
+        "👂 LISTENING FOR:",
+        collectionName
+    );
+
+
     unsubscribeRemoteCandidates =
         onSnapshot(
+
             collection(
                 db,
                 "calls",
                 callId,
                 collectionName
             ),
+
             async snapshot => {
 
                 for (
@@ -662,6 +648,10 @@ function listenForRemoteCandidates() {
                             candidate
                         );
 
+                        console.log(
+                            "⏳ ICE QUEUED"
+                        );
+
                         continue;
 
                     }
@@ -678,13 +668,13 @@ function listenForRemoteCandidates() {
 
 
                         console.log(
-                            "✅ Remote ICE added"
+                            "✅ REMOTE ICE ADDED"
                         );
 
                     } catch (error) {
 
                         console.error(
-                            "❌ Remote ICE error:",
+                            "❌ REMOTE ICE ERROR:",
                             error
                         );
 
@@ -693,6 +683,7 @@ function listenForRemoteCandidates() {
                 }
 
             }
+
         );
 
 }
@@ -715,7 +706,7 @@ async function flushPendingCandidates() {
 
 
     while (
-        pendingCandidates.length
+        pendingCandidates.length > 0
     ) {
 
         const candidate =
@@ -731,10 +722,15 @@ async function flushPendingCandidates() {
                     )
                 );
 
+
+            console.log(
+                "✅ QUEUED ICE ADDED"
+            );
+
         } catch (error) {
 
             console.error(
-                "❌ Pending ICE error:",
+                "❌ QUEUED ICE ERROR:",
                 error
             );
 
@@ -746,7 +742,7 @@ async function flushPendingCandidates() {
 
 
 // =====================================================
-// CREATE CALL
+// CREATE OUTGOING CALL DOCUMENT
 // =====================================================
 
 async function createCall() {
@@ -802,7 +798,7 @@ async function createCall() {
 
 
 // =====================================================
-// LISTEN CALL STATUS
+// LISTEN CALL DOCUMENT
 // =====================================================
 
 function listenForCallStatus() {
@@ -816,11 +812,13 @@ function listenForCallStatus() {
 
     unsubscribeCall =
         onSnapshot(
+
             doc(
                 db,
                 "calls",
                 callId
             ),
+
             snapshot => {
 
                 if (
@@ -856,23 +854,34 @@ function listenForCallStatus() {
 
                 if (
                     data.status ===
-                    "ended"
+                    "ended" &&
+                    !callEnded
                 ) {
 
                     cleanupCall(
-                        false
+                        true
                     );
 
                 }
 
+            },
+
+            error => {
+
+                console.error(
+                    "❌ CALL LISTENER ERROR:",
+                    error
+                );
+
             }
+
         );
 
 }
 
 
 // =====================================================
-// CALLER
+// START CALLER
 // =====================================================
 
 async function startCallerCall() {
@@ -892,29 +901,29 @@ async function startCallerCall() {
     );
 
 
-    // IMPORTANT:
-    // Get microphone BEFORE creating peer connection
+    // 1. MICROPHONE
 
     await getMicrophone();
 
 
-    createPeerConnection();
-
-
-    // IMPORTANT:
-    // Create call document BEFORE creating offer
+    // 2. CREATE CALL DOCUMENT
 
     await createCall();
 
+
+    // 3. CREATE PEER
+
+    createPeerConnection();
+
+
+    // 4. START LISTENERS
 
     listenForRemoteCandidates();
 
     listenForCallStatus();
 
 
-    // =================================================
-    // CREATE OFFER
-    // =================================================
+    // 5. CREATE OFFER
 
     const offer =
         await peerConnection
@@ -926,6 +935,8 @@ async function startCallerCall() {
             offer
         );
 
+
+    // 6. SAVE OFFER
 
     await setDoc(
         doc(
@@ -953,12 +964,11 @@ async function startCallerCall() {
     );
 
 
-    // =================================================
-    // WAIT FOR ANSWER
-    // =================================================
+    // 7. LISTEN FOR ANSWER
 
     unsubscribeAnswer =
         onSnapshot(
+
             doc(
                 db,
                 "calls",
@@ -966,6 +976,7 @@ async function startCallerCall() {
                 "answer",
                 "data"
             ),
+
             async snapshot => {
 
                 if (
@@ -1026,16 +1037,30 @@ async function startCallerCall() {
                         error
                     );
 
+                    setCallStatus(
+                        "Connection failed"
+                    );
+
                 }
 
+            },
+
+            error => {
+
+                console.error(
+                    "❌ ANSWER LISTENER ERROR:",
+                    error
+                );
+
             }
+
         );
 
 }
 
 
 // =====================================================
-// RECEIVER
+// START RECEIVER
 // =====================================================
 
 async function startReceiverCall() {
@@ -1052,11 +1077,9 @@ async function startReceiverCall() {
 
     if (!callId) {
 
-        console.error(
-            "❌ No call ID"
+        throw new Error(
+            "Missing incoming call ID"
         );
-
-        return;
 
     }
 
@@ -1072,23 +1095,28 @@ async function startReceiverCall() {
     );
 
 
+    // 1. MICROPHONE
+
     await getMicrophone();
 
 
+    // 2. CREATE PEER
+
     createPeerConnection();
 
+
+    // 3. LISTENERS
 
     listenForRemoteCandidates();
 
     listenForCallStatus();
 
 
-    // =================================================
-    // LISTEN FOR OFFER
-    // =================================================
+    // 4. LISTEN FOR OFFER
 
     unsubscribeOffer =
         onSnapshot(
+
             doc(
                 db,
                 "calls",
@@ -1096,6 +1124,7 @@ async function startReceiverCall() {
                 "offer",
                 "data"
             ),
+
             async snapshot => {
 
                 if (
@@ -1130,6 +1159,8 @@ async function startReceiverCall() {
                     );
 
 
+                    // 5. REMOTE OFFER
+
                     await peerConnection
                         .setRemoteDescription(
                             new RTCSessionDescription(
@@ -1145,9 +1176,7 @@ async function startReceiverCall() {
                     await flushPendingCandidates();
 
 
-                    // =================================================
-                    // CREATE ANSWER
-                    // =================================================
+                    // 6. CREATE ANSWER
 
                     const answer =
                         await peerConnection
@@ -1159,6 +1188,8 @@ async function startReceiverCall() {
                             answer
                         );
 
+
+                    // 7. SAVE ANSWER
 
                     await setDoc(
                         doc(
@@ -1179,6 +1210,8 @@ async function startReceiverCall() {
                         }
                     );
 
+
+                    // 8. MARK CONNECTED
 
                     await setDoc(
                         doc(
@@ -1215,68 +1248,23 @@ async function startReceiverCall() {
                     );
 
                     setCallStatus(
-                        "Call connection failed"
+                        "Connection failed"
                     );
 
                 }
 
+            },
+
+            error => {
+
+                console.error(
+                    "❌ OFFER LISTENER ERROR:",
+                    error
+                );
+
             }
+
         );
-
-}
-
-
-// =====================================================
-// FIND INCOMING CALL
-// =====================================================
-
-async function findIncomingCall() {
-
-    const callsQuery =
-        query(
-            collection(
-                db,
-                "calls"
-            ),
-            where(
-                "receiverId",
-                "==",
-                currentUser.uid
-            ),
-            where(
-                "callerId",
-                "==",
-                receiverId
-            ),
-            where(
-                "type",
-                "==",
-                "voice"
-            ),
-            where(
-                "status",
-                "==",
-                "ringing"
-            )
-        );
-
-
-    const snapshot =
-        await getDocs(
-            callsQuery
-        );
-
-
-    if (
-        snapshot.empty
-    ) {
-
-        return null;
-
-    }
-
-
-    return snapshot.docs[0].id;
 
 }
 
@@ -1288,7 +1276,7 @@ async function findIncomingCall() {
 async function endCall() {
 
     console.log(
-        "📞 END CALL BUTTON PRESSED"
+        "🛑 END CALL PRESSED"
     );
 
 
@@ -1306,6 +1294,9 @@ async function endCall() {
         "Ending call..."
     );
 
+
+    // ALWAYS CLEAN UP LOCALLY
+    // even if Firestore fails.
 
     if (callId) {
 
@@ -1327,8 +1318,8 @@ async function endCall() {
 
                     endedBy:
                         currentUser
-                            ?.uid ||
-                        null
+                            ? currentUser.uid
+                            : null
 
                 },
                 {
@@ -1338,13 +1329,13 @@ async function endCall() {
 
 
             console.log(
-                "📞 CALL MARKED ENDED"
+                "✅ CALL MARKED ENDED"
             );
 
         } catch (error) {
 
             console.error(
-                "❌ END CALL FIRESTORE ERROR:",
+                "❌ FIRESTORE END ERROR:",
                 error
             );
 
@@ -1368,18 +1359,10 @@ function cleanupCall(
     goBack = true
 ) {
 
-    if (
-        callEnded === false
-    ) {
-
-        callEnded = true;
-
-    }
+    callEnded = true;
 
 
-    // =================================================
     // LISTENERS
-    // =================================================
 
     if (unsubscribeCall) {
 
@@ -1421,9 +1404,7 @@ function cleanupCall(
     }
 
 
-    // =================================================
     // MICROPHONE
-    // =================================================
 
     if (localStream) {
 
@@ -1434,27 +1415,13 @@ function cleanupCall(
                     track.stop()
             );
 
-        localStream = null;
-
-    }
-
-
-    // =================================================
-    // REMOTE AUDIO
-    // =================================================
-
-    if (remoteAudio) {
-
-        remoteAudio.pause();
-
-        remoteAudio.srcObject =
-            null;
-
-        remoteAudio =
+        localStream =
             null;
 
     }
 
+
+    // REMOTE STREAM
 
     if (remoteStream) {
 
@@ -1465,14 +1432,25 @@ function cleanupCall(
                     track.stop()
             );
 
-        remoteStream = null;
+        remoteStream =
+            null;
 
     }
 
 
-    // =================================================
-    // PEER CONNECTION
-    // =================================================
+    // AUDIO
+
+    if (remoteAudio) {
+
+        remoteAudio.pause();
+
+        remoteAudio.srcObject =
+            null;
+
+    }
+
+
+    // PEER
 
     if (peerConnection) {
 
@@ -1484,7 +1462,8 @@ function cleanupCall(
     }
 
 
-    pendingCandidates = [];
+    pendingCandidates =
+        [];
 
     remoteDescriptionReady =
         false;
@@ -1494,10 +1473,6 @@ function cleanupCall(
         "Call ended"
     );
 
-
-    // =================================================
-    // RETURN
-    // =================================================
 
     if (goBack) {
 
@@ -1545,7 +1520,7 @@ if (muteBtn) {
             }
 
 
-            const currentlyEnabled =
+            const enabled =
                 tracks[0].enabled;
 
 
@@ -1553,7 +1528,7 @@ if (muteBtn) {
                 track => {
 
                     track.enabled =
-                        !currentlyEnabled;
+                        !enabled;
 
                 }
             );
@@ -1561,12 +1536,12 @@ if (muteBtn) {
 
             muteBtn.classList.toggle(
                 "active",
-                currentlyEnabled
+                enabled
             );
 
 
             muteBtn.innerHTML =
-                currentlyEnabled
+                enabled
 
                     ?
 
@@ -1583,14 +1558,26 @@ if (muteBtn) {
 
 
 // =====================================================
-// END BUTTON
+// END CALL BUTTON
 // =====================================================
 
 if (endCallBtn) {
 
     endCallBtn.addEventListener(
         "click",
-        endCall
+        async event => {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            console.log(
+                "🛑 END BUTTON CLICKED"
+            );
+
+            await endCall();
+
+        }
     );
 
 }
@@ -1604,7 +1591,15 @@ if (backBtn) {
 
     backBtn.addEventListener(
         "click",
-        endCall
+        async event => {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            await endCall();
+
+        }
     );
 
 }
@@ -1669,42 +1664,92 @@ onAuthStateChanged(
 
 
             // =================================================
-            // CHECK FOR INCOMING CALL
+            // INCOMING CALL
             // =================================================
 
-            const incomingCall =
-                await findIncomingCall();
-
-
-            if (incomingCall) {
-
-                callId =
-                    incomingCall;
-
+            if (incomingCallId) {
 
                 console.log(
-                    "📲 INCOMING VOICE CALL:",
-                    callId
+                    "📲 INCOMING CALL:",
+                    incomingCallId
                 );
+
+
+                const callSnap =
+                    await getDoc(
+                        doc(
+                            db,
+                            "calls",
+                            incomingCallId
+                        )
+                    );
+
+
+                if (
+                    !callSnap.exists()
+                ) {
+
+                    throw new Error(
+                        "Call no longer exists"
+                    );
+
+                }
+
+
+                const callData =
+                    callSnap.data();
+
+
+                if (
+                    callData.status ===
+                    "ended"
+                ) {
+
+                    throw new Error(
+                        "Call already ended"
+                    );
+
+                }
+
+
+                if (
+                    callData.receiverId !==
+                    currentUser.uid
+                ) {
+
+                    throw new Error(
+                        "This call is not for this user"
+                    );
+
+                }
+
+
+                callId =
+                    incomingCallId;
 
 
                 await startReceiverCall();
 
-            } else {
-
-                console.log(
-                    "📞 OUTGOING VOICE CALL"
-                );
-
-
-                await startCallerCall();
+                return;
 
             }
+
+
+            // =================================================
+            // OUTGOING CALL
+            // =================================================
+
+            console.log(
+                "📞 OUTGOING CALL"
+            );
+
+
+            await startCallerCall();
 
         } catch (error) {
 
             console.error(
-                "❌ VOICE CALL START ERROR:",
+                "❌ VOICE CALL ERROR:",
                 error
             );
 
