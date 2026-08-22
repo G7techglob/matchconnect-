@@ -1769,34 +1769,25 @@ onAuthStateChanged(
 // CHECK FOR AN INCOMING CALL FROM THIS USER
 // =================================================
 //
-// receiverId is the other person.
-// Therefore an incoming call must have:
+// IMPORTANT:
+// We intentionally query using ONLY receiverId.
+// This avoids requiring a Firestore composite index.
 //
-// callerId   = receiverId
-// receiverId = currentUser.uid
-// status     = ringing
+// After getting the ringing calls, we check
+// callerId and receiverId in JavaScript.
 //
-// This prevents MatchConnect from accidentally
-// joining an unrelated old ringing call.
-//
+
+console.log(
+    "🔎 CHECKING FOR INCOMING CALL..."
+);
 
 const incomingCallsQuery =
     query(
         collection(db, "calls"),
         where(
-            "callerId",
-            "==",
-            receiverId
-        ),
-        where(
             "receiverId",
             "==",
             currentUser.uid
-        ),
-        where(
-            "status",
-            "==",
-            "ringing"
         )
     );
 
@@ -1807,15 +1798,70 @@ const incomingCallsSnapshot =
     );
 
 
-if (
-    !incomingCallsSnapshot.empty
+let incomingCallDoc = null;
+
+
+for (
+    const callDoc
+    of incomingCallsSnapshot.docs
 ) {
 
-    const incomingCallDoc =
-        incomingCallsSnapshot.docs[0];
+    const callData =
+        callDoc.data();
+
+
+    // Must be a ringing call
+    if (
+        callData.status !==
+        "ringing"
+    ) {
+
+        continue;
+
+    }
+
+
+    // Must be from the person we are
+    // currently communicating with
+    if (
+        callData.callerId !==
+        receiverId
+    ) {
+
+        continue;
+
+    }
+
+
+    // Must actually be addressed
+    // to the current user
+    if (
+        callData.receiverId !==
+        currentUser.uid
+    ) {
+
+        continue;
+
+    }
+
+
+    incomingCallDoc =
+        callDoc;
+
+    break;
+
+}
+
+
+// =================================================
+// INCOMING CALL FOUND
+// =================================================
+
+if (incomingCallDoc) {
 
     const incomingCallData =
         incomingCallDoc.data();
+
 
     callId =
         incomingCallDoc.id;
@@ -1837,19 +1883,13 @@ if (
 
 // =================================================
 // NO INCOMING CALL
-// START A NEW OUTGOING CALL
+// START OUTGOING CALL
 // =================================================
 
 console.log(
     "📞 NO INCOMING CALL — STARTING OUTGOING CALL"
 );
 
-
-
-
-// =================================================
-// START NEW CALL
-// =================================================
 
 await startCallerCall();
             
