@@ -3,11 +3,14 @@ import { auth, db } from "./firebase.js";
 import {
     doc,
     getDoc,
+    getDocs,
     setDoc,
     addDoc,
     collection,
     onSnapshot,
-    serverTimestamp
+    serverTimestamp,
+    query,
+    where
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import {
@@ -243,16 +246,6 @@ function setCallStatus(text) {
             text;
 
     }
-
-
-    if (voiceConnectionStatus) {
-
-        voiceConnectionStatus.textContent =
-            text;
-
-    }
-
-}
 
 
 // =====================================================
