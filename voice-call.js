@@ -1,16 +1,16 @@
 import { auth, db } from "./firebase.js";
 
 import {
+    collection,
     doc,
+    addDoc,
     getDoc,
     getDocs,
-    setDoc,
-    addDoc,
-    collection,
-    onSnapshot,
-    serverTimestamp,
     query,
-    where
+    where,
+    setDoc,
+    onSnapshot,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import {
@@ -19,7 +19,8 @@ import {
 
 
 // =====================================================
-// MATCHCONNECT — ONE-TO-ONE VOICE CALL
+// MATCHCONNECT
+// ONE-TO-ONE VOICE CALL
 // =====================================================
 
 
@@ -42,11 +43,6 @@ const voiceAvatarPhoto =
 const voiceAvatarName =
     document.getElementById("voiceAvatarName");
 
-const voiceConnectionStatus =
-    document.getElementById(
-        "voiceConnectionStatus"
-    );
-
 const muteBtn =
     document.getElementById("muteBtn");
 
@@ -58,7 +54,7 @@ const backBtn =
 
 
 // =====================================================
-// URL PARAMETERS
+// URL
 // =====================================================
 
 const params =
@@ -76,8 +72,6 @@ const receiverId =
 
 let currentUser = null;
 
-let remoteUser = null;
-
 let callId = null;
 
 let peerConnection = null;
@@ -85,6 +79,8 @@ let peerConnection = null;
 let localStream = null;
 
 let remoteStream = null;
+
+let remoteAudio = null;
 
 let isCaller = false;
 
@@ -98,13 +94,13 @@ let unsubscribeCall = null;
 
 let unsubscribeAnswer = null;
 
-let unsubscribeRemoteCandidates = null;
-
 let unsubscribeOffer = null;
+
+let unsubscribeRemoteCandidates = null;
 
 
 // =====================================================
-// WEBRTC CONFIGURATION
+// WEBRTC
 // =====================================================
 
 const rtcConfiguration = {
@@ -112,13 +108,11 @@ const rtcConfiguration = {
     iceServers: [
 
         {
-            urls:
-                "stun:stun.l.google.com:19302"
+            urls: "stun:stun.l.google.com:19302"
         },
 
         {
-            urls:
-                "stun:stun1.l.google.com:19302"
+            urls: "stun:stun1.l.google.com:19302"
         }
 
     ]
@@ -127,14 +121,30 @@ const rtcConfiguration = {
 
 
 // =====================================================
-// PROFILE
+// STATUS
 // =====================================================
 
-async function getUserProfile(uid) {
+function setCallStatus(status) {
+
+    if (callStatus) {
+
+        callStatus.textContent =
+            status;
+
+    }
+
+}
+
+
+// =====================================================
+// LOAD USER
+// =====================================================
+
+async function loadUser(uid) {
 
     try {
 
-        const snapshot =
+        const snap =
             await getDoc(
                 doc(
                     db,
@@ -143,91 +153,89 @@ async function getUserProfile(uid) {
                 )
             );
 
-        if (snapshot.exists()) {
-
-            const data =
-                snapshot.data();
+        if (!snap.exists()) {
 
             return {
-
-                name:
-                    data.name ||
-                    data.username ||
-                    "User",
-
+                name: "User",
                 photoURL:
-                    data.photoURL ||
                     "images/default-avatar.png"
-
             };
 
         }
 
+        const data =
+            snap.data();
+
+        return {
+
+            name:
+                data.name ||
+                data.username ||
+                "User",
+
+            photoURL:
+                data.photoURL ||
+                "images/default-avatar.png"
+
+        };
+
     } catch (error) {
 
         console.error(
-            "❌ Profile error:",
+            "Profile error:",
             error
         );
 
+        return {
+
+            name: "User",
+
+            photoURL:
+                "images/default-avatar.png"
+
+        };
+
     }
-
-    return {
-
-        name: "User",
-
-        photoURL:
-            "images/default-avatar.png"
-
-    };
 
 }
 
 
 // =====================================================
-// LOAD REMOTE USER
+// DISPLAY USER
 // =====================================================
 
 async function loadRemoteUser() {
 
-    if (!receiverId) {
-        return;
-    }
-
-    remoteUser =
-        await getUserProfile(
+    const user =
+        await loadUser(
             receiverId
         );
-
 
     if (callerName) {
 
         callerName.textContent =
-            remoteUser.name;
+            user.name;
 
     }
-
 
     if (callerPhoto) {
 
         callerPhoto.src =
-            remoteUser.photoURL;
+            user.photoURL;
 
     }
-
 
     if (voiceAvatarName) {
 
         voiceAvatarName.textContent =
-            remoteUser.name;
+            user.name;
 
     }
-
 
     if (voiceAvatarPhoto) {
 
         voiceAvatarPhoto.src =
-            remoteUser.photoURL;
+            user.photoURL;
 
     }
 
@@ -235,24 +243,10 @@ async function loadRemoteUser() {
 
 
 // =====================================================
-// STATUS UI
+// MICROPHONE
 // =====================================================
 
-function setCallStatus(text) {
-
-    if (callStatus) {
-
-        callStatus.textContent =
-            text;
-
-    }
-
-
-// =====================================================
-// GET MICROPHONE
-// =====================================================
-
-async function getLocalAudio() {
+async function getMicrophone() {
 
     if (localStream) {
 
@@ -260,20 +254,35 @@ async function getLocalAudio() {
 
     }
 
+    try {
 
-    localStream =
-        await navigator
-            .mediaDevices
-            .getUserMedia({
+        localStream =
+            await navigator
+                .mediaDevices
+                .getUserMedia({
 
-                audio: true,
+                    audio: true,
 
-                video: false
+                    video: false
 
-            });
+                });
 
+        return localStream;
 
-    return localStream;
+    } catch (error) {
+
+        console.error(
+            "❌ Microphone error:",
+            error
+        );
+
+        setCallStatus(
+            "Microphone permission denied"
+        );
+
+        throw error;
+
+    }
 
 }
 
@@ -305,19 +314,43 @@ function createPeerConnection() {
     // REMOTE AUDIO
     // =================================================
 
-    const remoteAudio =
-        new Audio();
+    remoteAudio =
+        document.getElementById(
+            "remoteAudio"
+        );
 
-    remoteAudio.autoplay = true;
 
-    remoteAudio.playsInline = true;
+    if (!remoteAudio) {
+
+        remoteAudio =
+            document.createElement(
+                "audio"
+            );
+
+        remoteAudio.id =
+            "remoteAudio";
+
+        remoteAudio.autoplay =
+            true;
+
+        remoteAudio.playsInline =
+            true;
+
+        document.body.appendChild(
+            remoteAudio
+        );
+
+    }
+
+
+    remoteAudio.autoplay =
+        true;
+
+    remoteAudio.playsInline =
+        true;
 
     remoteAudio.srcObject =
         remoteStream;
-
-
-    window.matchConnectRemoteAudio =
-        remoteAudio;
 
 
     // =================================================
@@ -328,8 +361,32 @@ function createPeerConnection() {
         event => {
 
             console.log(
-                "🔊 Remote audio track received"
+                "🔊 REMOTE AUDIO RECEIVED"
             );
+
+
+            for (
+                const track
+                of event.streams[0]?.getTracks() || []
+            ) {
+
+                if (
+                    !remoteStream
+                        .getTracks()
+                        .some(
+                            existing =>
+                                existing.id ===
+                                track.id
+                        )
+                ) {
+
+                    remoteStream.addTrack(
+                        track
+                    );
+
+                }
+
+            }
 
 
             if (
@@ -360,7 +417,7 @@ function createPeerConnection() {
                     error => {
 
                         console.warn(
-                            "⚠️ Remote audio play:",
+                            "Audio autoplay:",
                             error
                         );
 
@@ -376,7 +433,7 @@ function createPeerConnection() {
 
 
     // =================================================
-    // ICE CANDIDATE
+    // LOCAL ICE
     // =================================================
 
     peerConnection.onicecandidate =
@@ -412,14 +469,14 @@ function createPeerConnection() {
 
 
                 console.log(
-                    "🧊 Voice ICE saved:",
+                    "🧊 ICE saved:",
                     collectionName
                 );
 
             } catch (error) {
 
                 console.error(
-                    "❌ Voice ICE save error:",
+                    "❌ ICE save error:",
                     error
                 );
 
@@ -449,7 +506,7 @@ function createPeerConnection() {
 
 
             console.log(
-                "🔗 Voice connection:",
+                "🔗 CONNECTION:",
                 state
             );
 
@@ -501,47 +558,28 @@ function createPeerConnection() {
 
             }
 
-
-            if (
-                state ===
-                "closed"
-            ) {
-
-                setCallStatus(
-                    "Call ended"
-                );
-
-            }
-
         };
 
 
     // =================================================
-    // ICE CONNECTION STATE
+    // ICE STATE
     // =================================================
 
     peerConnection
         .oniceconnectionstatechange =
         () => {
 
-            if (!peerConnection) {
-
-                return;
-
-            }
-
-
             console.log(
-                "🧊 Voice ICE:",
+                "🧊 ICE STATE:",
                 peerConnection
-                    .iceConnectionState
+                    ?.iceConnectionState
             );
 
         };
 
 
     // =================================================
-    // ADD MICROPHONE TRACK
+    // ADD MICROPHONE
     // =================================================
 
     if (localStream) {
@@ -568,7 +606,7 @@ function createPeerConnection() {
 
 
 // =====================================================
-// LISTEN FOR REMOTE ICE
+// LISTEN REMOTE ICE
 // =====================================================
 
 function listenForRemoteCandidates() {
@@ -640,13 +678,13 @@ function listenForRemoteCandidates() {
 
 
                         console.log(
-                            "✅ Remote voice ICE added"
+                            "✅ Remote ICE added"
                         );
 
                     } catch (error) {
 
                         console.error(
-                            "❌ Remote voice ICE error:",
+                            "❌ Remote ICE error:",
                             error
                         );
 
@@ -661,7 +699,7 @@ function listenForRemoteCandidates() {
 
 
 // =====================================================
-// FLUSH ICE
+// FLUSH PENDING ICE
 // =====================================================
 
 async function flushPendingCandidates() {
@@ -696,7 +734,7 @@ async function flushPendingCandidates() {
         } catch (error) {
 
             console.error(
-                "❌ Pending voice ICE error:",
+                "❌ Pending ICE error:",
                 error
             );
 
@@ -708,10 +746,10 @@ async function flushPendingCandidates() {
 
 
 // =====================================================
-// CREATE CALL DOCUMENT
+// CREATE CALL
 // =====================================================
 
-async function createCallDocument() {
+async function createCall() {
 
     const callRef =
         doc(
@@ -756,18 +794,15 @@ async function createCallDocument() {
 
 
     console.log(
-        "📞 Voice call created:",
+        "📞 CALL CREATED:",
         callId
     );
-
-
-    return callId;
 
 }
 
 
 // =====================================================
-// LISTEN FOR CALL STATUS
+// LISTEN CALL STATUS
 // =====================================================
 
 function listenForCallStatus() {
@@ -802,9 +837,21 @@ function listenForCallStatus() {
 
 
                 console.log(
-                    "📞 Voice call status:",
+                    "📞 CALL STATUS:",
                     data.status
                 );
+
+
+                if (
+                    data.status ===
+                    "connected"
+                ) {
+
+                    setCallStatus(
+                        "Connected"
+                    );
+
+                }
 
 
                 if (
@@ -825,7 +872,7 @@ function listenForCallStatus() {
 
 
 // =====================================================
-// START OUTGOING CALL
+// CALLER
 // =====================================================
 
 async function startCallerCall() {
@@ -845,18 +892,29 @@ async function startCallerCall() {
     );
 
 
-    await getLocalAudio();
+    // IMPORTANT:
+    // Get microphone BEFORE creating peer connection
+
+    await getMicrophone();
+
 
     createPeerConnection();
 
-    callId =
-        await createCallDocument();
+
+    // IMPORTANT:
+    // Create call document BEFORE creating offer
+
+    await createCall();
 
 
     listenForRemoteCandidates();
 
     listenForCallStatus();
 
+
+    // =================================================
+    // CREATE OFFER
+    // =================================================
 
     const offer =
         await peerConnection
@@ -890,9 +948,14 @@ async function startCallerCall() {
 
 
     console.log(
-        "📤 Voice offer sent"
+        "📤 OFFER SENT:",
+        callId
     );
 
+
+    // =================================================
+    // WAIT FOR ANSWER
+    // =================================================
 
     unsubscribeAnswer =
         onSnapshot(
@@ -947,19 +1010,19 @@ async function startCallerCall() {
                     await flushPendingCandidates();
 
 
-                    setCallStatus(
-                        "Connected"
+                    console.log(
+                        "📥 ANSWER RECEIVED"
                     );
 
 
-                    console.log(
-                        "📥 Voice answer received"
+                    setCallStatus(
+                        "Connected"
                     );
 
                 } catch (error) {
 
                     console.error(
-                        "❌ Voice answer error:",
+                        "❌ ANSWER ERROR:",
                         error
                     );
 
@@ -972,7 +1035,7 @@ async function startCallerCall() {
 
 
 // =====================================================
-// START INCOMING CALL
+// RECEIVER
 // =====================================================
 
 async function startReceiverCall() {
@@ -990,7 +1053,7 @@ async function startReceiverCall() {
     if (!callId) {
 
         console.error(
-            "❌ No voice call ID"
+            "❌ No call ID"
         );
 
         return;
@@ -998,19 +1061,31 @@ async function startReceiverCall() {
     }
 
 
+    console.log(
+        "📲 RECEIVING CALL:",
+        callId
+    );
+
+
     setCallStatus(
         "Connecting..."
     );
 
 
-    await getLocalAudio();
+    await getMicrophone();
+
 
     createPeerConnection();
+
 
     listenForRemoteCandidates();
 
     listenForCallStatus();
 
+
+    // =================================================
+    // LISTEN FOR OFFER
+    // =================================================
 
     unsubscribeOffer =
         onSnapshot(
@@ -1050,6 +1125,11 @@ async function startReceiverCall() {
                         snapshot.data();
 
 
+                    console.log(
+                        "📥 OFFER RECEIVED"
+                    );
+
+
                     await peerConnection
                         .setRemoteDescription(
                             new RTCSessionDescription(
@@ -1064,6 +1144,10 @@ async function startReceiverCall() {
 
                     await flushPendingCandidates();
 
+
+                    // =================================================
+                    // CREATE ANSWER
+                    // =================================================
 
                     const answer =
                         await peerConnection
@@ -1114,20 +1198,24 @@ async function startReceiverCall() {
                     );
 
 
-                    setCallStatus(
-                        "Connected"
+                    console.log(
+                        "📤 ANSWER SENT"
                     );
 
 
-                    console.log(
-                        "📤 Voice answer sent"
+                    setCallStatus(
+                        "Connected"
                     );
 
                 } catch (error) {
 
                     console.error(
-                        "❌ Voice receiver error:",
+                        "❌ RECEIVER ERROR:",
                         error
+                    );
+
+                    setCallStatus(
+                        "Call connection failed"
                     );
 
                 }
@@ -1139,10 +1227,70 @@ async function startReceiverCall() {
 
 
 // =====================================================
+// FIND INCOMING CALL
+// =====================================================
+
+async function findIncomingCall() {
+
+    const callsQuery =
+        query(
+            collection(
+                db,
+                "calls"
+            ),
+            where(
+                "receiverId",
+                "==",
+                currentUser.uid
+            ),
+            where(
+                "callerId",
+                "==",
+                receiverId
+            ),
+            where(
+                "type",
+                "==",
+                "voice"
+            ),
+            where(
+                "status",
+                "==",
+                "ringing"
+            )
+        );
+
+
+    const snapshot =
+        await getDocs(
+            callsQuery
+        );
+
+
+    if (
+        snapshot.empty
+    ) {
+
+        return null;
+
+    }
+
+
+    return snapshot.docs[0].id;
+
+}
+
+
+// =====================================================
 // END CALL
 // =====================================================
 
 async function endCall() {
+
+    console.log(
+        "📞 END CALL BUTTON PRESSED"
+    );
+
 
     if (callEnded) {
 
@@ -1189,10 +1337,14 @@ async function endCall() {
             );
 
 
+            console.log(
+                "📞 CALL MARKED ENDED"
+            );
+
         } catch (error) {
 
             console.error(
-                "❌ Voice end call error:",
+                "❌ END CALL FIRESTORE ERROR:",
                 error
             );
 
@@ -1216,11 +1368,17 @@ function cleanupCall(
     goBack = true
 ) {
 
-    callEnded = true;
+    if (
+        callEnded === false
+    ) {
+
+        callEnded = true;
+
+    }
 
 
     // =================================================
-    // FIRESTORE LISTENERS
+    // LISTENERS
     // =================================================
 
     if (unsubscribeCall) {
@@ -1243,21 +1401,21 @@ function cleanupCall(
     }
 
 
-    if (unsubscribeRemoteCandidates) {
-
-        unsubscribeRemoteCandidates();
-
-        unsubscribeRemoteCandidates =
-            null;
-
-    }
-
-
     if (unsubscribeOffer) {
 
         unsubscribeOffer();
 
         unsubscribeOffer =
+            null;
+
+    }
+
+
+    if (unsubscribeRemoteCandidates) {
+
+        unsubscribeRemoteCandidates();
+
+        unsubscribeRemoteCandidates =
             null;
 
     }
@@ -1272,7 +1430,8 @@ function cleanupCall(
         localStream
             .getTracks()
             .forEach(
-                track => track.stop()
+                track =>
+                    track.stop()
             );
 
         localStream = null;
@@ -1284,35 +1443,29 @@ function cleanupCall(
     // REMOTE AUDIO
     // =================================================
 
+    if (remoteAudio) {
+
+        remoteAudio.pause();
+
+        remoteAudio.srcObject =
+            null;
+
+        remoteAudio =
+            null;
+
+    }
+
+
     if (remoteStream) {
 
         remoteStream
             .getTracks()
             .forEach(
-                track => track.stop()
+                track =>
+                    track.stop()
             );
 
         remoteStream = null;
-
-    }
-
-
-    if (
-        window.matchConnectRemoteAudio
-    ) {
-
-        window
-            .matchConnectRemoteAudio
-            .pause();
-
-        window
-            .matchConnectRemoteAudio
-            .srcObject =
-            null;
-
-        window
-            .matchConnectRemoteAudio =
-            null;
 
     }
 
@@ -1322,18 +1475,6 @@ function cleanupCall(
     // =================================================
 
     if (peerConnection) {
-
-        peerConnection.ontrack =
-            null;
-
-        peerConnection.onicecandidate =
-            null;
-
-        peerConnection.onconnectionstatechange =
-            null;
-
-        peerConnection.oniceconnectionstatechange =
-            null;
 
         peerConnection.close();
 
@@ -1355,7 +1496,7 @@ function cleanupCall(
 
 
     // =================================================
-    // RETURN TO PREVIOUS PAGE
+    // RETURN
     // =================================================
 
     if (goBack) {
@@ -1363,19 +1504,8 @@ function cleanupCall(
         setTimeout(
             () => {
 
-                if (
-                    window.history.length >
-                    1
-                ) {
-
-                    window.history.back();
-
-                } else {
-
-                    window.location.href =
-                        "chats.html";
-
-                }
+                window.location.href =
+                    "chats.html";
 
             },
             700
@@ -1415,7 +1545,7 @@ if (muteBtn) {
             }
 
 
-            const enabled =
+            const currentlyEnabled =
                 tracks[0].enabled;
 
 
@@ -1423,7 +1553,7 @@ if (muteBtn) {
                 track => {
 
                     track.enabled =
-                        !enabled;
+                        !currentlyEnabled;
 
                 }
             );
@@ -1431,16 +1561,20 @@ if (muteBtn) {
 
             muteBtn.classList.toggle(
                 "active",
-                enabled
+                currentlyEnabled
             );
 
 
             muteBtn.innerHTML =
-                enabled
+                currentlyEnabled
+
                     ?
-                    '<i class="fa-solid fa-microphone-slash"></i>'
+
+                '<i class="fa-solid fa-microphone-slash"></i>'
+
                     :
-                    '<i class="fa-solid fa-microphone"></i>';
+
+                '<i class="fa-solid fa-microphone"></i>';
 
         }
     );
@@ -1477,7 +1611,7 @@ if (backBtn) {
 
 
 // =====================================================
-// AUTHENTICATION
+// AUTH
 // =====================================================
 
 onAuthStateChanged(
@@ -1535,106 +1669,17 @@ onAuthStateChanged(
 
 
             // =================================================
-            // LOOK FOR EXISTING INCOMING VOICE CALL
+            // CHECK FOR INCOMING CALL
             // =================================================
 
-            const incomingCallRef =
-                collection(
-                    db,
-                    "calls"
-                );
+            const incomingCall =
+                await findIncomingCall();
 
 
-            let incomingCallId =
-                null;
-
-
-            const snapshot =
-                await getDoc(
-                    doc(
-                        db,
-                        "users",
-                        currentUser.uid
-                    )
-                );
-
-
-            // Keep profile read isolated.
-            // The actual incoming-call detection
-            // will be handled below.
-
-
-            console.log(
-                "👤 Voice call user ready:",
-                currentUser.uid
-            );
-
-
-            // =================================================
-            // TEMPORARY OUTGOING / INCOMING DECISION
-            // =================================================
-
-            // We determine whether there is a ringing
-            // voice call from this exact user.
-
-            const callsQuery =
-                await import(
-                    "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js"
-                );
-
-
-            const incomingQuery =
-                callsQuery.query(
-                    callsQuery.collection(
-                        db,
-                        "calls"
-                    ),
-                    callsQuery.where(
-                        "receiverId",
-                        "==",
-                        currentUser.uid
-                    )
-                );
-
-
-            const incomingSnapshot =
-                await callsQuery.getDocs(
-                    incomingQuery
-                );
-
-
-            for (
-                const callDoc
-                of incomingSnapshot.docs
-            ) {
-
-                const data =
-                    callDoc.data();
-
-
-                if (
-                    data.type ===
-                    "voice" &&
-                    data.status ===
-                    "ringing" &&
-                    data.callerId ===
-                    receiverId
-                ) {
-
-                    incomingCallId =
-                        callDoc.id;
-
-                    break;
-
-                }
-
-            }
-
-
-            if (incomingCallId) {
+            if (incomingCall) {
 
                 callId =
-                    incomingCallId;
+                    incomingCall;
 
 
                 console.log(
@@ -1648,7 +1693,7 @@ onAuthStateChanged(
             } else {
 
                 console.log(
-                    "📞 STARTING OUTGOING VOICE CALL"
+                    "📞 OUTGOING VOICE CALL"
                 );
 
 
@@ -1659,13 +1704,13 @@ onAuthStateChanged(
         } catch (error) {
 
             console.error(
-                "❌ Voice call initialization error:",
+                "❌ VOICE CALL START ERROR:",
                 error
             );
 
 
             setCallStatus(
-                "Unable to start voice call"
+                "Unable to start call"
             );
 
 
@@ -1692,7 +1737,8 @@ window.addEventListener(
             localStream
                 .getTracks()
                 .forEach(
-                    track => track.stop()
+                    track =>
+                        track.stop()
                 );
 
         }
