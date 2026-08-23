@@ -6,6 +6,7 @@ import {
     collection,
     addDoc,
     setDoc,
+    updateDoc,
     serverTimestamp,
     query,
     orderBy,
@@ -627,14 +628,8 @@ if (recordBtn) {
     );
 
 }
-
-
 // =====================================================
-// VOICE CALL
-// =====================================================
-
-// =====================================================
-// VOICE CALL
+// GROUP VOICE CALL
 // =====================================================
 
 if (voiceCallBtn) {
@@ -672,7 +667,127 @@ if (voiceCallBtn) {
             try {
 
                 // =====================================
-                // CREATE NEW GROUP CALL
+                // GET GROUP
+                // =====================================
+
+                const groupRef =
+                    doc(
+                        db,
+                        "groups",
+                        groupId
+                    );
+
+
+                const groupSnap =
+                    await getDoc(
+                        groupRef
+                    );
+
+
+                if (!groupSnap.exists()) {
+
+                    alert(
+                        "Group does not exist."
+                    );
+
+                    return;
+
+                }
+
+
+                const group =
+                    groupSnap.data();
+
+
+                // =====================================
+                // CHECK MEMBERSHIP
+                // =====================================
+
+                const members =
+                    Array.isArray(
+                        group.members
+                    )
+                        ? group.members
+                        : [];
+
+
+                if (
+                    !members.includes(
+                        user.uid
+                    )
+                ) {
+
+                    alert(
+                        "You are not a member of this group."
+                    );
+
+                    return;
+
+                }
+
+
+                // =====================================
+                // CHECK FOR EXISTING ACTIVE CALL
+                // =====================================
+
+                const activeCallId =
+                    group.activeCallId;
+
+
+                const activeCallType =
+                    group.activeCallType;
+
+
+                if (
+                    activeCallId &&
+                    activeCallType === "voice"
+                ) {
+
+                    const activeCallRef =
+                        doc(
+                            db,
+                            "groupCalls",
+                            activeCallId
+                        );
+
+
+                    const activeCallSnap =
+                        await getDoc(
+                            activeCallRef
+                        );
+
+
+                    if (
+                        activeCallSnap.exists()
+                    ) {
+
+                        const activeCall =
+                            activeCallSnap.data();
+
+
+                        if (
+                            activeCall.status ===
+                            "active"
+                        ) {
+
+                            // =============================
+                            // JOIN EXISTING CALL
+                            // =============================
+
+                            window.location.href =
+                                `group-voice-call.html?groupId=${encodeURIComponent(groupId)}&callId=${encodeURIComponent(activeCallId)}&type=voice`;
+
+                            return;
+
+                        }
+
+                    }
+
+                }
+
+
+                // =====================================
+                // CREATE NEW CALL
                 // =====================================
 
                 const callRef =
@@ -689,7 +804,7 @@ if (voiceCallBtn) {
 
 
                 // =====================================
-                // SAVE CALL SESSION
+                // SAVE CALL
                 // =====================================
 
                 await setDoc(
@@ -716,7 +831,28 @@ if (voiceCallBtn) {
 
 
                 // =====================================
-                // ADD CALLER AS PARTICIPANT
+                // SAVE ACTIVE CALL TO GROUP
+                // =====================================
+
+                await updateDoc(
+                    groupRef,
+                    {
+
+                        activeCallId:
+                            callId,
+
+                        activeCallType:
+                            "voice",
+
+                        activeCallStatus:
+                            "active"
+
+                    }
+                );
+
+
+                // =====================================
+                // ADD HOST
                 // =====================================
 
                 await setDoc(
@@ -739,7 +875,10 @@ if (voiceCallBtn) {
                             false,
 
                         cameraOn:
-                            false
+                            false,
+
+                        online:
+                            true
 
                     }
                 );
@@ -750,17 +889,19 @@ if (voiceCallBtn) {
                 // =====================================
 
                 window.location.href =
-    `group-voice-call.html?groupId=${encodeURIComponent(groupId)}&callId=${encodeURIComponent(callId)}&type=voice`;
+                    `group-voice-call.html?groupId=${encodeURIComponent(groupId)}&callId=${encodeURIComponent(callId)}&type=voice`;
+
+
             } catch (error) {
 
                 console.error(
-                    "Start group voice call error:",
+                    "Start/join group voice call error:",
                     error
                 );
 
 
                 alert(
-                    "Unable to start group voice call."
+                    "Unable to start or join group voice call."
                 );
 
             }
@@ -769,7 +910,6 @@ if (voiceCallBtn) {
     );
 
 }
-
 
 // =====================================================
 // VIDEO CALL
