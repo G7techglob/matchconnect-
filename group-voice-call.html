@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Group Voice Call - MatchConnect</title>
+
+    <link
+        rel="stylesheet"
+        href="group-voice-call.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         CALL HEADER
+    ========================== -->
+
+    <header class="call-header">
+
+        <button
+            id="backBtn"
+            class="back-btn"
+        >
+            ←
+        </button>
+
+
+        <div class="call-title">
+
+            <img
+                id="groupPhoto"
+                src="images/default-avatar.png"
+                alt="Group"
+            >
+
+            <div>
+
+                <h2 id="groupName">
+                    Group Call
+                </h2>
+
+                <p id="callStatus">
+                    Connecting...
+                </p>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         CALL AREA
+    ========================== -->
+
+    <main class="call-container">
+
+
+        <div
+            id="participants"
+            class="participants"
+        >
+        </div>
+
+
+        <div
+            id="connectionMessage"
+            class="connection-message"
+        >
+            Connecting to call...
+        </div>
+
+
+    </main>
+
+
+
+    <!-- =========================
+         CALL CONTROLS
+    ========================== -->
+
+    <div class="call-controls">
+
+
+        <button
+            id="muteBtn"
+            class="call-control"
+        >
+
+            <span id="muteIcon">
+                🎤
+            </span>
+
+            <span id="muteText">
+                Mute
+            </span>
+
+        </button>
+
+
+        <button
+            id="speakerBtn"
+            class="call-control"
+        >
+
+            🔊
+
+            <span>
+                Speaker
+            </span>
+
+        </button>
+
+
+        <button
+            id="leaveBtn"
+            class="call-control leave-btn"
+        >
+
+            📞
+
+            <span>
+                Leave
+            </span>
+
+        </button>
+
+
+    </div>
+
+
+
+    <!-- =========================
+         HIDDEN AUDIO ELEMENTS
+    ========================== -->
+
+    <div
+        id="audioContainer"
+        class="audio-container"
+    >
+    </div>
+
+
+
+    <script
+        type="module"
+        src="group-voice-call.js"
+    ></script>
+
+
+</body>
+
+</html>
