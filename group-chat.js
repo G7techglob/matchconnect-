@@ -750,8 +750,7 @@ if (voiceCallBtn) {
                 // =====================================
 
                 window.location.href =
-                    `group-call.html?groupId=${encodeURIComponent(groupId)}&callId=${encodeURIComponent(callId)}&type=voice`;
-
+    `group-voice-call.html?groupId=${encodeURIComponent(groupId)}&callId=${encodeURIComponent(callId)}&type=voice`;
             } catch (error) {
 
                 console.error(
