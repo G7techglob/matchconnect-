@@ -1,0 +1,293 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: #101010;
+    color: white;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.call-header {
+
+    height: 70px;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 10px 15px;
+
+    background: #181818;
+
+    border-bottom: 1px solid #333;
+
+}
+
+
+.back-btn {
+
+    width: 42px;
+    height: 42px;
+
+    border: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 28px;
+
+    cursor: pointer;
+
+}
+
+
+.group-info {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+.group-info img {
+
+    width: 45px;
+    height: 45px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+}
+
+
+.group-info h2 {
+
+    font-size: 17px;
+
+}
+
+
+.group-info p {
+
+    font-size: 12px;
+
+    color: #aaa;
+
+    margin-top: 3px;
+
+}
+
+
+/* =========================================
+   CONNECTION MESSAGE
+========================================= */
+
+.connection-message {
+
+    text-align: center;
+
+    padding: 8px;
+
+    font-size: 13px;
+
+    color: #aaa;
+
+}
+
+
+/* =========================================
+   VIDEO CONTAINER
+========================================= */
+
+.video-container {
+
+    height: calc(100vh - 190px);
+
+    padding: 10px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(160px, 1fr)
+        );
+
+    gap: 8px;
+
+    overflow-y: auto;
+
+}
+
+
+/* =========================================
+   VIDEO BOX
+========================================= */
+
+.video-box {
+
+    position: relative;
+
+    background: #202020;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    min-height: 180px;
+
+}
+
+
+.video-box video {
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+
+}
+
+
+.video-name {
+
+    position: absolute;
+
+    bottom: 8px;
+    left: 8px;
+
+    padding: 5px 8px;
+
+    background: rgba(0,0,0,.65);
+
+    border-radius: 6px;
+
+    font-size: 12px;
+
+}
+
+
+.local-video-box {
+
+    border: 2px solid #444;
+
+}
+
+
+/* =========================================
+   PARTICIPANTS
+========================================= */
+
+.participants {
+
+    display: none;
+
+}
+
+
+/* =========================================
+   CONTROLS
+========================================= */
+
+.call-controls {
+
+    position: fixed;
+
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+
+    height: 90px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 12px;
+
+    background: #181818;
+
+    border-top: 1px solid #333;
+
+}
+
+
+.call-control {
+
+    min-width: 65px;
+
+    height: 58px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #292929;
+
+    color: white;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 4px;
+
+    cursor: pointer;
+
+}
+
+
+.call-control span {
+
+    font-size: 11px;
+
+}
+
+
+.leave-btn {
+
+    background: #d32f2f;
+
+}
+
+
+@media (max-width: 600px) {
+
+    .video-container {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+    .video-box {
+
+        min-height: 150px;
+
+    }
+
+}
