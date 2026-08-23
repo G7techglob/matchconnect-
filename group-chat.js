@@ -912,23 +912,183 @@ if (voiceCallBtn) {
 }
 
 // =====================================================
-// VIDEO CALL
+// GROUP VIDEO CALL
 // =====================================================
 
 if (videoCallBtn) {
 
     videoCallBtn.addEventListener(
         "click",
-        () => {
+        async () => {
 
-            alert(
-                "Video calling coming next."
-            );
+            const user =
+                auth.currentUser;
+
+            if (!user) {
+
+                alert(
+                    "Please log in first."
+                );
+
+                return;
+
+            }
+
+            if (!groupId) {
+
+                alert(
+                    "Group not found."
+                );
+
+                return;
+
+            }
+
+            try {
+
+                // =====================================
+                // CHECK GROUP MEMBERSHIP
+                // =====================================
+
+                const groupSnap =
+                    await getDoc(
+                        doc(
+                            db,
+                            "groups",
+                            groupId
+                        )
+                    );
+
+                if (!groupSnap.exists()) {
+
+                    alert(
+                        "Group does not exist."
+                    );
+
+                    return;
+
+                }
+
+                const group =
+                    groupSnap.data();
+
+                const members =
+                    Array.isArray(group.members)
+                        ? group.members
+                        : [];
+
+                if (!members.includes(user.uid)) {
+
+                    alert(
+                        "You must be a group member to start a video call."
+                    );
+
+                    return;
+
+                }
+
+
+                // =====================================
+                // CREATE GROUP VIDEO CALL
+                // =====================================
+
+                const callRef =
+                    doc(
+                        collection(
+                            db,
+                            "groupCalls"
+                        )
+                    );
+
+                const callId =
+                    callRef.id;
+
+
+                // =====================================
+                // SAVE CALL DOCUMENT
+                // =====================================
+
+                await setDoc(
+                    callRef,
+                    {
+
+                        groupId:
+                            groupId,
+
+                        type:
+                            "video",
+
+                        hostId:
+                            user.uid,
+
+                        status:
+                            "active",
+
+                        createdAt:
+                            serverTimestamp()
+
+                    }
+                );
+
+
+                // =====================================
+                // ADD HOST AS PARTICIPANT
+                // =====================================
+
+                await setDoc(
+                    doc(
+                        db,
+                        "groupCalls",
+                        callId,
+                        "participants",
+                        user.uid
+                    ),
+                    {
+
+                        uid:
+                            user.uid,
+
+                        joinedAt:
+                            serverTimestamp(),
+
+                        muted:
+                            false,
+
+                        cameraOn:
+                            true,
+
+                        online:
+                            true
+
+                    }
+                );
+
+
+                // =====================================
+                // OPEN VIDEO CALL PAGE
+                // =====================================
+
+                window.location.href =
+                    `group-video-call.html?groupId=${encodeURIComponent(groupId)}&callId=${encodeURIComponent(callId)}&type=video`;
+
+
+            } catch (error) {
+
+                console.error(
+                    "Start group video call error:",
+                    error
+                );
+
+                alert(
+                    "Unable to start group video call."
+                );
+
+            }
 
         }
     );
 
-}
+                        }
 
 
 // =====================================================
