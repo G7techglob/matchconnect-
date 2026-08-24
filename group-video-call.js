@@ -634,94 +634,99 @@ function removeRemoteVideo(
 
 }
 
-
 // =====================================================
 // CREATE PEER CONNECTION
 // =====================================================
 
-function createPeerConnection(
-    remoteUid
-) {
+function createPeerConnection(remoteUid) {
 
     console.log(
         "Creating peer connection:",
         remoteUid
     );
 
-
     const peer =
         new RTCPeerConnection(
             rtcConfiguration
         );
 
-
+    // Store connection
     peerConnections.set(
         remoteUid,
         peer
     );
 
+    // =================================================
+    // PENDING ICE CANDIDATES
+    // =================================================
 
-    // =====================================
-    // ADD LOCAL TRACKS
-    // =====================================
+    peer.pendingIceCandidates = [];
+
+    peer.remoteDescriptionReady = false;
+
+
+    // =================================================
+    // ADD LOCAL MEDIA
+    // =================================================
 
     if (localStream) {
 
         localStream
             .getTracks()
-            .forEach(
-                track => {
+            .forEach(track => {
 
-                    peer.addTrack(
-                        track,
-                        localStream
-                    );
+                peer.addTrack(
+                    track,
+                    localStream
+                );
 
-                }
-            );
+            });
 
     }
 
 
-    // =====================================
+    // =================================================
     // REMOTE TRACK
-    // =====================================
+    // =================================================
 
-    peer.ontrack =
-        event => {
+    peer.ontrack = event => {
 
-            console.log(
-                "Remote track received:",
+        console.log(
+            "Remote track received:",
+            remoteUid
+        );
+
+        const stream =
+            event.streams &&
+            event.streams[0];
+
+        if (!stream) {
+
+            console.warn(
+                "No remote stream:",
                 remoteUid
             );
 
-            const stream =
-                event.streams[0];
+            return;
 
-            if (!stream) {
+        }
 
-                return;
+        createRemoteVideo(
+            remoteUid,
+            stream
+        );
 
-            }
-
-            createRemoteVideo(
-                remoteUid,
-                stream
-            );
-
-        };
+    };
 
 
-    // =====================================
+    // =================================================
     // ICE CANDIDATE
-    // =====================================
+    // =================================================
 
     peer.onicecandidate =
         async event => {
 
-            if (
-                !event.candidate
-            ) {
+            if (!event.candidate) {
 
                 return;
 
@@ -734,7 +739,6 @@ function createPeerConnection(
                         currentUser.uid,
                         remoteUid
                     );
-
 
                 const candidateRef =
                     doc(
@@ -750,27 +754,30 @@ function createPeerConnection(
                         )
                     );
 
-
                 await setDoc(
                     candidateRef,
                     {
 
                         candidate:
-                            event.candidate
-                                .candidate,
+                            event.candidate.candidate,
 
                         sdpMid:
-                            event.candidate
-                                .sdpMid,
+                            event.candidate.sdpMid,
 
                         sdpMLineIndex:
-                            event.candidate
-                                .sdpMLineIndex,
+                            event.candidate.sdpMLineIndex,
 
                         createdAt:
                             serverTimestamp()
 
                     }
+                );
+
+                console.log(
+                    "ICE candidate saved:",
+                    currentUser.uid,
+                    "->",
+                    remoteUid
                 );
 
             } catch (error) {
@@ -785,15 +792,17 @@ function createPeerConnection(
         };
 
 
-    // =====================================
+    // =================================================
     // CONNECTION STATE
-    // =====================================
+    // =================================================
 
     peer.onconnectionstatechange =
         () => {
 
             console.log(
-                "Peer connection:",
+                "Connection state:",
+                currentUser.uid,
+                "->",
                 remoteUid,
                 peer.connectionState
             );
@@ -804,8 +813,24 @@ function createPeerConnection(
                 "connected"
             ) {
 
+                console.log(
+                    "CONNECTED TO:",
+                    remoteUid
+                );
+
                 connectionMessage.textContent =
                     "Video call connected";
+
+            }
+
+
+            if (
+                peer.connectionState ===
+                "connecting"
+            ) {
+
+                connectionMessage.textContent =
+                    "Connecting...";
 
             }
 
@@ -815,8 +840,8 @@ function createPeerConnection(
                 "failed"
             ) {
 
-                console.warn(
-                    "Peer connection failed:",
+                console.error(
+                    "WebRTC connection FAILED:",
                     remoteUid
                 );
 
@@ -829,7 +854,7 @@ function createPeerConnection(
             ) {
 
                 console.warn(
-                    "Peer disconnected:",
+                    "WebRTC disconnected:",
                     remoteUid
                 );
 
@@ -850,11 +875,25 @@ function createPeerConnection(
         };
 
 
+    // =================================================
+    // ICE CONNECTION STATE
+    // =================================================
+
+    peer.oniceconnectionstatechange =
+        () => {
+
+            console.log(
+                "ICE state:",
+                remoteUid,
+                peer.iceConnectionState
+            );
+
+        };
+
+
     return peer;
 
 }
-
-
 // =====================================================
 // CREATE OFFER
 // =====================================================
@@ -865,7 +904,9 @@ async function createOffer(
 ) {
 
     console.log(
-        "Creating offer for:",
+        "CREATING OFFER:",
+        currentUser.uid,
+        "->",
         remoteUid
     );
 
@@ -927,12 +968,13 @@ async function createOffer(
 
 
     console.log(
-        "Offer saved:",
+        "OFFER SAVED:",
+        currentUser.uid,
+        "->",
         remoteUid
     );
 
 }
-
 
 // =====================================================
 // LISTEN FOR CONNECTION SIGNALING
@@ -960,9 +1002,9 @@ function listenForConnection(
         );
 
 
-    // =====================================
+    // =================================================
     // CONNECTION DOCUMENT
-    // =====================================
+    // =================================================
 
     const unsubscribeConnection =
         onSnapshot(
@@ -992,11 +1034,11 @@ function listenForConnection(
                         data.offer &&
                         data.receiver ===
                             currentUser.uid &&
-                        !peer.currentRemoteDescription
+                        !peer.remoteDescriptionReady
                     ) {
 
                         console.log(
-                            "Offer received from:",
+                            "OFFER RECEIVED FROM:",
                             remoteUid
                         );
 
@@ -1007,6 +1049,24 @@ function listenForConnection(
                             )
                         );
 
+
+                        peer.remoteDescriptionReady =
+                            true;
+
+
+                        // =================================
+                        // ADD PENDING ICE
+                        // =================================
+
+                        await flushPendingIceCandidates(
+                            peer,
+                            remoteUid
+                        );
+
+
+                        // =================================
+                        // CREATE ANSWER
+                        // =================================
 
                         const answer =
                             await peer.createAnswer();
@@ -1036,7 +1096,7 @@ function listenForConnection(
 
 
                         console.log(
-                            "Answer sent to:",
+                            "ANSWER SENT TO:",
                             remoteUid
                         );
 
@@ -1051,11 +1111,11 @@ function listenForConnection(
                         data.answer &&
                         data.caller ===
                             currentUser.uid &&
-                        !peer.currentRemoteDescription
+                        !peer.remoteDescriptionReady
                     ) {
 
                         console.log(
-                            "Answer received from:",
+                            "ANSWER RECEIVED FROM:",
                             remoteUid
                         );
 
@@ -1064,6 +1124,20 @@ function listenForConnection(
                             new RTCSessionDescription(
                                 data.answer
                             )
+                        );
+
+
+                        peer.remoteDescriptionReady =
+                            true;
+
+
+                        // =================================
+                        // ADD PENDING ICE
+                        // =================================
+
+                        await flushPendingIceCandidates(
+                            peer,
+                            remoteUid
                         );
 
                     }
@@ -1088,9 +1162,9 @@ function listenForConnection(
     );
 
 
-    // =====================================
+    // =================================================
     // REMOTE ICE CANDIDATES
-    // =====================================
+    // =================================================
 
     const remoteCandidateRef =
         collection(
@@ -1137,23 +1211,52 @@ function listenForConnection(
                 }
 
 
+                const candidate =
+                    new RTCIceCandidate({
+
+                        candidate:
+                            data.candidate,
+
+                        sdpMid:
+                            data.sdpMid,
+
+                        sdpMLineIndex:
+                            data.sdpMLineIndex
+
+                    });
+
+
+                // =================================
+                // REMOTE DESCRIPTION NOT READY
+                // =================================
+
+                if (
+                    !peer.remoteDescriptionReady
+                ) {
+
+                    console.log(
+                        "Queueing ICE candidate:",
+                        remoteUid
+                    );
+
+
+                    peer.pendingIceCandidates
+                        .push(candidate);
+
+
+                    continue;
+
+                }
+
+
+                // =================================
+                // ADD ICE IMMEDIATELY
+                // =================================
+
                 try {
 
                     await peer.addIceCandidate(
-
-                        new RTCIceCandidate({
-
-                            candidate:
-                                data.candidate,
-
-                            sdpMid:
-                                data.sdpMid,
-
-                            sdpMLineIndex:
-                                data.sdpMLineIndex
-
-                        })
-
+                        candidate
                     );
 
 
@@ -1179,6 +1282,72 @@ function listenForConnection(
 
 }
 
+
+// =====================================================
+// FLUSH PENDING ICE CANDIDATES
+// =====================================================
+
+async function flushPendingIceCandidates(
+    peer,
+    remoteUid
+) {
+
+    if (
+        !peer.pendingIceCandidates ||
+        peer.pendingIceCandidates.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    console.log(
+        "Flushing pending ICE candidates:",
+        remoteUid,
+        peer.pendingIceCandidates.length
+    );
+
+
+    const candidates =
+        [
+            ...peer.pendingIceCandidates
+        ];
+
+
+    peer.pendingIceCandidates = [];
+
+
+    for (
+        const candidate
+        of candidates
+    ) {
+
+        try {
+
+            await peer.addIceCandidate(
+                candidate
+            );
+
+
+            console.log(
+                "Pending ICE candidate added:",
+                remoteUid
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Pending ICE candidate error:",
+                remoteUid,
+                error
+            );
+
+        }
+
+    }
+
+}
 
 // =====================================================
 // ENSURE CONNECTION
