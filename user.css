@@ -282,7 +282,9 @@ body {
 .user-page .post{
     padding-left:8px;
     padding-right:8px;
-}
+    padding-bottom:5px;
+    border-bottom:1px solid #dbdbdb;
+} 
 
 /* =========================
    USER PROFILE TOP ROW
