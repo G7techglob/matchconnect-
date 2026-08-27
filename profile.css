@@ -451,6 +451,11 @@ hr {
 .post-container{
     padding-left:0;
     padding-right:0;
+
+    /* Post demarcation line */
+    border-bottom:1px solid #dbdbdb;
+    padding-bottom:10px;
+    margin-bottom:0;
 }
 /* Clean post action buttons */
 .post-actions button{
