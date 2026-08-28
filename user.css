@@ -460,3 +460,17 @@ body {
 .post-options-btn:hover{
     color:#000;
 }
+
+
+/* =========================
+   USER PROFILE POST DEMARCATION
+========================= */
+
+#userPosts .post {
+    width: 100%;
+    border-bottom: 1px solid #dbdbdb !important;
+    padding-bottom: 5px !important;
+    margin-bottom: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
