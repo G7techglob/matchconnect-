@@ -478,4 +478,22 @@ body {
 
 #userPosts .post-container + .post-container {
     padding-top: 10px;
-    }
+}
+
+/* FULL-WIDTH DEMARCATION LINE */
+
+#userPosts .post-container {
+    position: relative;
+    border-bottom: none !important;
+}
+
+#userPosts .post-container::after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: #dbdbdb;
+}
