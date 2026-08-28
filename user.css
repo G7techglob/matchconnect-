@@ -461,16 +461,21 @@ body {
     color:#000;
 }
 
-
 /* =========================
    USER PROFILE POST DEMARCATION
 ========================= */
 
-#userPosts .post {
+#userPosts .post-container {
     width: 100%;
+    margin: 0;
+    padding: 0 8px 5px 8px;
     border-bottom: 1px solid #dbdbdb !important;
-    padding-bottom: 5px !important;
-    margin-bottom: 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
+    box-sizing: border-box;
+    overflow: hidden;
 }
+
+#userPosts .post-container + .post-container {
+    padding-top: 10px;
+    }
